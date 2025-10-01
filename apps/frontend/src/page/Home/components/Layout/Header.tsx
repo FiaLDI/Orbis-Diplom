@@ -6,8 +6,6 @@ import { NavBar } from "../Shared/NavBar";
 export const Header = () => {
     const navigator = useNavigate();
     const [burgerActive, setBurgerActive] = useState<boolean>(true);
-    const [showMenu, setShowMenu] = useState<boolean>();
-
     useEffect(() => {
         const handleResize = () => {
             setBurgerActive(window.innerWidth > 1199);

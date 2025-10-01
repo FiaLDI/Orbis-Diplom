@@ -1,7 +1,7 @@
 import { DefaultButton } from "@/components/ui/Button/DefaultButton";
 import { ModalInput } from "@/components/ui/Input/ModalInput";
 import { useLogoutUserMutation } from "@/features/auth";
-import { AccountSettings, AppearanceSettings, ChatSettings, DevicesSettings, HotKeySettings, LanguageSettings, NotificationSettings, ProfileSettings, VoiceAndVideoSettings } from "@/features/usersettings";
+import { AccountSettings, AppearanceSettings, ChatSettings, DevicesSettings, HotKeySettings, LanguageSettings, NotificationSettings, ProfileSettings } from "@/features/usersettings";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -10,7 +10,6 @@ const SettingsContent: Record<string, JSX.Element> = {
     Profile: <ProfileSettings />,
     Devices: <DevicesSettings />,
     Appearance: <AppearanceSettings />,
-    "Voice and video": <VoiceAndVideoSettings />,
     Chat: <ChatSettings />,
     Notification: <NotificationSettings />,
     "Hot Key": <HotKeySettings />,

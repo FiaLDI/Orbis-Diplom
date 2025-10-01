@@ -12,7 +12,6 @@ export { default as HotKeySettings } from './components/Settings/HotKeySettings'
 export { default as LanguageSettings } from './components/Settings/LanguageSettings';
 export { default as NotificationSettings } from './components/Settings/NotificationSettings';
 export { default as ProfileSettings } from './components/Settings/ProfileSettings';
-export { default as VoiceAndVideoSettings } from './components/Settings/VoiceAndVideoSettings';
 // Хуки
 // export { useAuth } from './hooks/useAuth';
 // export { useUserSession } from './hooks/useUserSession';

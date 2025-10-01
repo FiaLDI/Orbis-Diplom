@@ -12,7 +12,7 @@ export const useChatSocket = () => {
 
         // Создаем новый сокет только если его еще нет
         if (!socketRef.current) {
-            const newSocket = io(config.chatServiceUrl, {
+            const newSocket = io(config.monoliteUrl, {
                 auth: { token: tokenData.access_token },
                 autoConnect: true,
                 reconnection: true,

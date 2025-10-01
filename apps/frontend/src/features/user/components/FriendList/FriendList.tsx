@@ -11,8 +11,6 @@ import { CircleMinus, CirclePlus, Menu, MessageSquare } from "lucide-react";
 import { DefaultButton } from "@/components/ui/Button/DefaultButton";
 
 
-
-
 const FriendList: React.FC = () => {
     const dispatch = useAppDispatch();
     const mode = useAppSelector(s => s.user.friendsMode);
@@ -23,12 +21,12 @@ const FriendList: React.FC = () => {
     const [getInvMe] = useLazyGetInviteMeQuery();
     const [confirm, {isSuccess: confirmSuccess}] = useConfirmFriendMutation();
     const [reject, {isSuccess: confirmReject}] = useRejectFriendMutation();
-    const [startChatting, {isSuccess: isSuccessChat, isError: isErrorChat}] = useStartChattingMutation();
+    const [startChatting] = useStartChattingMutation();
     const {} = useGetFriendQuery({});
     const [menuActive, setMenuActive] = useState(window.innerWidth > 1024 || false);
     
     const handleClick = (id: number) => {
-        trigger(id); // Выполняем запрос с конкретным ID
+        trigger(id);
     };
 
     useEffect(() => {

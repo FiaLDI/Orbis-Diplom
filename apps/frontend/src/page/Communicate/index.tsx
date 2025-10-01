@@ -2,7 +2,6 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setActiveChat, useChatMessages } from "@/features/chat";
 import { CreateServerForm, setActiveServer, useLazyGetServersInsideQuery, useLazyGetServersMembersQuery } from "@/features/server";
 import { FriendList, Search, UserProfile } from "@/features/user";
-import { setBigMode, VoiceComponets } from "@/features/voice";
 import React, { useEffect, useState } from "react";
 import { AppMenu } from "./components/AppMenu";
 import { MessageMenu } from "./components/personal/MessagesMenu";
@@ -16,9 +15,6 @@ export const CommunicatePage: React.FC = () => {
 
     const server = useAppSelector((state) => state.server);
     const activeChat = useAppSelector((state) => state.chat.activeChat);
-    const status = useAppSelector(s => s.voice.status)
-    const isConnection = (status === 'connected');
-    const bigMode = useAppSelector(s => s.voice.bigMode);
     const [trigger] = useLazyGetServersMembersQuery();
     const [getServer] = useLazyGetServersInsideQuery();
     const [isMessageMenuOpen, setIsMessageMenuOpen] = useState(true);
@@ -27,7 +23,6 @@ export const CommunicatePage: React.FC = () => {
     
     useEffect(() => {
         if (activeServerId) {
-            dispatch(setBigMode(false));
             trigger(activeServerId);
             getServer(activeServerId)
             dispatch(setActiveChat(undefined));
@@ -35,7 +30,6 @@ export const CommunicatePage: React.FC = () => {
     }, [activeServerId]);
 
     useEffect(() => {
-        dispatch(setBigMode(false));
         dispatch(setActiveServer(undefined));
         dispatch(setActiveChat(undefined));
     }, [dispatch]);
@@ -51,18 +45,13 @@ export const CommunicatePage: React.FC = () => {
             <AppMenu />
             <MessageServerMenu />
 
-            {(isConnection && bigMode) &&
-                <div className="w-full h-full flex flex-col justify-between items-center p-10">
-                    <VoiceComponets.VoiceMemberManager />
-                 </div>
-            }
             
-            {(hasActiveChat && !bigMode) ? (
+            {(hasActiveChat) ? (
                 <div className="w-full h-screen">
                     <ActionServer />
                 </div>
                 
-            ): !bigMode  && (<div className="w-full"></div>)}
+            ): (<div className="w-full"></div>)}
             <CreateServerForm />
             <UserProfile />
             {hasActiveServer && <MemberChatServer />}
@@ -87,27 +76,20 @@ export const CommunicatePage: React.FC = () => {
             <div className="w-full flex h-full relative">
             {/* {чаты пользователя} */}
             {isMessageMenuOpen ? <MessageMenu /> :null}
-            
-            {(isConnection && bigMode) &&
-                <div className="w-full h-full flex flex-col justify-between items-center p-10">
-                    <VoiceComponets.VoiceMemberManager />
-                 </div>
-            }
+           
 
             {/* {Чат} */}
-            {(hasActiveChat && !bigMode) ? (
+            {hasActiveChat ? (
                 <div className="w-full h-full lg:h-screen">
                     <Action />
                 </div>
                 
-            ): !bigMode && hasActiveChat  && (<div className="w-full"></div>)}
+            ): (<div className="w-full"></div>)}
 
             {/* {Список друзей} */}
             {!hasActiveChat && !hasActiveServer && <FriendList />}
             </div>
 
-            {/* {Аудио менеджер} */}
-            <VoiceComponets.AudioManager />
 
         </div>
     );

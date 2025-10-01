@@ -14,7 +14,7 @@ export const useServerJournalSocket = () => {
 
         // Создаем новый сокет только если его еще нет
         if (!socketRef.current) {
-            const newSocket = io(config.userServiceUrl, {
+            const newSocket = io(config.monoliteUrl, {
                 auth: { token: tokenData.access_token },
                 autoConnect: true,
                 reconnection: true,

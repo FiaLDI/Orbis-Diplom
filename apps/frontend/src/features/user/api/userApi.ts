@@ -4,7 +4,7 @@ import { config } from "@/config";
 export const userApi = createApi({
     reducerPath: "userApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: `${config.userServiceUrl}/api`,
+        baseUrl: `${config.monoliteUrl}/api`,
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             const state = getState() as {

@@ -9,11 +9,11 @@ import { ModalInput } from "@/components/ui/Input/ModalInput";
 const AddServerForm: React.FC = () => {
     const dispatch = useAppDispatch();
     const check = useAppSelector(s => s.server.isCreatingServer);
-    const [createServer, {isLoading, isError, isSuccess: successCreate}] = useCreateSeverMutation();
+    const [createServer, {isSuccess: successCreate}] = useCreateSeverMutation();
     const [joinServer, {isSuccess: successJoin}] = useJoinServerMutation();
     const [nameServer, setNameServer] = useState<string>();
     const [idServer, setIdServer] = useState<string>();
-    const [trigger, { data, isFetching, error }] = useLazyGetServersQuery();
+    const [trigger] = useLazyGetServersQuery();
 
     const createServerRef = useRef<HTMLDivElement>(null);
 

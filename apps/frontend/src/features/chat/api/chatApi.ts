@@ -4,7 +4,7 @@ import { config } from "../../../config";
 export const messageApi = createApi({
     reducerPath: "messageApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: `${config.chatServiceUrl}/api`,
+        baseUrl: `${config.monoliteUrl}/api`,
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             const state = getState() as {

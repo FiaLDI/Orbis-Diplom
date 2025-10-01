@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { config } from "../../../config";
+import { config } from "@/config";
 
 export const serverApi = createApi({
     reducerPath: "serverApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: `${config.userServiceUrl}/api`,
+        baseUrl: `${config.monoliteUrl}/api`,
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             const state = getState() as {

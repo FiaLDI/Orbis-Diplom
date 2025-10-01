@@ -11,7 +11,7 @@ export const uploadFiles = createAsyncThunk<string[], File[], { rejectValue: str
       const formData = new FormData();
       files.forEach(file => formData.append('files', file));
 
-      const res = await axios.post<UploadResponse>(`${config.cdnServiceUrl}/upload` ||'http://26.234.138.233:3006/upload', formData);
+      const res = await axios.post<UploadResponse>(`${config.cdnServiceUrl}/upload` ||'http://26.234.138.233:4001/upload', formData);
       return res.data.uploaded;
     } catch (err: any) {
       return rejectWithValue(err.message);

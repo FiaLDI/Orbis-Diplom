@@ -1,5 +1,4 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 
 export const ArticleNavigator: React.FC<{navigate: (order: number)=>void, order: number}> = ({navigate, order}) => {
 
