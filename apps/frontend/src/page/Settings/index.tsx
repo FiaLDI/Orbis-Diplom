@@ -68,8 +68,6 @@ export const SettingAppPage: React.FC = () => {
                                     }
                                     }}
                                 >Exit</button>
-                                    Exit
-                                </button>
                             </div>
                         </div>
                     </ul>
