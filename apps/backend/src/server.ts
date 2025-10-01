@@ -41,7 +41,14 @@ export const ioJournal = new Server(server, {
         origin: process.env.FRONTENDADDRES,
     },
 });
-const PORT = process.env.AUTHPORT;
+
+export const ioChat = new Server(server, {
+    cors: {
+        origin: process.env.FRONTENDADDRES,
+    },
+});
+
+const PORT = process.env.PORT;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     console.log(`Server for frontend: ${process.env.FRONTENDADDRES}`);
