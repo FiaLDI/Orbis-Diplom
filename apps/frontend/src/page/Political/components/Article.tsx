@@ -47,7 +47,7 @@ const Article: React.FC<ArticleProps> = ({ title, description, content }) => {
     };
 
     const chapters = parseContent(content);
-    
+
     return (
         <div className="text-white p-5">
             <h2 className="p-5 text-2xl">{title}</h2>

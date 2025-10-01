@@ -1,6 +1,11 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setActiveChat, useChatMessages } from "@/features/chat";
-import { CreateServerForm, setActiveServer, useLazyGetServersInsideQuery, useLazyGetServersMembersQuery } from "@/features/server";
+import {
+    CreateServerForm,
+    setActiveServer,
+    useLazyGetServersInsideQuery,
+    useLazyGetServersMembersQuery,
+} from "@/features/server";
 import { FriendList, Search, UserProfile } from "@/features/user";
 import React, { useEffect, useState } from "react";
 import { AppMenu } from "./components/AppMenu";
@@ -18,13 +23,13 @@ export const CommunicatePage: React.FC = () => {
     const [trigger] = useLazyGetServersMembersQuery();
     const [getServer] = useLazyGetServersInsideQuery();
     const [isMessageMenuOpen, setIsMessageMenuOpen] = useState(true);
-    
+
     const activeServerId = server.activeserver?.id;
-    
+
     useEffect(() => {
         if (activeServerId) {
             trigger(activeServerId);
-            getServer(activeServerId)
+            getServer(activeServerId);
             dispatch(setActiveChat(undefined));
         }
     }, [activeServerId]);
@@ -42,26 +47,24 @@ export const CommunicatePage: React.FC = () => {
     if (hasActiveServer) {
         return (
             <div className="flex h-screen w-screen">
-            <AppMenu />
-            <MessageServerMenu />
+                <AppMenu />
+                <MessageServerMenu />
 
-            
-            {(hasActiveChat) ? (
-                <div className="w-full h-screen">
-                    <ActionServer />
-                </div>
-                
-            ): (<div className="w-full"></div>)}
-            <CreateServerForm />
-            <UserProfile />
-            {hasActiveServer && <MemberChatServer />}
+                {hasActiveChat ? (
+                    <div className="w-full h-screen">
+                        <ActionServer />
+                    </div>
+                ) : (
+                ): (<div className="w-full"></div>)}
+                <CreateServerForm />
+                <UserProfile />
+                {hasActiveServer && <MemberChatServer />}
             </div>
-        )
+        );
     }
 
     return (
         <div className="flex flex-col lg:flex-row h-screen w-screen">
-
             {/* {Меню приложения} */}
             <AppMenu />
 
@@ -74,23 +77,20 @@ export const CommunicatePage: React.FC = () => {
             {/* {Поиск друзей} */}
             <Search />
             <div className="w-full flex h-full relative">
-            {/* {чаты пользователя} */}
-            {isMessageMenuOpen ? <MessageMenu /> :null}
-           
+                {/* {чаты пользователя} */}
+                {isMessageMenuOpen ? <MessageMenu /> :null}
 
-            {/* {Чат} */}
-            {hasActiveChat ? (
-                <div className="w-full h-full lg:h-screen">
-                    <Action />
-                </div>
-                
-            ): (<div className="w-full"></div>)}
+                {/* {Чат} */}
+                {hasActiveChat ? (
+                    <div className="w-full h-full lg:h-screen">
+                        <Action />
+                    </div>
+                ) : (
+                ): (<div className="w-full"></div>)}
 
-            {/* {Список друзей} */}
-            {!hasActiveChat && !hasActiveServer && <FriendList />}
+                {/* {Список друзей} */}
+                {!hasActiveChat && !hasActiveServer && <FriendList />}
             </div>
-
-
         </div>
     );
 };

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { HeroSection } from "./sections/Hero";
 import { Edge } from "./sections/Edge";
@@ -10,9 +9,9 @@ import { Support } from "./sections/Support";
 export const HomePage = () => {
     return (
         <>
-            <HeroSection />     
-            <Edge />      
-            <ShowCase /> 
+            <HeroSection />
+            <Edge />
+            <ShowCase />
             <Slider />
             <Start />
             <Support />

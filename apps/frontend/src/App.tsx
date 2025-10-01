@@ -8,11 +8,11 @@ import { ActionManager } from "@/features/action";
 export const App: React.FC = () => {
     return (
         <>
-                        <ServerJournalProvider>
-                            <div className="bg-custom fixed w-full h-full -z-50 overflow-hidden bg-cover bg-no-repeat"></div>
-                            <PagesRouter />
-                        </ServerJournalProvider>
-        <ActionManager />
+            <ServerJournalProvider>
+                <div className="bg-custom fixed w-full h-full -z-50 overflow-hidden bg-cover bg-no-repeat"></div>
+                <PagesRouter />
+            </ServerJournalProvider>
+            <ActionManager />
         </>
     );
 };

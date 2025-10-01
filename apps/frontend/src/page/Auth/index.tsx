@@ -7,7 +7,10 @@ const AuthPageController: React.FC<{ type: string }> = ({ type }) => {
 
     return (
         <>
-            <div className="fixed top-5 left-5 text-white cursor-pointer p-5" onClick={() => navigator("/")}>
+            <div
+                className="fixed top-5 left-5 text-white cursor-pointer p-5"
+                onClick={() => navigator("/")}
+            >
                 На главную
             </div>
             <div className="flex justify-center items-center w-screen h-screen ">
@@ -18,4 +21,4 @@ const AuthPageController: React.FC<{ type: string }> = ({ type }) => {
     );
 };
 
-export default AuthPageController
+export default AuthPageController;

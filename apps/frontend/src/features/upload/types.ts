@@ -1,7 +1,7 @@
 export interface UploadState {
-  loading: boolean;
-  urls: string[];
-  error?: string;
+    loading: boolean;
+    urls: string[];
+    error?: string;
 }
 
 export interface UploadResponse {

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { SectionLayout } from "../../components/Layout/SectionLayout";
 import { TitleSection } from "../../components/UI/TitleSection";
@@ -11,17 +10,16 @@ interface SupportFormData {
     description: string;
 }
 
-
 export const Support = () => {
     const {
-            register,
-            handleSubmit,
-            formState: { errors },
+        register,
+        handleSubmit,
+        formState: { errors },
     } = useForm<SupportFormData>();
 
     const onSubmit: SubmitHandler<SupportFormData> = async (data) => {
         try {
-            console.log(data)
+            console.log(data);
         } catch (err) {
             console.error("Login error:", err);
         }
@@ -32,10 +30,17 @@ export const Support = () => {
             <SectionLayout classListContainer="gap-10 lg:!max-w-2xl">
                 <div className="flex flex-col gap-5">
                     <TitleSection>ПОДДЕРЖКА</TitleSection>
-                    <p className="text-2xl text-center">Здесь вы можете обратиться за помощью по любому интересующему вас вопросу</p>
+                    <p className="text-2xl text-center">
+                        Здесь вы можете обратиться за помощью по любому
+                        интересующему вас вопросу
+                    </p>
                 </div>
-                
-                <form onSubmit={handleSubmit(onSubmit)} {...register} className="flex flex-col gap-10 items-center">
+
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    {...register}
+                    className="flex flex-col gap-10 items-center"
+                >
                     <InputField<SupportFormData>
                         type="text"
                         placeholder="Иван"
@@ -59,15 +64,15 @@ export const Support = () => {
                         <textarea
                             placeholder={"Я хочу спросить о...."}
                             className="border-2 p-2 border-white -m-2 w-full box-border outline-none text-3xl"
-                        {...register("description", { required: "Required" })}
+                            {...register("description", { required: "Required" })}
                         ></textarea>
-                    {errors.description && <div>{errors.description.message}</div>}
+                        {errors.description && <div>{errors.description.message}</div>}
+                        )}
                     </div>
-                    
+
                     <SubmitButton label="Отправить" />
-                    
                 </form>
             </SectionLayout>
         </div>
-    )
-}
+    );
+};

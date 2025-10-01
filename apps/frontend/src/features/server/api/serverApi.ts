@@ -61,7 +61,6 @@ export const serverApi = createApi({
 });
 
 export const {
-    
     useGetServersQuery,
     useLazyGetServersQuery,
     useCreateSeverMutation,

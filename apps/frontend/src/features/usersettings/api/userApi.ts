@@ -38,7 +38,7 @@ export const userApi = createApi({
                 method: "GET",
             }),
         }),
-        getInviteMe:builder.query({
+        getInviteMe: builder.query({
             query: () => ({
                 url: `/friend/invme`,
                 method: "GET",
@@ -91,7 +91,7 @@ export const userApi = createApi({
                 url: `/user/search?name=${name}`,
                 method: "GET",
             }),
-        })
+        }),
     }),
 });
 

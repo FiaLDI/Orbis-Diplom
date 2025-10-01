@@ -26,39 +26,37 @@ export const messageApi = createApi({
             }),
         }),
         GetMessages: builder.query({
-            query: ({id, offset=0}) => ({
+            query: ({ id, offset = 0 }) => ({
                 url: `/chats/${id}/messages?offset=${offset}`,
                 method: "GET",
             }),
         }),
         GetMessage: builder.query({
-            query: ({chat_id, id}) => ({
+            query: ({ chat_id, id }) => ({
                 url: `/message?chat_id=${chat_id}&message_id=${id}`,
                 method: "GET",
             }),
         }),
         CreateMessages: builder.mutation({
-            query: ({id, data}) => ({
+            query: ({ id, data }) => ({
                 url: `/chats/${id}/messages`,
                 method: "POST",
                 body: data,
             }),
         }),
         RemoveMessage: builder.mutation({
-            query: ({chat_id, id}) => ({
+            query: ({ chat_id, id }) => ({
                 url: `/message/?chat_id=${chat_id}&message_id=${id}`,
                 method: "DELETE",
-
-            })
+            }),
         }),
         EditMessage: builder.mutation({
-            query: ({chat_id, id, content}) => ({
+            query: ({ chat_id, id, content }) => ({
                 url: `/message/?chat_id=${chat_id}&message_id=${id}`,
                 method: "PUT",
-                body: {content}
-            })
-        })
-
+                body: { content },
+            }),
+        }),
     }),
 });
 
@@ -69,5 +67,5 @@ export const {
     useGetChatInfoQuery,
     useEditMessageMutation,
     useLazyGetMessageQuery,
-    useRemoveMessageMutation
+    useRemoveMessageMutation,
 } = messageApi;

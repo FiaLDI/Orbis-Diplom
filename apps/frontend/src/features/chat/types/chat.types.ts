@@ -28,6 +28,6 @@ export type InputChatProps = {
 };
 
 export interface SingleMessageProps {
-  message: Message;
-  onClick?: (e: React.MouseEvent) => void;
+    message: Message;
+    onClick?: (e: React.MouseEvent) => void;
 }

@@ -3,96 +3,107 @@ import React, { useState, ChangeEvent } from "react";
 import { config } from "../../../../config";
 
 type FileUploaderProps = {
-  onUploaded: (url: string) => void;
+    onUploaded: (url: string) => void;
 };
 
 type UploadFile = {
-  file: File;
-  progress: number;
-  error?: string;
+    file: File;
+    progress: number;
+    error?: string;
 };
 
 const FileUploader: React.FC<FileUploaderProps> = ({ onUploaded }) => {
-  const [files, setFiles] = useState<UploadFile[]>([]);
+    const [files, setFiles] = useState<UploadFile[]>([]);
 
-  const uploadFile = (fileObj: UploadFile) => {
-    const xhr = new XMLHttpRequest();
-    const formData = new FormData();
-    formData.append("files", fileObj.file);
+    const uploadFile = (fileObj: UploadFile) => {
+        const xhr = new XMLHttpRequest();
+        const formData = new FormData();
+        formData.append("files", fileObj.file);
 
-    xhr.upload.onprogress = (event) => {
-      if (event.lengthComputable) {
-        const progress = Math.round((event.loaded / event.total) * 100);
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.file === fileObj.file ? { ...f, progress } : f
-          )
-        );
-      }
+        xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+                const progress = Math.round((event.loaded / event.total) * 100);
+                setFiles((prev) =>
+                    prev.map((f) =>
+                        f.file === fileObj.file ? { ...f, progress } : f,
+                    ),
+                );
+            }
+        };
+
+        xhr.onload = () => {
+            console.log("XHR response:", xhr.responseText);
+            if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                const fileUrl = response.uploaded?.[0];
+                setFiles((prev) =>
+                    prev.map((f) =>
+                        f.file === fileObj.file ? { ...f, progress: 100 } : f,
+                    ),
+                );
+                onUploaded(fileUrl);
+            } else {
+                setFiles((prev) =>
+                    prev.map((f) =>
+                        f.file === fileObj.file
+                            ? { ...f, error: "Ошибка загрузки" }
+                            : f,
+                    ),
+                );
+            }
+        };
+
+        xhr.onerror = () => {
+            setFiles((prev) =>
+                prev.map((f) =>
+                    f.file === fileObj.file
+                        ? { ...f, error: "Ошибка сети" }
+                        : f,
+                ),
+            );
+        };
+
+        xhr.open("POST", `${config.cdnServiceUrl}/upload`);
+        xhr.send(formData);
     };
 
-    xhr.onload = () => {
-      console.log("XHR response:", xhr.responseText);
-      if (xhr.status === 200) {
-        const response = JSON.parse(xhr.responseText);
-        const fileUrl = response.uploaded?.[0];
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.file === fileObj.file ? { ...f, progress: 100 } : f
-          )
+    const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
+        const selectedFiles = Array.from(e.target.files);
+
+        // Проверка типа и размера (например, max 10MB)
+        const allowedTypes = ["image/png", "image/jpeg", "application/pdf"];
+        const maxSize = 10 * 1024 * 1024;
+
+        const filteredFiles = selectedFiles.filter(
+            (file) => allowedTypes.includes(file.type) && file.size <= maxSize,
         );
-        onUploaded(fileUrl);
-      } else {
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.file === fileObj.file
-              ? { ...f, error: "Ошибка загрузки" }
-              : f
-          )
-        );
-      }
+
+        const newFiles = filteredFiles.map((file) => ({
+            file,
+            progress: 0,
+        }));
+
+        setFiles((prev) => [...prev, ...newFiles]);
+
+        newFiles.forEach(uploadFile);
     };
 
-    xhr.onerror = () => {
-      setFiles((prev) =>
-        prev.map((f) =>
-          f.file === fileObj.file ? { ...f, error: "Ошибка сети" } : f
-        )
-      );
-    };
-
-    xhr.open("POST", `${config.cdnServiceUrl}/upload`);
-    xhr.send(formData);
-  };
-
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-    const selectedFiles = Array.from(e.target.files);
-
-    // Проверка типа и размера (например, max 10MB)
-    const allowedTypes = ["image/png", "image/jpeg", "application/pdf"];
-    const maxSize = 10 * 1024 * 1024;
-
-    const filteredFiles = selectedFiles.filter(
-      (file) =>
-        allowedTypes.includes(file.type) && file.size <= maxSize
-    );
-
-    const newFiles = filteredFiles.map((file) => ({
-      file,
-      progress: 0,
-    }));
-
-    setFiles((prev) => [...prev, ...newFiles]);
-
-    newFiles.forEach(uploadFile);
-  };
-
-  return (
-    <label className="flex custom-file-upload w-15 h-10 p-2 file cursor-pointer relative ">
-      <Upload className="absolute top-0 hover:brightness-90" color="#fff" size={40} strokeWidth={1.25} />
-      <input className="absolute -z-1 bg-amber-50 w-10 h-10 top-0 bottom-0" type="file" multiple onChange={onChange} />
-      {/* <ul>
+    return (
+        <label className="flex custom-file-upload w-15 h-10 p-2 file cursor-pointer relative ">
+            <Upload
+                className="absolute top-0 hover:brightness-90"
+                color="#fff"
+                size={40}
+                strokeWidth={1.25}
+            />
+            <input
+                className="absolute -z-1 bg-amber-50 w-10 h-10 top-0 bottom-0"
+                type="file"
+                multiple
+                onChange={onChange}
+            />
+            {/* <ul>
          {files.map(({ file, progress, error }) => (
           <li key={file.name}>
             {file.name} - {progress}%
@@ -107,8 +118,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploaded }) => {
           </li>
         ))} 
       </ul> */}
-    </label>
-  );
+        </label>
+    );
 };
 
 export default FileUploader;

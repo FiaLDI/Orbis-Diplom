@@ -34,7 +34,7 @@ export const RegisterForm: React.FC = () => {
     // RTK Query мутации
     const [sendCode] = useSendVerificationCodeMutation();
     const [verifyCode] = useVerifyCodeMutation();
-    const [registerUser, {isSuccess, isError}] = useRegisterUserMutation();
+    const [registerUser, { isSuccess, isError }] = useRegisterUserMutation();
 
     // Формы для разных шагов
     const emailForm = useForm<EmailFormData>();
@@ -78,22 +78,21 @@ export const RegisterForm: React.FC = () => {
                 email,
                 ...data,
             }).unwrap();
-            
         } catch (err) {
             console.error("Registration error:", err);
-            navigator('/login/?confirm=false')
+            navigator("/login/?confirm=false");
         }
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         if (isSuccess) {
-            navigator('/login/?confirm=true')
+            navigator("/login/?confirm=true");
         }
-    }, [isSuccess])
+    }, [isSuccess]);
 
     return (
         <>
-            <div className="auth p-10 bg-[#04122f80] text-white flex flex-col gap-5" >
+            <div className="auth p-10 bg-[#04122f80] text-white flex flex-col gap-5">
                 {(step == "email" || step == "code") && (
                     <>
                         <form
@@ -102,30 +101,30 @@ export const RegisterForm: React.FC = () => {
                             autoComplete="off"
                         >
                             <div className="">
-                                <h1 className="text-3xl text-center">Инициирование регистрации</h1>
-                                
+                                <h1 className="text-3xl text-center">
+                                    Инициирование регистрации
+                                </h1>
                             </div>
                             <div className="relative">
-                            <InputField<EmailFormData>
-                                type="email"
-                                placeholder="Почта"
-                                name="email"
-                                readOnly={step == "code"}
-                                register={emailForm.register}
-                                error={emailForm.formState.errors.email}
-                                validation={{ required: "Required" }}
-                            />
-                            <SubmitButton
-                                label="Отправить код"
-                                disabled={step == "code"}
-                            />
+                                <InputField<EmailFormData>
+                                    type="email"
+                                    placeholder="Почта"
+                                    name="email"
+                                    readOnly={step == "code"}
+                                    register={emailForm.register}
+                                    error={emailForm.formState.errors.email}
+                                    validation={{ required: "Required" }}
+                                />
+                                <SubmitButton
+                                    label="Отправить код"
+                                    disabled={step == "code"}
+                                />
                             </div>
                         </form>
                         <form
                             className="flex flex-col gap-10 "
                             onSubmit={codeForm.handleSubmit(handleCodeSubmit)}
                             autoComplete="off"
-                            
                         >
                             <InputField<CodeFormData>
                                 readOnly={true}
@@ -141,7 +140,6 @@ export const RegisterForm: React.FC = () => {
                                 disabled={step !== "code"}
                             />
                         </form>
-                        
                     </>
                 )}
 
@@ -189,7 +187,10 @@ export const RegisterForm: React.FC = () => {
                         <SubmitButton label="Зарегистрироваться" />
                     </form>
                 )}
-                <span className="text-center relative text-3xl" style={{ textAlign: "center", position: "relative" }}>
+                <span
+                    className="text-center relative text-3xl"
+                    style={{ textAlign: "center", position: "relative" }}
+                >
                     <a
                         href=""
                         onClick={(e) => {

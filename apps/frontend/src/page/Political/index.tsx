@@ -5,10 +5,10 @@ import { article } from "@/utils/articles";
 
 export const PoliticalPage: React.FC = () => {
     const [order, setOrder] = useState(0);
-    
+
     return (
         <div className="p-10 bg-[rgba(0,0,0,0.3)]">
-            <ArticleNavigator navigate={setOrder} order={order}/>
+            <ArticleNavigator navigate={setOrder} order={order} />
             <Article
                 title={article[order].title}
                 description={article[order].description}

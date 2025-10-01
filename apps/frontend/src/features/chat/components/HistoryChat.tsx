@@ -1,34 +1,49 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { SingleMessage } from "./SingleMessage";
-import { leaveEditMode, setEditMode, setOpenMessage, setReply } from "../chatSlice";
-import { useLazyGetMessagesQuery, useRemoveMessageMutation } from "../api/chatApi";
+import {
+    leaveEditMode,
+    setEditMode,
+    setOpenMessage,
+    setReply,
+} from "../chatSlice";
+import {
+    useLazyGetMessagesQuery,
+    useRemoveMessageMutation,
+} from "../api/chatApi";
 
-const HistoryChat: React.FC<{ bottomRef: React.RefObject<HTMLDivElement>, topRef: React.RefObject<HTMLDivElement> }> = ({ bottomRef, topRef }) => {
+const HistoryChat: React.FC<{
+    bottomRef: React.RefObject<HTMLDivElement>;
+    topRef: React.RefObject<HTMLDivElement>;
+}> = ({ bottomRef, topRef }) => {
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const offsetRef = useRef(0); // актуальное значение offset для колбеков
     const fetchingRef = useRef(false); // блокировка запросов
-    const history = useAppSelector(s => s.chat.activeHistory);
-    const activeChat = useAppSelector(s => s.chat.activeChat);
+    const history = useAppSelector((s) => s.chat.activeHistory);
+    const activeChat = useAppSelector((s) => s.chat.activeChat);
     const [getMessages] = useLazyGetMessagesQuery();
     const menuRef = useRef<HTMLUListElement>(null);
     const [menuVisible, setMenuVisible] = useState(false);
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
     const dispatch = useAppDispatch();
-    const isOpen = useAppSelector(s => s.chat.openMessage);
+    const isOpen = useAppSelector((s) => s.chat.openMessage);
     const [removeMessage] = useRemoveMessageMutation();
     const containerRef = useRef<HTMLDivElement>(null);
 
     // клики вне меню
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(e.target as Node)
+            ) {
                 setMenuVisible(false);
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        return () =>
+            document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
     const handleMessageClick = (e: React.MouseEvent, message: any) => {
@@ -79,7 +94,10 @@ const HistoryChat: React.FC<{ bottomRef: React.RefObject<HTMLDivElement>, topRef
 
                 fetchingRef.current = true;
                 try {
-                    const data = await getMessages({ id: activeChat.chat_id, offset: newOffset });
+                    const data = await getMessages({
+                        id: activeChat.chat_id,
+                        offset: newOffset,
+                    });
 
                     if (!data?.data?.length) {
                         // если данных нет — достигнут конец
@@ -93,7 +111,6 @@ const HistoryChat: React.FC<{ bottomRef: React.RefObject<HTMLDivElement>, topRef
                         rootEl.scrollTop = prevScrollTop + added;
                         fetchingRef.current = false;
                     }, 50);
-
                 } catch {
                     offsetRef.current = Math.max(0, offsetRef.current - 1);
                     setOffset(offsetRef.current);
@@ -104,13 +121,12 @@ const HistoryChat: React.FC<{ bottomRef: React.RefObject<HTMLDivElement>, topRef
                 root: rootEl,
                 threshold: 0.1,
                 rootMargin: "50px",
-            }
+            },
         );
 
         observer.observe(topEl);
         return () => observer.disconnect();
     }, [activeChat, getMessages, hasMore]);
-
 
     if (!history) return null;
 
@@ -124,23 +140,25 @@ const HistoryChat: React.FC<{ bottomRef: React.RefObject<HTMLDivElement>, topRef
         dispatch(setReply(String(isOpen?.id)));
         dispatch(setOpenMessage(undefined));
         setMenuVisible(false);
-    }
+    };
 
     const handleEditMessage = () => {
         if (!isOpen) return;
-        if (!isOpen.id && !isOpen.chat_id) return; 
-        dispatch(setEditMode({
-            enabled: true, 
-            messagesId: String(isOpen?.id),
-            chatId: String(isOpen?.chat_id),
-        }));
+        if (!isOpen.id && !isOpen.chat_id) return;
+        dispatch(
+            setEditMode({
+                enabled: true,
+                messagesId: String(isOpen?.id),
+                chatId: String(isOpen?.chat_id),
+            }),
+        );
         setMenuVisible(false);
-    }
+    };
 
     const handleRemoveMessage = () => {
-        const confirms = confirm('Вы уверены? ');
+        const confirms = confirm("Вы уверены? ");
         if (confirms && isOpen) {
-            removeMessage({chat_id: isOpen.chat_id, id: isOpen.id});
+            removeMessage({ chat_id: isOpen.chat_id, id: isOpen.id });
         }
         setMenuVisible(false);
     };
@@ -152,7 +170,10 @@ const HistoryChat: React.FC<{ bottomRef: React.RefObject<HTMLDivElement>, topRef
     };
 
     return (
-        <div ref={containerRef} className="overflow-y-auto bg-[#25309b88] p-4 h-[calc(100vh_-_370px)] lg:h-screen text-white flex flex-col gap-3"  >
+        <div
+            ref={containerRef}
+            className="overflow-y-auto bg-[#25309b88] p-4 h-[calc(100vh_-_370px)] lg:h-screen text-white flex flex-col gap-3"
+        >
             <div ref={topRef} />
             {history.map((message: any, idx: number) => (
                 <SingleMessage

@@ -8,10 +8,11 @@ interface ServerJournalSocketContextType {
     signal?: any;
 }
 
-const ServerJournalSocketContext = createContext<ServerJournalSocketContextType>({
-    socket: null,
-    isConnected: false,
-});
+const ServerJournalSocketContext =
+    createContext<ServerJournalSocketContextType>({
+        socket: null,
+        isConnected: false,
+    });
 
 export const ServerJournalProvider: React.FC<{
     children: React.ReactNode;

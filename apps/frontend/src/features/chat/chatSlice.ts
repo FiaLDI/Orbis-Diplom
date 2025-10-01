@@ -7,7 +7,7 @@ import { Message } from "./types/chat.types";
 export interface chat {
     id: number;
     username: string;
-    name?:string;
+    name?: string;
     type: string;
     chat_id?: string;
     lastmessage: string;
@@ -27,12 +27,12 @@ interface chatState {
     uploadedFiles?: {
         type: string;
         url: string;
-    }
+    };
     editmode?: {
         enabled: boolean;
         messagesId: string;
         chatId: string;
-    }
+    };
     reply?: string;
 }
 
@@ -54,31 +54,34 @@ const chatSlice = createSlice({
             state.activeChat = action.payload;
         },
         sendMessageVisual(state, action: PayloadAction<any>) {
-            if (!state.activeHistory) return
-            state.activeHistory.push(action.payload)
+            if (!state.activeHistory) return;
+            state.activeHistory.push(action.payload);
         },
         setOpenMessage(state, action: PayloadAction<Message | undefined>) {
-            state.openMessage = action.payload
+            state.openMessage = action.payload;
         },
         setUploadState(state, action: PayloadAction<boolean>) {
-            state.uploadstate = action.payload
+            state.uploadstate = action.payload;
         },
-        setEditMode(state, action: PayloadAction<{
-            enabled: boolean;
-            messagesId: string;
-            chatId: string;
-        }>) {
+        setEditMode(
+            state,
+            action: PayloadAction<{
+                enabled: boolean;
+                messagesId: string;
+                chatId: string;
+            }>,
+        ) {
             state.editmode = {
-                enabled: action.payload.enabled, 
+                enabled: action.payload.enabled,
                 messagesId: action.payload.messagesId,
                 chatId: action.payload.chatId,
-            }
+            };
         },
         leaveEditMode(state) {
             state.editmode = undefined;
         },
         setReply(state, action: PayloadAction<string | undefined>) {
-            state.reply = action.payload
+            state.reply = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -92,7 +95,7 @@ const chatSlice = createSlice({
                     } else {
                         state.activeHistory = [
                             ...(payload || []),
-                            ...(state.activeHistory || [])
+                            ...(state.activeHistory || []),
                         ];
                     }
                 },
@@ -104,14 +107,14 @@ const chatSlice = createSlice({
     },
 });
 
-export const { 
-    setActiveChat, 
-    sendMessageVisual, 
-    setOpenMessage, 
+export const {
+    setActiveChat,
+    sendMessageVisual,
+    setOpenMessage,
     setUploadState,
     setEditMode,
     leaveEditMode,
-    setReply
+    setReply,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

@@ -1,6 +1,6 @@
-export type Visible = 'ERROR' | 'WARNING' | 'SUCCESS'
+export type Visible = "ERROR" | "WARNING" | "SUCCESS";
 
-export type typeAction = 'ERROR' | 'WARNING' | 'SUCCESS';
+export type typeAction = "ERROR" | "WARNING" | "SUCCESS";
 
 export interface action {
     id: number;
@@ -11,5 +11,5 @@ export interface action {
 
 export interface actionSlicis {
     Action: action[];
-    isPersonalCommunicateActive: boolean
+    isPersonalCommunicateActive: boolean;
 }

@@ -6,8 +6,7 @@ export interface UserData {
         displayName: string;
         username: string;
         birthDate: string;
-        
-    }
+    };
     access_token: string;
     username: string;
 }

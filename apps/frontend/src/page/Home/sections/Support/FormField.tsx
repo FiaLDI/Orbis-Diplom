@@ -27,19 +27,19 @@ export const InputField = <T extends FieldValues>({
     error,
     validation,
 }: InputFieldProps<T>) => (
-    <div className="flex flex-col gap-2 w-full">
-        {label ? <label className="flex text-2xl">{label}</label> : null}
-        <div className="border-b-2">
-            <input
-                type={type}
-                placeholder={placeholder}
-                className="w-full box-border outline-none text-3xl p-2"
-                {...register(name, validation)}
-            />
+        <div className="flex flex-col gap-2 w-full">
+            {label ? <label className="flex text-2xl">{label}</label> : null}
+            <div className="border-b-2">
+                <input
+                    type={type}
+                    placeholder={placeholder}
+                    className="w-full box-border outline-none text-3xl p-2"
+                    {...register(name, validation)}
+                />
+            </div>
+            {error && <div>{error.message}</div>}
         </div>
-        {error && <div>{error.message}</div>}
-    </div>
-);
+    );
 
 interface SubmitButtonProps {
     label: string;
@@ -50,7 +50,11 @@ export const SubmitButton: React.FC<SubmitButtonProps> = ({
     label,
     disabled,
 }) => (
-    <button type="submit" disabled={disabled} className="text-2xl cursor-pointer border-b-2 p-2 px-10 w-fit">
+    <button
+        type="submit"
+        disabled={disabled}
+        className="text-2xl cursor-pointer border-b-2 p-2 px-10 w-fit"
+    >
         {label}
     </button>
 );

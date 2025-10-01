@@ -12,8 +12,7 @@ const AppearanceSettings: React.FC = () => {
             gap
             <input type="radio" name="" id="" /> 1
             <input type="radio" name="" id="" /> 2
-            <input type="radio" name="" id="" /> 3
-            font-size
+            <input type="radio" name="" id="" /> 3 font-size
             <input type="range" name="" id="" />
             scale
             <input type="range" name="" id="" />

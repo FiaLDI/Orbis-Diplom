@@ -1,1 +1,1 @@
-export { default } from './InputChat';
+export { default } from "./InputChat";

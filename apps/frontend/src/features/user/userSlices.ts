@@ -8,7 +8,7 @@ const initialState: userState = {
     loadedProfiles: undefined,
     openProfile: {
         id: 0,
-       username: "aaaaaa",
+        username: "aaaaaa",
         avatar_url: "/img/icon.png",
         about: `
         Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
@@ -21,7 +21,7 @@ const initialState: userState = {
         `,
     },
     isOpenProfile: false,
-    friendsMode: 'All'
+    friendsMode: "All",
 };
 
 const userSlice = createSlice({
@@ -42,8 +42,8 @@ const userSlice = createSlice({
             state.isSearchActive = false;
         },
         setFriendMode(state, action: PayloadAction<ModeKeys>) {
-            state.friendsMode = action.payload
-        }
+            state.friendsMode = action.payload;
+        },
     },
     extraReducers: (builder) => {
         // Обработка состояний для регистрации и авторизации
@@ -59,33 +59,36 @@ const userSlice = createSlice({
             .addMatcher(
                 userApi.endpoints.GetChatsUsers.matchFulfilled,
                 (state, action) => {
-                    state.chats = action.payload
-                }
+                    state.chats = action.payload;
+                },
             )
             .addMatcher(
                 userApi.endpoints.getFriend.matchFulfilled,
                 (state, action) => {
-                    
                     state.friends = action.payload;
-                }
+                },
             )
             .addMatcher(
                 userApi.endpoints.getInviteI.matchFulfilled,
                 (state, action) => {
-                    
                     state.friends = action.payload;
-                }
+                },
             )
             .addMatcher(
                 userApi.endpoints.getInviteMe.matchFulfilled,
                 (state, action) => {
-                    
                     state.friends = action.payload;
-                }
-            )
+                },
+            );
     },
 });
 
-export const { setFriendMode, setProfile, closeProfile, startSearch, endSearch } = userSlice.actions;
+export const {
+    setFriendMode,
+    setProfile,
+    closeProfile,
+    startSearch,
+    endSearch,
+} = userSlice.actions;
 
 export default userSlice.reducer;

@@ -3,7 +3,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AuthState, UserData } from "./types/user";
 import { authApi } from "./api/authApi";
 
-
 const initialState: AuthState = {
     user: null,
     isAuthenticated: false,
@@ -12,11 +11,14 @@ const initialState: AuthState = {
 };
 
 const authSlice = createSlice({
-    name: 'auth',
+    name: "auth",
     initialState,
     reducers: {
         // Авторизация
-        loginStart(state, action: PayloadAction<{ email: string; password: string }>) {
+        loginStart(
+            state,
+            action: PayloadAction<{ email: string; password: string }>,
+        ) {
             state.loading = true;
             state.error = null;
         },
@@ -31,7 +33,9 @@ const authSlice = createSlice({
         },
 
         // Регистрация
-        registerStart(state, action: PayloadAction<{
+        registerStart(
+            state,
+            action: PayloadAction<{
                 email: string;
                 password: string;
                 displayName: string;
@@ -66,37 +70,34 @@ const authSlice = createSlice({
                 (state) => {
                     state.loading = true;
                     state.error = null;
-                }
+                },
             )
             .addMatcher(
                 authApi.endpoints.registerUser.matchRejected,
                 (state, action) => {
-                    state.error = action.error.message || 'Ошибка регистрации';
+                    state.error = action.error.message || "Ошибка регистрации";
                     state.loading = false;
-                }
+                },
             )
-            .addMatcher(
-                authApi.endpoints.loginUser.matchPending,
-                (state) => {
-                    state.loading = true;
-                    state.error = null;
-                }
-            )
+            .addMatcher(authApi.endpoints.loginUser.matchPending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
             .addMatcher(
                 authApi.endpoints.loginUser.matchFulfilled,
                 (state, action) => {
-                    console.log(action.payload)
+                    console.log(action.payload);
                     state.user = action.payload;
                     state.isAuthenticated = true;
                     state.loading = false;
-                }
+                },
             )
             .addMatcher(
                 authApi.endpoints.loginUser.matchRejected,
                 (state, action) => {
-                    state.error = action.error.message || 'Ошибка авторизации';
+                    state.error = action.error.message || "Ошибка авторизации";
                     state.loading = false;
-                }
+                },
             )
             .addMatcher(
                 authApi.endpoints.logoutUser.matchFulfilled,
@@ -104,7 +105,7 @@ const authSlice = createSlice({
                     state.user = null;
                     state.isAuthenticated = false;
                     state.loading = false;
-                }
+                },
             )
             .addMatcher(
                 authApi.endpoints.refreshToken.matchFulfilled,
@@ -112,9 +113,8 @@ const authSlice = createSlice({
                     state.user = action.payload;
                     state.isAuthenticated = true;
                     state.loading = false;
-                }
-            )
-      
+                },
+            );
     },
 });
 

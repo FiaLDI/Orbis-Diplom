@@ -1,18 +1,17 @@
-import { useState, useEffect,  useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useChatSocket } from "./useChatSocket";
 import { useAppSelector } from "../../../app/hooks";
 import { Message } from "../types/chat.types";
 import { useLazyGetMessagesQuery } from "../api/chatApi";
 
-
 export const useChatMessages = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isSocketConnected, setIsSocketConnected] = useState(false);
     const { socket } = useChatSocket();
-    const activeChat = useAppSelector(s => s.chat.activeChat);
-    const activeServer = useAppSelector(s => s.server.activeserver)
+    const activeChat = useAppSelector((s) => s.chat.activeChat);
+    const activeServer = useAppSelector((s) => s.server.activeserver);
     const [getMesseges] = useLazyGetMessagesQuery();
-    
+
     // Группировка сообщений
     const groupedMessages = useMemo(() => {
         if (messages.length === 0) return null;
@@ -21,11 +20,10 @@ export const useChatMessages = () => {
 
     // Подключение к комнате
     useEffect(() => {
-        if (!socket) return
-        if (!activeChat?.chat_id) return
+        if (!socket) return;
+        if (!activeChat?.chat_id) return;
 
         socket.emit("join-chat", activeChat?.chat_id);
-        
     }, [activeChat?.chat_id, socket]);
 
     // Обработчики сокетов
@@ -33,9 +31,9 @@ export const useChatMessages = () => {
         if (!socket) return;
 
         const handleNewMessage = () => {
-            setTimeout(()=>{
+            setTimeout(() => {
                 getMesseges(activeChat?.chat_id);
-            }, 3000)
+            }, 3000);
         };
 
         const handleMessageHistory = (history: Message[]) => {
@@ -58,7 +56,6 @@ export const useChatMessages = () => {
         };
     }, [socket, activeChat?.chat_id]);
     // Отправка сообщения
-    
 
     return {
         messages,

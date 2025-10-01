@@ -72,19 +72,19 @@ export const PagesRouter: React.FC = () => {
                         </>
                     }
                 />
-                
+
                 <Route
                     path="/political"
                     element={
                         <Layout>
-                                <PoliticalPage />
+                            <PoliticalPage />
                         </Layout>
                     }
                 />
-                
-                <Route 
+
+                <Route
                     path="/app/settings"
-                    element= {
+                    element={
                         <ProtectedRoute isAuth={isAuth}>
                             <SettingAppPage />
                         </ProtectedRoute>
@@ -98,7 +98,6 @@ export const PagesRouter: React.FC = () => {
                         </ProtectedRoute>
                     }
                 />
-                
             </Routes>
         </BrowserRouter>
     );

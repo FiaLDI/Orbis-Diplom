@@ -8,9 +8,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     return (
         <>
             <Header />
-                <main className="w-full">
-                    {children}
-                </main>
+            <main className="w-full">{children}</main>
             <Footer />
         </>
     );

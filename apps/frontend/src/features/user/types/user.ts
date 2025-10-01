@@ -1,4 +1,3 @@
-
 export interface userState {
     loadedProfiles?: UserInfo[];
     openProfile?: UserInfo;
@@ -14,7 +13,6 @@ export interface fastUserInfo {
     name: string;
     avatar_url: string;
     is_online: boolean;
-    
 }
 
 export interface UserInfo {
@@ -24,5 +22,5 @@ export interface UserInfo {
     about: string;
 }
 
-export type ModeKeys = 'Online' | 'Offline' | 'All' | 'Invite' | 'My Invite';
+export type ModeKeys = "Online" | "Offline" | "All" | "Invite" | "My Invite";
 export type ModeState = Record<ModeKeys, boolean>;

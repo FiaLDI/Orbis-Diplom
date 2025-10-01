@@ -3,7 +3,10 @@ import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { HistoryChat, InputChat } from "@/features/chat";
 import { Phone } from "lucide-react";
 
-class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+class ErrorBoundary extends React.Component<
+    { children: React.ReactNode },
+    { hasError: boolean }
+> {
     state = { hasError: false };
     static getDerivedStateFromError() {
         return { hasError: true };
@@ -13,7 +16,9 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
     }
     render() {
         if (this.state.hasError) {
-            return <div className="error-fallback">Произошла ошибка в чате</div>;
+            return (
+                <div className="error-fallback">Произошла ошибка в чате</div>
+            );
         }
         return this.props.children;
     }
@@ -21,11 +26,11 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 
 export const Action: React.FC = () => {
     const dispatch = useAppDispatch();
-    const activeChat = useAppSelector(state => state.chat.activeChat);
-    const activeServer = useAppSelector(state => state.server.activeserver);
-    const authInfo = useAppSelector(s => s.auth.user?.info);
-    
-        const topRef = useRef<HTMLDivElement>(null);
+    const activeChat = useAppSelector((state) => state.chat.activeChat);
+    const activeServer = useAppSelector((state) => state.server.activeserver);
+    const authInfo = useAppSelector((s) => s.auth.user?.info);
+
+    const topRef = useRef<HTMLDivElement>(null);
 
     const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -33,24 +38,22 @@ export const Action: React.FC = () => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-   
-
     return (
         <ErrorBoundary>
             <>
                 {activeChat && (
-                
                     <div className="flex flex-col h-full p-5 rounded-[5px] lg:h-screen  ">
                         <div className="flex bg-[#2e3ed328] text-white text-1xl justify-between items-center flex-wrap shrink-0">
                             <div className="text-5xl lg:text-base pl-5 p-2">
                                 {activeChat.username}
                             </div>
                             <div className="flex gap-5 bg-[#2e3ed328] pr-10 lg:pr-5 pl-10 lg:pl-5 p-5 lg:p-2 w-full lg:w-auto justify-end">
-                            <div className="w-full lg:w-auto 
-                            ">
-                                <input type="text" className="w-full lg:w-auto text-5xl lg:text-base rounded-[5px] bg-[#2e3ed328] pl-1" placeholder="Search" />
-                            </div>
-                            
+                                <div className="w-full lg:w-auto 
+                            "
+                                >
+                                    <input type="text" className="w-full lg:w-auto text-5xl lg:text-base rounded-[5px] bg-[#2e3ed328] pl-1" placeholder="Search" />
+                                </div>
+                                </div>
                             </div>
                         </div>
 
@@ -60,11 +63,8 @@ export const Action: React.FC = () => {
                         {/* Ввод нового сообщения с scrollToBottom */}
                         <InputChat scrollToBottom={scrollToBottom} />
                     </div>
-                
-            )
-        }
+                )}
             </>
-            
         </ErrorBoundary>
     );
 };

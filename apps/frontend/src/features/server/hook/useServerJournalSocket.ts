@@ -7,7 +7,6 @@ export const useServerJournalSocket = () => {
     const socketRef = useRef<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false);
     const { data: tokenData, isSuccess } = useRefreshTokenQueryQuery({});
-    
 
     useEffect(() => {
         if (!isSuccess || !tokenData) return;
@@ -38,7 +37,6 @@ export const useServerJournalSocket = () => {
             });
 
             socketRef.current = newSocket;
-            
         }
     }, [isSuccess, tokenData]);
 
