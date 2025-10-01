@@ -61,7 +61,6 @@ export const AppMenu: React.FC = () => {
                             className="cursor-pointer"
                         >
                             {avatarUrl ? null : (
-                            {avatarUrl ? null : (
                                 <>
                                     <img src="/img/icon.png" alt="" className="w-15 h-15 lg:w-10 lg:h-10"/>
                                 </>

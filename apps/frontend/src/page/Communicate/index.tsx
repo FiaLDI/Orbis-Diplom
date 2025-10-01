@@ -54,8 +54,7 @@ export const CommunicatePage: React.FC = () => {
                     <div className="w-full h-screen">
                         <ActionServer />
                     </div>
-                ) : (
-                ): (<div className="w-full"></div>)}
+                ) : (<div className="w-full"></div>)}
                 <CreateServerForm />
                 <UserProfile />
                 {hasActiveServer && <MemberChatServer />}
@@ -78,15 +77,14 @@ export const CommunicatePage: React.FC = () => {
             <Search />
             <div className="w-full flex h-full relative">
                 {/* {чаты пользователя} */}
-                {isMessageMenuOpen ? <MessageMenu /> :null}
+                {isMessageMenuOpen ? <MessageMenu /> : null}
 
                 {/* {Чат} */}
                 {hasActiveChat ? (
                     <div className="w-full h-full lg:h-screen">
                         <Action />
                     </div>
-                ) : (
-                ): (<div className="w-full"></div>)}
+                ) : (<div className="w-full"></div>)}
 
                 {/* {Список друзей} */}
                 {!hasActiveChat && !hasActiveServer && <FriendList />}

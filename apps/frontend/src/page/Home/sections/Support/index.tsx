@@ -67,7 +67,7 @@ export const Support = () => {
                             {...register("description", { required: "Required" })}
                         ></textarea>
                         {errors.description && <div>{errors.description.message}</div>}
-                        )}
+                        
                     </div>
 
                     <SubmitButton label="Отправить" />
