@@ -2,20 +2,12 @@ import React from "react";
 
 const AppearanceSettings: React.FC = () => {
     return (
-        <div className="flex flex-col gap-5">
-            theme
-            <select name="" id="">
-                <option value="">them 1</option>
-                <option value="">them 2</option>
-                <option value="">them 3</option>
-            </select>
-            gap
-            <input type="radio" name="" id="" /> 1
-            <input type="radio" name="" id="" /> 2
-            <input type="radio" name="" id="" /> 3 font-size
-            <input type="range" name="" id="" />
-            scale
-            <input type="range" name="" id="" />
+        <div className="flex flex-col gap-5 p-10 text-center">
+            <h3 className="text-left">Выберите тему</h3>
+            <div className="bg-blue-950 p-10 w-[250px]">Стандартная тема</div>
+            
+            <div className="bg-gray-400 p-10 w-[250px]">Светлая тема</div>
+            <div className="bg-gray-900 p-10 w-[250px]">Темная тема</div>
         </div>
     );
 };

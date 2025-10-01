@@ -4,9 +4,6 @@ import { useLogoutUserMutation } from "@/features/auth";
 import {
     AccountSettings,
     AppearanceSettings,
-    ChatSettings,
-    DevicesSettings,
-    HotKeySettings,
     LanguageSettings,
     NotificationSettings,
     ProfileSettings,
@@ -17,11 +14,8 @@ import { useNavigate } from "react-router-dom";
 const SettingsContent: Record<string, JSX.Element> = {
     Account: <AccountSettings />,
     Profile: <ProfileSettings />,
-    Devices: <DevicesSettings />,
     Appearance: <AppearanceSettings />,
-    Chat: <ChatSettings />,
     Notification: <NotificationSettings />,
-    "Hot Key": <HotKeySettings />,
     Language: <LanguageSettings />,
 };
 
