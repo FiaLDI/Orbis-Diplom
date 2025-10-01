@@ -3,7 +3,7 @@ services:
     image: postgres:15
     container_name: orbis_db_container
     ports:
-      - "5435:5434"
+      - "5433:5432"
     environment:
       POSTGRES_DB: orbis
       POSTGRES_USER: orbis
