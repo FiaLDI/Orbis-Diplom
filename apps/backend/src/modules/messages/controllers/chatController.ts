@@ -69,7 +69,7 @@ const getMessages = async (req: Request, res: Response) => {
 
 const sendMessages = async (req: Request, res: Response) => {
     const { chat_id, username, content, reply_to_id, user_id } = req.body;
-  
+
     try {
         const types = Object.keys(content);
         const values = Object.values(content);
@@ -144,7 +144,9 @@ const sendMessages = async (req: Request, res: Response) => {
             chat_id,
             user_id,
             username,
-            reply_to_id: message.reply_to_id ? parseInt(`${message.reply_to_id}`) : null,
+            reply_to_id: message.reply_to_id
+                ? parseInt(`${message.reply_to_id}`)
+                : null,
             is_edited: message.is_edited,
             content: contentsRow,
             timestamp: message.created_at
@@ -292,8 +294,7 @@ const editMessage = async (req: Request, res: Response) => {
                 data: { text: content },
             });
 
-            
-          ioChat.to(`chat_${chat_id}`).emit("new-message");
+            ioChat.to(`chat_${chat_id}`).emit("new-message");
 
             return res
                 .status(200)

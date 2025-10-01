@@ -7,12 +7,14 @@ import https from "https";
 import { connectRedis } from "./config";
 import { authRoutes } from "./modules/auth";
 import { userRouter } from "./modules/users";
-import { Server } from 'socket.io';
+import { Server } from "socket.io";
 
 dotenv.config();
 
 if (!process.env.PORT && !process.env.FRONTENDADDRES) {
-    console.error(`Need PORT(${process.env.PORT}) FRONTENDADDRES${process.env.FRONTENDADDRES}`)
+    console.error(
+        `Need PORT(${process.env.PORT}) FRONTENDADDRES${process.env.FRONTENDADDRES}`,
+    );
     process.exit(0);
 }
 connectRedis();

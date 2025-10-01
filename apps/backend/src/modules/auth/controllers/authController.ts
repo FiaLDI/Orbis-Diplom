@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import { prisma, redisClient } from "@/config";
 
-
 export const sendCodeCheck = async (req: Request, res: Response) => {
     try {
         const { email } = req.body;
@@ -125,7 +124,9 @@ export const register = async (req: Request, res: Response) => {
         const latestAllowed = new Date(now.getFullYear() - 13, 11, 31); // минимум 13 лет
 
         if (birthDate < earliestAllowed || birthDate > latestAllowed) {
-            return res.status(400).json({ error: "Birth date is out of allowed range" });
+            return res
+                .status(400)
+                .json({ error: "Birth date is out of allowed range" });
         }
 
         const user = await prisma.users.create({
@@ -134,20 +135,20 @@ export const register = async (req: Request, res: Response) => {
                 password_hash: hashedPassword,
                 username,
                 user_profile: {
-                create: {
-                    birth_date: birthDate,
-                    avatar_url: '/img/icon.png',
-                },
+                    create: {
+                        birth_date: birthDate,
+                        avatar_url: "/img/icon.png",
+                    },
                 },
                 user_preferences: {
-                create: {},
+                    create: {},
                 },
             },
             include: {
                 user_profile: true,
                 user_preferences: true,
             },
-            });
+        });
 
         // Удаляем verification code из Redis если он был
         await redisClient.del(email);
@@ -164,7 +165,8 @@ export const register = async (req: Request, res: Response) => {
         });
     } catch (err: any) {
         console.error("Registration error:", err);
-        if (err.code === 'P2002') { // Prisma unique constraint error code
+        if (err.code === "P2002") {
+            // Prisma unique constraint error code
             return res.status(409).json({ error: "User already exists" });
         }
         res.status(500).json({ error: "Internal server error" });
@@ -180,27 +182,30 @@ export const login = async (req: Request, res: Response) => {
             include: {
                 user_profile: true,
                 user_preferences: true,
-                },
-            });
+            },
+        });
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password_hash ?? "");
+        const isPasswordValid = await bcrypt.compare(
+            password,
+            user.password_hash ?? "",
+        );
         if (!isPasswordValid) {
-        return res.status(401).json({ error: "Invalid credentials" });
+            return res.status(401).json({ error: "Invalid credentials" });
         }
 
         const accessToken = jwt.sign(
             { id: user.id },
             process.env.ACCESS_TOKEN_SECRET!,
-            { expiresIn: "15m" }
+            { expiresIn: "15m" },
         );
         const refreshToken = jwt.sign(
             { id: user.id },
             process.env.REFRESH_TOKEN_SECRET!,
-            { expiresIn: "7d" }
+            { expiresIn: "7d" },
         );
 
         res.clearCookie("refresh_token", {
@@ -224,7 +229,7 @@ export const login = async (req: Request, res: Response) => {
                 id: user.id,
                 username: user.username,
                 avatar_url: user.user_profile?.avatar_url || null,
-                email: user.email
+                email: user.email,
             },
         });
     } catch (error) {
@@ -245,7 +250,7 @@ export const refresh = async (req: Request, res: Response) => {
             refreshToken,
             process.env.REFRESH_TOKEN_SECRET!,
         ) as jwt.JwtPayload;
-        
+
         const user = await prisma.users.findUnique({
             where: { id: decoded.id },
             include: {
