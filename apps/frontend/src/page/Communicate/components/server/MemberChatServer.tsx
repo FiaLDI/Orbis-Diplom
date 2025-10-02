@@ -13,7 +13,7 @@ export const MemberChatServer: React.FC = () => {
 
     const users = activeserver ? membersServer : chatinfo?.users;
     const handleClick = (id: number) => {
-        trigger(id); // Выполняем запрос с конкретным ID
+        trigger(id);
     };
 
     return (

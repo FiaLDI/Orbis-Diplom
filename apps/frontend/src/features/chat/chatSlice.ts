@@ -42,14 +42,6 @@ const chatSlice = createSlice({
     name: "chat",
     initialState,
     reducers: {
-        // Авторизация
-
-        // loginSuccess(state, action: PayloadAction<UserData>) {
-        //   state.user = action.payload;
-        //   state.isAuthenticated = true;
-        //   state.loading = false;
-        //   console.log(action.payload)
-        // },
         setActiveChat(state, action: PayloadAction<chat | undefined>) {
             state.activeChat = action.payload;
         },

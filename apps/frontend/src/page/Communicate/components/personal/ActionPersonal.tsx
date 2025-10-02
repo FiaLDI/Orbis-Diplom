@@ -33,8 +33,6 @@ export const Action: React.FC = () => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-   
-
     return (
         <ErrorBoundary>
             <>

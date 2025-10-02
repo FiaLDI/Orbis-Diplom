@@ -62,7 +62,6 @@ const InputChat: React.FC<InputChatProps> = ({ scrollToBottom }) => {
         dispatch(setReply(undefined));
         inputRef.current?.focus();
 
-        // Прокрутка вниз после отправки
         setTimeout(() => {
             scrollToBottom();
         }, 100);
@@ -108,7 +107,7 @@ const InputChat: React.FC<InputChatProps> = ({ scrollToBottom }) => {
     useEffect(() => {
         if (activeChat) {
             setTimeout(() => {
-                getMessages(activeChat.chat_id);
+                getMessages({ id: activeChat?.chat_id, offset: 0 });
             }, 6000);
         }
     }, [data]);

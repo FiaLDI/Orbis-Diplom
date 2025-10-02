@@ -10,15 +10,14 @@ export const useChatSocket = () => {
     useEffect(() => {
         if (!isSuccess || !tokenData) return;
 
-        // Создаем новый сокет только если его еще нет
         if (!socketRef.current) {
-            const newSocket = io(config.monoliteUrl, {
+            const newSocket = io(`${config.monoliteUrl}/chat`, {
                 auth: { token: tokenData.access_token },
                 autoConnect: true,
                 reconnection: true,
                 reconnectionAttempts: 5,
                 reconnectionDelay: 3000,
-            });
+            },);
 
             newSocket.on("connect", () => {
                 console.log("[TextSocket] Connected");

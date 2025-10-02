@@ -31,7 +31,6 @@ const HistoryChat: React.FC<{
     const [removeMessage] = useRemoveMessageMutation();
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // клики вне меню
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (
@@ -54,25 +53,22 @@ const HistoryChat: React.FC<{
         dispatch(setOpenMessage(message));
     };
 
-    // при смене чата — сброс offset и загрузка первых сообщений
     useEffect(() => {
         if (!activeChat) return;
         setHasMore(true);
         offsetRef.current = 0;
         setOffset(0);
+        console.log(activeChat.chat_id)
         getMessages({ id: activeChat.chat_id, offset: 0 }).catch(() => {});
     }, [activeChat, getMessages]);
 
-    // автоскролл вниз при первой загрузке (offset === 0)
     useEffect(() => {
         if (!history?.length || offset !== 0) return;
-        // даём React отрендерить DOM
         setTimeout(() => {
             bottomRef.current?.scrollIntoView({ behavior: "auto" });
         }, 0);
     }, [history, offset, bottomRef]);
 
-    // IntersectionObserver — подгрузка старых сообщений при достижении topRef
     useEffect(() => {
         const topEl = topRef?.current;
         const rootEl = containerRef.current;
@@ -84,7 +80,6 @@ const HistoryChat: React.FC<{
                 if (!ent || !ent.isIntersecting) return;
                 if (fetchingRef.current) return;
 
-                // сохраняем позицию прокрутки
                 const prevScrollHeight = rootEl.scrollHeight;
                 const prevScrollTop = rootEl.scrollTop;
 
@@ -100,11 +95,9 @@ const HistoryChat: React.FC<{
                     });
 
                     if (!data?.data?.length) {
-                        // если данных нет — достигнут конец
                         setHasMore(false);
                     }
 
-                    // после вставки новых сообщений восстанавливаем позицию скролла
                     setTimeout(() => {
                         const newScrollHeight = rootEl.scrollHeight;
                         const added = newScrollHeight - prevScrollHeight;

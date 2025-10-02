@@ -12,26 +12,27 @@ export const useChatMessages = () => {
     const activeServer = useAppSelector((s) => s.server.activeserver);
     const [getMesseges] = useLazyGetMessagesQuery();
 
-    // Группировка сообщений
     const groupedMessages = useMemo(() => {
         if (messages.length === 0) return null;
         return groupMessagesByMinuteAndUserId(messages);
     }, [messages]);
 
-    // Подключение к комнате
     useEffect(() => {
         if (!socket) return;
         if (!activeChat?.chat_id) return;
-
+        console.log("EMIT")
         socket.emit("join-chat", activeChat?.chat_id);
     }, [activeChat?.chat_id, socket]);
 
-    // Обработчики сокетов
     useEffect(() => {
         if (!socket) return;
 
         const handleNewMessage = () => {
+            if (!activeChat?.chat_id) {
+                return null;
+            }
             setTimeout(() => {
+                console.log(`NEW ${activeChat?.chat_id}`)
                 getMesseges(activeChat?.chat_id);
             }, 3000);
         };
@@ -55,7 +56,6 @@ export const useChatMessages = () => {
             socket.off("disconnect", handleDisconnect);
         };
     }, [socket, activeChat?.chat_id]);
-    // Отправка сообщения
 
     return {
         messages,
@@ -64,7 +64,6 @@ export const useChatMessages = () => {
     };
 };
 
-// Вспомогательная функция для группировки
 const groupMessagesByMinuteAndUserId = (
     messages: Message[],
 ): {
