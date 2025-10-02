@@ -1,19 +1,20 @@
 import { ioChat } from "@/server";
-import { AuthenticatedSocket } from "../types/socket";
+import { AuthenticatedSocket } from "./types/socket";
+import { Socket } from "socket.io";
 
-export const chatSocket = (socket: AuthenticatedSocket) => {
-    console.log("Новый пользователь подключился:", socket.user);
+export const chatSocket = (socket: Socket) => {
+    console.log("New user chat:", socket.id);
 
     socket.on("join-chat", async (chatId: string) => {
         console.log(
-            `Пользователь ${socket.user.id} подключился к чату ${chatId}`,
+            `Пользователь ${socket.id} подключился к чату ${chatId}`,
         );
         socket.join(`chat_${chatId}`);
     });
 
     socket.on("leave-chat", async (chatId: string) => {
         console.log(
-            `Пользователь ${socket.user.id} отключился от чата ${chatId}`,
+            `Пользователь ${socket.id} отключился от чата ${chatId}`,
         );
         socket.leave(`chat_${chatId}`);
     });

@@ -4,7 +4,7 @@ import { redisClient } from "@/config";
 import { Socket } from "socket.io";
 
 export const journalSocket = (socket: Socket) => {
-    console.log("Новый пользователь подключился:", socket.id);
+    console.log("New user journal:", socket.id);
 
     socket.on("set-status", (userId, status) => {
         redisClient.set(`user:${userId}:${status}`, "true");
@@ -33,4 +33,3 @@ export const journalSocket = (socket: Socket) => {
         //socket.broadcast.emit('user-offline', socket.userId);
     });
 };
-}

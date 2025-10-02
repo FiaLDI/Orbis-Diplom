@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 import { ioChat } from "@/server";
 import { prisma } from "@/config";
 
-// Тип для содержимого сообщения
 interface ContentItem {
     id: string;
     type: string;
@@ -76,20 +75,18 @@ const sendMessages = async (req: Request, res: Response) => {
         console.log(types);
         const contentsRow: any[] = [];
 
-        // Сохраняем content (текст или файл)
         for (let idx = 0; idx < types.length; idx++) {
             const contentId = uuidv4();
 
             if (types[idx] === "url") {
                 const fileUrl = values[idx] as string;
-                // Извлечь имя файла из URL, например:
                 const urlParts = fileUrl.split("/");
-                const fileName = urlParts[urlParts.length - 1]; // последний сегмент URL
+                const fileName = urlParts[urlParts.length - 1]; 
 
                 const createdContent = await prisma.content.create({
                     data: {
                         id: contentId,
-                        text: fileName, // сохраняем имя файла
+                        text: fileName,
                         url: fileUrl,
                     },
                 });
@@ -101,7 +98,6 @@ const sendMessages = async (req: Request, res: Response) => {
                     url: fileUrl,
                 });
             } else {
-                // для текста
                 const textContent = values[idx] as string;
                 const createdContent = await prisma.content.create({
                     data: {
@@ -120,7 +116,6 @@ const sendMessages = async (req: Request, res: Response) => {
             }
         }
 
-        // Создаём сообщение
         const message = await prisma.messages.create({
             data: {
                 chat_id: chat_id,
@@ -185,7 +180,6 @@ const deleteMessage = async (req: Request, res: Response) => {
                 .json({ message: "Invalid chat_id or message_id" });
         }
 
-        // Проверка, принадлежит ли сообщение пользователю
         const message = await prisma.messages.findUnique({
             where: { id: messageId },
             select: { user_id: true, chat_id: true },
@@ -199,25 +193,21 @@ const deleteMessage = async (req: Request, res: Response) => {
             return res.status(403).json({ message: "Forbidden" });
         }
 
-        // Удаляем сообщения и связанные content через messages_content
         await prisma.$transaction(async (tx) => {
             const contentLinks = await tx.messages_content.findMany({
                 where: { id_messages: messageId },
                 select: { id_content: true },
             });
 
-            // Удалить связи
             await tx.messages_content.deleteMany({
                 where: { id_messages: messageId },
             });
 
-            // Удалить content
             const contentIds = contentLinks.map((c) => c.id_content);
             await tx.content.deleteMany({
                 where: { id: { in: contentIds } },
             });
 
-            // Удалить само сообщение
             await tx.messages.delete({
                 where: { id: messageId },
             });
@@ -255,7 +245,6 @@ const editMessage = async (req: Request, res: Response) => {
                 .json({ message: "Invalid chat_id or message_id" });
         }
 
-        // Проверка, принадлежит ли сообщение пользователю
         const message = await prisma.messages.findUnique({
             where: { id: messageId },
             include: {
@@ -267,7 +256,6 @@ const editMessage = async (req: Request, res: Response) => {
             },
         });
         if (!message || !message.messages_content.length) {
-            // Ошибка - не найдено содержимое
             return res.status(404).json({ message: "Content not found" });
         }
 
@@ -301,7 +289,6 @@ const editMessage = async (req: Request, res: Response) => {
                 .json({ message: "Message updated", data: updatedContent });
         }
 
-        // Если метод не PUT — просто возвращаем содержимое для редактирования
         return res
             .status(200)
             .json({ message: "Confirm Edit", data: { content: message } });

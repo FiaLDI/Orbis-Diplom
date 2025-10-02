@@ -8,6 +8,8 @@ import { connectRedis } from "./config";
 import { authRoutes } from "./modules/auth";
 import { userRouter } from "./modules/users";
 import { Server } from "socket.io";
+import { AuthenticatedSocket, chatSocket, journalSocket } from "./socket";
+import { chatRouter } from "./modules/messages";
 
 dotenv.config();
 
@@ -35,20 +37,27 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/api", authRoutes);
 app.use("/api", userRouter);
+app.use("/api", chatRouter);
 
 const server = https.createServer(options, app);
 
-export const ioJournal = new Server(server, {
+export const io = new Server(server, {
     cors: {
         origin: process.env.FRONTENDADDRES,
     },
-});
+})
 
-export const ioChat = new Server(server, {
-    cors: {
-        origin: process.env.FRONTENDADDRES,
-    },
-});
+export const ioJournal = io.of("/journal");
+
+ioJournal.on("connection", (socket) => {
+    journalSocket(socket as AuthenticatedSocket)
+})
+
+export const ioChat = io.of("/chat");
+
+ioChat.on("connection", (socket) => {
+    chatSocket(socket as AuthenticatedSocket)
+})
 
 const PORT = process.env.PORT;
 server.listen(PORT, () => {
