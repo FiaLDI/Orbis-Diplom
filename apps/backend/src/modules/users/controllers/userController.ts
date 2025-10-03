@@ -3,106 +3,6 @@ import { Request, Response } from "express";
 import { prisma } from "@/config";
 import bcrypt from "bcrypt";
 
-const getUsersFriends = async (req: Request, res: Response) => {
-    try {
-        const token = req.headers["authorization"]?.split(" ")[1];
-        if (!token) return res.sendStatus(401);
-
-        const decoded = jwt.verify(
-            token,
-            process.env.ACCESS_TOKEN_SECRET!,
-        ) as any;
-        if (!decoded) return res.sendStatus(401);
-
-        const userId = decoded.id;
-
-        const friends = await prisma.users.findMany({
-            where: {
-                OR: [
-                    {
-                        friend_requests_to: {
-                            some: {
-                                from_user_id: userId,
-                                status: "accepted",
-                            },
-                        },
-                    },
-                    {
-                        friend_requests_from: {
-                            some: {
-                                to_user_id: userId,
-                                status: "accepted",
-                            },
-                        },
-                    },
-                ],
-            },
-        });
-
-        res.status(200).json(friends);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
-    }
-};
-
-// const getUserInvite = async (req: Request, res: Response) => {
-//     const client = await pool.connect();
-
-//     try {
-//         const token = req.headers['authorization']?.split(' ')[1]; // Extract token from header
-//         if (!token) return res.sendStatus(401);
-//         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
-//         if (!decoded) return res.sendStatus(401);
-
-//         const friends = await client.query(`
-//             SELECT u.*
-//             FROM users u
-//             JOIN friend_requests fr ON fr.to_user_id = u.id
-//             WHERE fr.from_user_id = $1 AND fr.status = 'pending';
-
-//         `, [ decoded?.id]);
-//         res.status(200).json(friends.rows);
-//     } catch (err) {
-//         console.log(err)
-//         res.status(500).json({ message: 'Server error' });
-//     } finally {
-//         client.release();
-//     }
-// };
-
-const getUsersInviteMe = async (req: Request, res: Response) => {
-    try {
-        const token = req.headers["authorization"]?.split(" ")[1];
-        if (!token) return res.sendStatus(401);
-
-        const decoded = jwt.verify(
-            token,
-            process.env.ACCESS_TOKEN_SECRET!,
-        ) as any;
-        if (!decoded) return res.sendStatus(401);
-
-        const userId = decoded.id;
-
-        // Получаем пользователей, которые отправили заявку текущему пользователю
-        const invites = await prisma.users.findMany({
-            where: {
-                friend_requests_from: {
-                    some: {
-                        to_user_id: userId,
-                        status: "pending",
-                    },
-                },
-            },
-        });
-
-        res.status(200).json(invites);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
-    }
-};
-
 const getUserInfo = async (req: Request, res: Response) => {
     const userId = parseInt(req.params.id);
 
@@ -309,106 +209,6 @@ const startchat = async (req: Request, res: Response) => {
     }
 };
 
-// const friendInvite = async (req: Request, res: Response) => {
-//     const client = await pool.connect();
-
-//     const id_user = req.params.id;
-
-//     try {
-//         const token = req.headers['authorization']?.split(' ')[1]; // Extract token from header
-//         if (!token) return res.sendStatus(401);
-//         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
-//         if (!decoded) return res.sendStatus(401);
-
-//         const check = await client.query(`SELECT * FROM friend_requests
-//             WHERE (from_user_id = $1 AND to_user_id = $2)
-//             OR (from_user_id = $2 AND to_user_id = $1);
-//         `, [id_user, decoded.id]);
-
-//         if (check.rows.length > 0 ) {
-//             console.log(check.rows)
-//             return res.status(401).json({message: 'no'})
-//         }
-
-//         await client.query('BEGIN');
-
-//         // status:1-inv,2-conf,3-black
-//         await client.query(
-//             `INSERT INTO friend_requests (from_user_id, to_user_id, status)
-//             VALUES ($1, $2, 'pending')
-//             ON CONFLICT DO NOTHING;`,
-//             [decoded.id, id_user]
-//         );
-
-//         await client.query('COMMIT');
-
-//         res.json({message: 'Success'});
-//     } catch (err) {
-//         await client.query('ROLLBACK');
-//         console.log(err)
-//         res.status(401).json({message: 'need refresh'})
-//     } finally {
-//         client.release();
-//     }
-// }
-
-const confirmFriendInvite = async (req: Request, res: Response) => {
-    const id_user = Number(req.params.id);
-
-    try {
-        const token = req.headers["authorization"]?.split(" ")[1];
-        if (!token) return res.sendStatus(401);
-        const decoded = jwt.verify(
-            token,
-            process.env.ACCESS_TOKEN_SECRET!,
-        ) as any;
-        if (!decoded) return res.sendStatus(401);
-
-        // Обновляем статус приглашения
-        await prisma.friend_requests.updateMany({
-            where: {
-                from_user_id: id_user,
-                to_user_id: decoded.id,
-            },
-            data: {
-                status: "accepted",
-            },
-        });
-
-        res.json({ message: "Success" });
-    } catch (err) {
-        console.error(err);
-        res.status(401).json({ message: "need refresh" });
-    }
-};
-
-const rejectFriendInvite = async (req: Request, res: Response) => {
-    const id_user = Number(req.params.id);
-
-    try {
-        const token = req.headers["authorization"]?.split(" ")[1];
-        if (!token) return res.sendStatus(401);
-        const decoded = jwt.verify(
-            token,
-            process.env.ACCESS_TOKEN_SECRET!,
-        ) as any;
-        if (!decoded) return res.sendStatus(401);
-
-        // Удаляем заявку на дружбу
-        await prisma.friend_requests.deleteMany({
-            where: {
-                from_user_id: id_user,
-                to_user_id: decoded.id,
-            },
-        });
-
-        res.json({ message: "Success" });
-    } catch (err) {
-        console.error(err);
-        res.status(401).json({ message: "need refresh" });
-    }
-};
-
 const getUserbyName = async (req: Request, res: Response) => {
     const userName = req.query.name as string;
 
@@ -514,14 +314,8 @@ const editUser = async (req: Request, res: Response) => {
 
 export {
     getUserInfo,
-    getUsersFriends,
-    //getUserInvite,
     getChats,
     createChat,
     startchat,
     getUserbyName,
-    //friendInvite,
-    getUsersInviteMe,
-    confirmFriendInvite,
-    rejectFriendInvite,
 };

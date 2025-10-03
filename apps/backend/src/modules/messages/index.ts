@@ -1,1 +1,1 @@
-export * from "./routes/ChatRoutes";
+export * from "./routes/messagesRoutes";

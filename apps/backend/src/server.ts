@@ -9,7 +9,9 @@ import { authRoutes } from "./modules/auth";
 import { userRouter } from "./modules/users";
 import { Server } from "socket.io";
 import { AuthenticatedSocket, chatSocket, journalSocket } from "./socket";
-import { chatRouter } from "./modules/messages";
+import { messagesRouter } from "./modules/messages";
+import { friendRouter } from "./modules/friends";
+import { serverRouter } from "./modules/servers";
 
 dotenv.config();
 
@@ -37,7 +39,9 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/api", authRoutes);
 app.use("/api", userRouter);
-app.use("/api", chatRouter);
+app.use("/api", messagesRouter);
+app.use("/api", friendRouter);
+app.use("/api", serverRouter)
 
 const server = https.createServer(options, app);
 

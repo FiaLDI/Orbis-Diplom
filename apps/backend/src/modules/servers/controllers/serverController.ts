@@ -127,6 +127,7 @@ const getServerInfo = async (req: Request, res: Response) => {
         res.status(401).json({ message: "need refresh" });
     }
 };
+
 const createServer = async (req: Request, res: Response) => {
     const { name } = req.body;
 
@@ -224,7 +225,7 @@ const joinServer = async (req: Request, res: Response) => {
 };
 
 const createChat = async (req: Request, res: Response) => {
-    const { id } = req.params; // id сервера
+    const { id } = req.params;
 
     try {
         const token = req.headers["authorization"]?.split(" ")[1];
