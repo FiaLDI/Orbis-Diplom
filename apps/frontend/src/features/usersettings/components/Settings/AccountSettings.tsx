@@ -20,53 +20,49 @@ const AccountSettings: React.FC = () => {
         }));
     };
 
-    console.log(user);
-
     return (
-        <div className="flex flex-col">
-            <div className="flex flex-col gap-2 border-1 border-[#ffffff11] p-2">
-                <div className="">User name:</div>
-                <div className="p">Current: {user?.username}</div>
-                <div className="p">
-                    Change:
+        <div className="flex gap-5 flex-wrap ">
+            <div className="flex flex-col gap-1 border-1 border-[#ffffff11] w-[300px]">
+                <div className="bg-[#ffffff11] p-2">User name</div>
+                <div className="flex flex-col w-full gap-2 p-2">
+                    <div className="">{user?.username}</div>
+                    <div className="">
                     <input
                         type="text"
                         value={activeChanged.username}
                         onChange={(e) =>
                             changeHandler("username", e.target.value)
                         }
+                        className="w-full rounded-none focus:outline-none focus-visible:outline-none border-b border-[#ffffff11] focus-visible:border-[#ffffff]"
+                        placeholder="Enter new username"
+                    
                     />
                 </div>
-
-                <SettingsButton
-                    handler={() => setActiveChanged({ username: "" })}
-                >
-                    Change
-                </SettingsButton>
+                </div>
+                
             </div>
-            <div className="flex flex-col gap-2 border-1 border-[#ffffff11] p-2">
-                <div className="">Password</div>
-                <div className="">Current: ****************</div>
+            <div className="flex flex-col gap-1 border-1 border-[#ffffff11] w-[300px]">
+                <div className="bg-[#ffffff11] p-2">Password</div>
+                <div className="flex flex-col w-full gap-2 p-2">
+                <div className="">****************</div>
                 <div className="p">
-                    Change:
                     <input
                         type="text"
                         value={activeChanged.password}
                         onChange={(e) =>
                             changeHandler("password", e.target.value)
                         }
+                        className="w-full rounded-none focus:outline-none focus-visible:outline-none border-b border-[#ffffff11] focus-visible:border-[#ffffff]"
+                        placeholder="Enter new password"
+                    
                     />
                 </div>
-                <SettingsButton
-                    handler={() => setActiveChanged({ password: "" })}
-                >
-                    Change
-                </SettingsButton>
+                </div>
             </div>
-            <div className="flex flex-col gap-2 border-1 border-[#ffffff11] p-2">
-                <div className="">Email</div>
+            <div className="flex flex-col gap-1 border-1 border-[#ffffff11] w-[300px]">
+                <div className="bg-[#ffffff11] p-2">Email</div>
+                <div className="flex flex-col w-full gap-2 p-2">
                 <div className="">
-                    Current:{" "}
                     {user &&
                         user.email &&
                         user?.email
@@ -77,35 +73,33 @@ const AccountSettings: React.FC = () => {
                             .join(".")}{" "}
                 </div>
                 <div className="p">
-                    Change:
                     <input
                         type="text"
                         value={activeChanged.email}
                         onChange={(e) => changeHandler("email", e.target.value)}
+                        className="w-full rounded-none focus:outline-none focus-visible:outline-none border-b border-[#ffffff11] focus-visible:border-[#ffffff]"
+                        placeholder="Enter new email"
+                    
                     />
                 </div>
-                <SettingsButton handler={() => setActiveChanged({ email: "" })}>
-                    Change
-                </SettingsButton>
+                </div>
             </div>
-            <div className="flex flex-col gap-2 border-1 border-[#ffffff11] p-2">
-                <div className="w-40">Number</div>
-                <div className="">Current: ************</div>
+            <div className="flex flex-col gap-1 border-1 border-[#ffffff11] w-[300px]">
+                <div className="bg-[#ffffff11] p-2">Number</div>
+                <div className="flex flex-col w-full gap-2 p-2">
+                <div className="">************</div>
                 <div className="p">
-                    Change:
                     <input
                         type="text"
                         value={activeChanged.number}
                         onChange={(e) =>
                             changeHandler("number", e.target.value)
                         }
+                        className="w-full rounded-none focus:outline-none focus-visible:outline-none border-b border-[#ffffff11] focus-visible:border-[#ffffff]"
+                        placeholder="Enter new number"
                     />
                 </div>
-                <SettingsButton
-                    handler={() => setActiveChanged({ number: "" })}
-                >
-                    Change
-                </SettingsButton>
+                </div>
             </div>
         </div>
     );

@@ -9,6 +9,7 @@ export { default as AppearanceSettings } from "./components/Settings/AppearanceS
 export { default as LanguageSettings } from "./components/Settings/LanguageSettings";
 export { default as NotificationSettings } from "./components/Settings/NotificationSettings";
 export { default as ProfileSettings } from "./components/Settings/ProfileSettings";
+export { default as SettingsController } from "./components/settingsController";
 // Хуки
 // export { useAuth } from './hooks/useAuth';
 // export { useUserSession } from './hooks/useUserSession';

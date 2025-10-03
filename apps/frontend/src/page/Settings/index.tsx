@@ -7,6 +7,7 @@ import {
     LanguageSettings,
     NotificationSettings,
     ProfileSettings,
+    SettingsController,
 } from "@/features/usersettings";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -71,6 +72,7 @@ export const SettingAppPage: React.FC = () => {
                         </h1>
                         <div className="p-5">
                             {SettingsContent[currentSettingsPage]}
+                            {(currentSettingsPage == "Account" || currentSettingsPage == "Profile") ? <SettingsController /> : null}
                         </div>
                     </div>
                 </div>
