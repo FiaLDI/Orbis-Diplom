@@ -3,9 +3,9 @@ import { assignRoleToMember, createServerRole, deleteServerRole, getServerRoles,
 
 export const rolesRouter = Router();
 
-rolesRouter.get("/servers/:id/roles", getServerRoles);
-rolesRouter.post("/servers/:id/roles", createServerRole);
-rolesRouter.patch("/servers/:id/roles/:roleId", updateServerRole);
-rolesRouter.delete("/servers/:id/roles/:roleId", deleteServerRole);
-rolesRouter.post("/servers/:id/members/:userId/role/:roleId", assignRoleToMember);
-rolesRouter.delete("/servers/:id/members/:userId/role/:roleId", removeRoleFromMember);
+rolesRouter.get("/:id/roles", getServerRoles);
+rolesRouter.post("/:id/roles", createServerRole);
+rolesRouter.patch("/:id/roles/:roleId", updateServerRole);
+rolesRouter.delete("/:id/roles/:roleId", deleteServerRole);
+rolesRouter.post("/:id/members/:userId/role/:roleId", assignRoleToMember);
+rolesRouter.delete("/:id/members/:userId/role/:roleId", removeRoleFromMember);

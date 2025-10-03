@@ -19,26 +19,26 @@ import {
 
 export const serverRouter = express.Router();
 
-serverRouter.get("/servers", getServers);
-serverRouter.post("/servers", createServer);
-serverRouter.get("/servers/:id", getServerInfo);
-serverRouter.patch("/servers/:id", updateServer);
-serverRouter.delete("/servers/:id", deleteServer);
+serverRouter.get("", getServers);
+serverRouter.post("", createServer);
+serverRouter.get("/:id", getServerInfo);
+serverRouter.patch("/:id", updateServer);
+serverRouter.delete("/:id", deleteServer);
 
 // Работа с участниками (members)
-serverRouter.get("/servers/:id/members", getServerMembers);
-serverRouter.post("/servers/:id/join", joinServer); 
-serverRouter.delete("/servers/:id/members/:userId", kickMember);
-serverRouter.post("/servers/:id/members/:userId/ban", banMember);
-serverRouter.delete("/servers/:id/members/:userId/ban", unbanMember);
+serverRouter.get("/:id/members", getServerMembers);
+serverRouter.post("/:id/join", joinServer); 
+serverRouter.delete("/:id/members/:userId", kickMember);
+serverRouter.post("/:id/members/:userId/ban", banMember);
+serverRouter.delete("/:id/members/:userId/ban", unbanMember);
 
 // Работа с чатами внутри сервера
-serverRouter.get("/servers/:id/chats", getServerChats);
-serverRouter.post("/servers/:id/chats", createChat);
-serverRouter.get("/servers/:id/chats/:chatId", getChatInfo);
-serverRouter.delete("/servers/:id/chats/:chatId", deleteChat);
+serverRouter.get("/:id/chats", getServerChats);
+serverRouter.post("/:id/chats", createChat);
+serverRouter.get("/:id/chats/:chatId", getChatInfo);
+serverRouter.delete("/:id/chats/:chatId", deleteChat);
 
-// serverRouter.get("/servers/:id/roles", getServerRoles); 
-// serverRouter.post("/servers/:id/roles", createRole); 
-// serverRouter.patch("/servers/:id/roles/:roleId", updateRole); 
-// serverRouter.delete("/servers/:id/roles/:roleId", deleteRole);
+// serverRouter.get("/:id/roles", getServerRoles); 
+// serverRouter.post("/:id/roles", createRole); 
+// serverRouter.patch("/:id/roles/:roleId", updateRole); 
+// serverRouter.delete("/:id/roles/:roleId", deleteRole);

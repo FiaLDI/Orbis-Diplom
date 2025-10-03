@@ -13,11 +13,11 @@ import {
 
 export const friendRouter = express.Router();
 
-friendRouter.post("/friend/:id/invite", friendInvite);
-friendRouter.get("/friend/invme", getUsersInviteMe);
-friendRouter.get("/friend/invi", getUserInvite);
-friendRouter.get("/friend", getUsersFriends);
-friendRouter.get("/friend/:id/status", getFriendStatus);
-friendRouter.post("/friend/:id/confirm", confirmFriendInvite);
-friendRouter.post("/friend/:id/reject", rejectFriendInvite);
-friendRouter.delete("/friend/:id", deleteFriend);   
+friendRouter.post("/:id/invite", friendInvite);
+friendRouter.get("/invme", getUsersInviteMe);
+friendRouter.get("/invi", getUserInvite);
+friendRouter.get("/", getUsersFriends);
+friendRouter.get("/:id/status", getFriendStatus);
+friendRouter.post("/:id/confirm", confirmFriendInvite);
+friendRouter.post("/:id/reject", rejectFriendInvite);
+friendRouter.delete("/:id", deleteFriend);   

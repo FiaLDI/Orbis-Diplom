@@ -5,13 +5,13 @@ import cors from "cors";
 import fs from "fs";
 import https from "https";
 import { connectRedis } from "./config";
-import { authRoutes } from "./modules/auth";
-import { userRouter } from "./modules/users";
+import { authRoutes, chatRouter, moderationRouter, notificationRouter, rolesRouter, searchRouter } from "@/modules";
+import { userRouter } from "@/modules";
 import { Server } from "socket.io";
 import { AuthenticatedSocket, chatSocket, journalSocket } from "./socket";
-import { messagesRouter } from "./modules/messages";
-import { friendRouter } from "./modules/friends";
-import { serverRouter } from "./modules/servers";
+import { messagesRouter } from "@/modules";
+import { friendRouter } from "@/modules";
+import { serverRouter } from "@/modules";
 
 dotenv.config();
 
@@ -37,11 +37,16 @@ app.use(
 );
 app.use(cookieParser());
 app.use(express.json());
-app.use("/api", authRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/chats", chatRouter);
+app.use("/api/friend", friendRouter);
+app.use("/api/messages", messagesRouter);
+app.use("/api/moderation", moderationRouter);
+app.use("/api/notification", notificationRouter);
+app.use("/api/servers", rolesRouter);
+app.use("/api/search", searchRouter);
+app.use("/api/servers", serverRouter);
 app.use("/api/users", userRouter);
-app.use("/api", messagesRouter);
-app.use("/api", friendRouter);
-app.use("/api", serverRouter)
 
 const server = https.createServer(options, app);
 
