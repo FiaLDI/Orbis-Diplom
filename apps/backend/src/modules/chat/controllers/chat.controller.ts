@@ -155,3 +155,36 @@ export const startChat = async (req: Request, res: Response) => {
         res.status(401).json({ message: "need refresh" });
     }
 };
+
+// GET /chats/unread
+export const getUnreadCounts = async (req: any, res: Response) => {
+  const userId = req.user.id;
+
+  try {
+    const unreadCounts = await prisma.$queryRaw<
+      { chat_id: number; unread_count: bigint }[]
+    >`
+      SELECT c.id as chat_id,
+             COUNT(m.id) as unread_count
+      FROM chat_users cu
+      JOIN chats c ON c.id = cu.chat_id
+      LEFT JOIN message_reads mr 
+        ON mr.chat_id = c.id AND mr.user_id = ${userId}
+      JOIN messages m ON m.chat_id = c.id
+      WHERE cu.user_id = ${userId}
+        AND (mr.last_read_message_id IS NULL OR m.id > mr.last_read_message_id)
+      GROUP BY c.id
+    `;
+
+    // конвертируем bigint → number для JSON
+    const formatted = unreadCounts.map(row => ({
+      chat_id: row.chat_id,
+      unread_count: Number(row.unread_count),
+    }));
+
+    res.json(formatted);
+  } catch (err) {
+    console.error("Error in getUnreadCounts:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

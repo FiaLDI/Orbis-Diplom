@@ -381,6 +381,22 @@ model message_reads {
   @@index([chat_id])
 }
 
+model notifications {
+  id         Int      @id @default(autoincrement())
+  user_id    Int      // кому принадлежит уведомление
+  type       String   @db.VarChar(50) // "friend_request" | "message" | "server_invite" | ...
+  title      String   @db.VarChar(255)
+  body       String?  // текст уведомления
+  data       String?  // JSON строка с доп. инфо (например id чата/сообщения)
+  is_read    Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  user users @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+}
+
+
 /* Web Push подписки */
 model push_subscriptions {
   id         Int      @id @default(autoincrement())

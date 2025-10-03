@@ -1,1 +1,2 @@
-export * from "./routes/authRoutes";
+export * from "./routes/auth.routes";
+export * from "./middleware/auth.middleware"
