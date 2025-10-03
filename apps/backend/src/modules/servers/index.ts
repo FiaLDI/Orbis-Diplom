@@ -1,1 +1,1 @@
-export * from "./routes/serverRoutes";
+export * from "./routes/server.routes";

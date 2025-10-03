@@ -299,3 +299,141 @@ export const logout = (req: Request, res: Response) => {
     });
     res.json({ message: "User logout" });
 };
+
+export const getMe = async (req: Request, res: Response) => {
+    try {
+        const token = req.headers["authorization"]?.split(" ")[1];
+        if (!token) return res.status(401).json({ error: "Token missing" });
+
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
+        if (!decoded) return res.status(401).json({ error: "Invalid token" });
+
+        const user = await prisma.users.findUnique({
+            where: { id: decoded.id },
+            include: {
+                user_profile: true,
+                user_preferences: true,
+            },
+        });
+
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        // друзья (двусторонние accepted заявки)
+        const friends = await prisma.users.findMany({
+            where: {
+                OR: [
+                    {
+                        friend_requests_to: {
+                            some: { from_user_id: decoded.id, status: "accepted" },
+                        },
+                    },
+                    {
+                        friend_requests_from: {
+                            some: { to_user_id: decoded.id, status: "accepted" },
+                        },
+                    },
+                ],
+            },
+            select: {
+                id: true,
+                username: true,
+                user_profile: { select: { avatar_url: true } },
+            },
+        });
+
+        // сервера, где состоит
+        const servers = await prisma.servers.findMany({
+            where: {
+                user_server: { some: { user_id: decoded.id } },
+            },
+            select: {
+                id: true,
+                name: true,
+                avatar_url: true,
+            },
+        });
+
+        res.json({
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            avatar_url: user.user_profile?.avatar_url,
+            preferences: user.user_preferences,
+            friends,
+            servers,
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
+export const changePassword = async (req: Request, res: Response) => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+        const token = req.headers["authorization"]?.split(" ")[1];
+
+        if (!token) return res.status(401).json({ error: "Token missing" });
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
+        if (!decoded) return res.status(401).json({ error: "Invalid token" });
+
+        const user = await prisma.users.findUnique({ where: { id: decoded.id } });
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        const isPasswordValid = await bcrypt.compare(oldPassword, user.password_hash ?? "");
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: "Old password incorrect" });
+        }
+
+        if (newPassword.length < 8) {
+            return res.status(400).json({ error: "Password must be at least 8 characters long" });
+        }
+
+        const hashed = await bcrypt.hash(newPassword, 10);
+
+        await prisma.users.update({
+            where: { id: decoded.id },
+            data: { password_hash: hashed },
+        });
+
+        res.json({ message: "Password changed successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// POST /auth/forgot-password
+export const forgotPassword = async (req: Request, res: Response) => {
+    try {
+        const { email, code, newPassword } = req.body;
+
+        if (!email || !code || !newPassword) {
+            return res.status(400).json({ error: "Email, code and new password are required" });
+        }
+
+        const storedCode = await redisClient.get(email);
+        if (!storedCode || storedCode !== code) {
+            return res.status(401).json({ error: "Invalid or expired code" });
+        }
+
+        if (newPassword.length < 8) {
+            return res.status(400).json({ error: "Password must be at least 8 characters long" });
+        }
+
+        const hashed = await bcrypt.hash(newPassword, 10);
+
+        await prisma.users.update({
+            where: { email },
+            data: { password_hash: hashed },
+        });
+
+        await redisClient.del(email);
+
+        res.json({ message: "Password reset successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};

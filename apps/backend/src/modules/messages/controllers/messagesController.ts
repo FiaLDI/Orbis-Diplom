@@ -4,14 +4,7 @@ import jwt from "jsonwebtoken";
 import { ioChat } from "@/server";
 import { prisma } from "@/config";
 
-interface ContentItem {
-    id: string;
-    type: string;
-    text?: string;
-    url?: string;
-}
-
-const getMessages = async (req: Request, res: Response) => {
+export const getMessages = async (req: Request, res: Response) => {
     const chatId = parseInt(req.params.id);
     const offset = Number(req.query.offset);
 
@@ -66,7 +59,7 @@ const getMessages = async (req: Request, res: Response) => {
     }
 };
 
-const sendMessages = async (req: Request, res: Response) => {
+export const sendMessages = async (req: Request, res: Response) => {
     const { chat_id, username, content, reply_to_id, user_id } = req.body;
 
     try {
@@ -159,8 +152,8 @@ const sendMessages = async (req: Request, res: Response) => {
     }
 };
 
-const deleteMessage = async (req: Request, res: Response) => {
-    const { chat_id, message_id } = req.query;
+export const deleteMessage = async (req: Request, res: Response) => {
+    const messageId = parseInt(req.params.id, 10);
 
     try {
         const token = req.headers["authorization"]?.split(" ")[1];
@@ -171,13 +164,8 @@ const deleteMessage = async (req: Request, res: Response) => {
         };
         if (!decoded) return res.sendStatus(401);
 
-        const chatId = parseInt(chat_id as string, 10);
-        const messageId = parseInt(message_id as string, 10);
-
-        if (isNaN(chatId) || isNaN(messageId)) {
-            return res
-                .status(400)
-                .json({ message: "Invalid chat_id or message_id" });
+        if (isNaN(messageId)) {
+            return res.status(400).json({ message: "Invalid message_id" });
         }
 
         const message = await prisma.messages.findUnique({
@@ -185,13 +173,11 @@ const deleteMessage = async (req: Request, res: Response) => {
             select: { user_id: true, chat_id: true },
         });
 
-        if (
-            !message ||
-            message.user_id !== decoded.id ||
-            message.chat_id !== chatId
-        ) {
+        if (!message || message.user_id !== decoded.id) {
             return res.status(403).json({ message: "Forbidden" });
         }
+
+        const chatId = message.chat_id!;
 
         await prisma.$transaction(async (tx) => {
             const contentLinks = await tx.messages_content.findMany({
@@ -204,18 +190,16 @@ const deleteMessage = async (req: Request, res: Response) => {
             });
 
             const contentIds = contentLinks.map((c) => c.id_content);
-            await tx.content.deleteMany({
-                where: { id: { in: contentIds } },
-            });
+            if (contentIds.length) {
+                await tx.content.deleteMany({
+                    where: { id: { in: contentIds } },
+                });
+            }
 
-            await tx.messages.delete({
-                where: { id: messageId },
-            });
+            await tx.messages.delete({ where: { id: messageId } });
         });
 
-        ioChat.to(`chat_${chatId}`).emit("delete-message", {
-            message_id: messageId,
-        });
+        ioChat.to(`chat_${chatId}`).emit("delete-message", { message_id: messageId });
 
         return res.status(200).json({ message: "Confirm Delete" });
     } catch (err) {
@@ -224,8 +208,8 @@ const deleteMessage = async (req: Request, res: Response) => {
     }
 };
 
-const editMessage = async (req: Request, res: Response) => {
-    const { chat_id, message_id } = req.query;
+export const editMessage = async (req: Request, res: Response) => {
+    const messageId = parseInt(req.params.id, 10);
 
     try {
         const token = req.headers["authorization"]?.split(" ")[1];
@@ -236,18 +220,71 @@ const editMessage = async (req: Request, res: Response) => {
         };
         if (!decoded) return res.sendStatus(401);
 
-        const chatId = parseInt(chat_id as string, 10);
-        const messageId = parseInt(message_id as string, 10);
-
-        if (isNaN(chatId) || isNaN(messageId)) {
-            return res
-                .status(400)
-                .json({ message: "Invalid chat_id or message_id" });
+        if (isNaN(messageId)) {
+            return res.status(400).json({ message: "Invalid message_id" });
         }
 
         const message = await prisma.messages.findUnique({
             where: { id: messageId },
             include: {
+                messages_content: { include: { content: true } },
+            },
+        });
+
+        if (!message || message.user_id !== decoded.id) {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        const { content } = req.body;
+        if (typeof content !== "string" || !content.trim()) {
+            return res.status(400).json({
+                message: "Content is required and must be a non-empty string",
+            });
+        }
+
+        const contentId = message.messages_content[0]?.id_content;
+        if (!contentId) {
+            return res.status(404).json({ message: "Message content not found" });
+        }
+
+        const updatedContent = await prisma.content.update({
+            where: { id: contentId },
+            data: { text: content },
+        });
+
+        await prisma.messages.update({
+            where: { id: messageId },
+            data: { is_edited: true, updated_at: new Date() },
+        });
+
+        ioChat.to(`chat_${message.chat_id}`).emit("edit-message", {
+            message_id: messageId,
+            newContent: updatedContent.text,
+        });
+
+        return res.status(200).json({
+            message: "Message updated",
+            data: updatedContent,
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
+export const getMessageById = async (req: Request, res: Response) => {
+    const messageId = parseInt(req.params.id, 10);
+
+    if (isNaN(messageId)) {
+        return res.status(400).json({ message: "Invalid message id" });
+    }
+
+    try {
+        const message = await prisma.messages.findUnique({
+            where: { id: messageId },
+            include: {
+                user: { select: { id: true, username: true } },
                 messages_content: {
                     include: {
                         content: true,
@@ -255,47 +292,29 @@ const editMessage = async (req: Request, res: Response) => {
                 },
             },
         });
-        if (!message || !message.messages_content.length) {
-            return res.status(404).json({ message: "Content not found" });
-        }
 
-        if (
-            !message ||
-            message.user_id !== decoded.id ||
-            message.chat_id !== chatId
-        ) {
-            return res.status(403).json({ message: "Forbidden" });
-        }
-        if (req.method === "PUT") {
-            const { content } = req.body;
-            if (typeof content !== "string" || !content.trim()) {
-                return res.status(400).json({
-                    message:
-                        "Content is required and must be a non-empty string",
-                });
-            }
+        if (!message) return res.status(404).json({ message: "Message not found" });
 
-            const contentId = message.messages_content[0].id_content;
+        const formatted = {
+            id: message.id,
+            chat_id: message.chat_id,
+            user_id: message.user?.id || null,
+            username: message.user?.username || "Unknown",
+            reply_to_id: message.reply_to_id,
+            is_edited: message.is_edited,
+            content: message.messages_content.map(mc => ({
+                type: mc.type,
+                id: mc.content.id,
+                text: mc.content.text ?? "",
+                url: mc.content.url ?? "",
+            })),
+            timestamp: message.created_at?.toLocaleTimeString() || null,
+            updated_at: message.updated_at?.toLocaleTimeString() || null,
+        };
 
-            const updatedContent = await prisma.content.update({
-                where: { id: contentId },
-                data: { text: content },
-            });
-
-            ioChat.to(`chat_${chat_id}`).emit("new-message");
-
-            return res
-                .status(200)
-                .json({ message: "Message updated", data: updatedContent });
-        }
-
-        return res
-            .status(200)
-            .json({ message: "Confirm Edit", data: { content: message } });
+        res.json(formatted);
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: "Internal server error" });
     }
 };
-
-export { getMessages, sendMessages, deleteMessage, editMessage };

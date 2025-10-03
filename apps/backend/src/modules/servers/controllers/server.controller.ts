@@ -273,11 +273,226 @@ const createChat = async (req: Request, res: Response) => {
     }
 };
 
+// PATCH /servers/:id
+const updateServer = async (req: Request, res: Response) => {
+    const serverId = parseInt(req.params.id);
+    const { name, avatar_url } = req.body;
+
+    try {
+        const token = req.headers["authorization"]?.split(" ")[1];
+        if (!token) return res.sendStatus(401);
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
+
+        const server = await prisma.servers.findUnique({ where: { id: serverId } });
+        if (!server) return res.status(404).json({ message: "Server not found" });
+
+        if (server.creator_id !== decoded.id) {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        const updated = await prisma.servers.update({
+            where: { id: serverId },
+            data: { name, avatar_url, updated_at: new Date() },
+        });
+
+        res.json(updated);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// DELETE /servers/:id
+const deleteServer = async (req: Request, res: Response) => {
+    const serverId = parseInt(req.params.id);
+
+    try {
+        const token = req.headers["authorization"]?.split(" ")[1];
+        if (!token) return res.sendStatus(401);
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
+
+        const server = await prisma.servers.findUnique({ where: { id: serverId } });
+        if (!server) return res.status(404).json({ message: "Server not found" });
+
+        if (server.creator_id !== decoded.id) {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        await prisma.servers.delete({ where: { id: serverId } });
+        res.json({ message: "Server deleted" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// DELETE /servers/:id/members/:userId
+const kickMember = async (req: Request, res: Response) => {
+    const serverId = parseInt(req.params.id);
+    const userId = parseInt(req.params.userId);
+
+    try {
+        await prisma.user_server.delete({
+            where: {
+                user_id_server_id: { user_id: userId, server_id: serverId },
+            },
+        });
+        res.json({ message: "Member kicked" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// POST /servers/:id/members/:userId/ban
+const banMember = async (req: Request, res: Response) => {
+    const serverId = parseInt(req.params.id);
+    const userId = parseInt(req.params.userId);
+
+    try {
+        const token = req.headers["authorization"]?.split(" ")[1];
+        if (!token) return res.sendStatus(401);
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
+
+        await prisma.server_bans.create({
+            data: {
+                server_id: serverId,
+                user_id: userId,
+                banned_by: decoded.id,
+                created_at: new Date(),
+            },
+        });
+
+        res.json({ message: "User banned" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// DELETE /servers/:id/members/:userId/ban
+const unbanMember = async (req: Request, res: Response) => {
+    const serverId = parseInt(req.params.id);
+    const userId = parseInt(req.params.userId);
+
+    try {
+        await prisma.server_bans.delete({
+            where: { server_id_user_id: { server_id: serverId, user_id: userId } },
+        });
+        res.json({ message: "User unbanned" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// GET /servers/:id/chats
+const getServerChats = async (req: Request, res: Response) => {
+    const serverId = parseInt(req.params.id);
+
+    try {
+        const chats = await prisma.chats.findMany({
+            where: {
+                server_chats: { some: { id_server: serverId } },
+            },
+            select: { id: true, name: true, created_at: true },
+        });
+
+        res.json(chats);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// GET /servers/:id/members
+const getServerMembers = async (req: Request, res: Response) => {
+    const serverId = parseInt(req.params.id);
+
+    try {
+        const members = await prisma.users.findMany({
+            where: {
+                user_server: { some: { server_id: serverId } },
+            },
+            select: {
+                id: true,
+                username: true,
+                user_profile: {
+                    select: {
+                        avatar_url: true,
+                        about: true,
+                    },
+                },
+            },
+        });
+
+        res.json(members);
+    } catch (err) {
+        console.error("Error in getServerMembers:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// GET /servers/:id/chats/:chatId
+const getChatInfo = async (req: Request, res: Response) => {
+    const chatId = parseInt(req.params.chatId);
+
+    try {
+        const chat = await prisma.chats.findUnique({
+            where: { id: chatId },
+            include: {
+                chat_users: {
+                    include: { users: { select: { id: true, username: true } } },
+                },
+            },
+        });
+
+        if (!chat) {
+            return res.status(404).json({ message: "Chat not found" });
+        }
+
+        res.json(chat);
+    } catch (err) {
+        console.error("Error in getChatInfo:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+// DELETE /servers/:id/chats/:chatId
+const deleteChat = async (req: Request, res: Response) => {
+    const chatId = parseInt(req.params.chatId);
+
+    try {
+        const chat = await prisma.chats.findUnique({ where: { id: chatId } });
+        if (!chat) {
+            return res.status(404).json({ message: "Chat not found" });
+        }
+
+        await prisma.chats.delete({ where: { id: chatId } });
+
+        res.json({ message: "Chat deleted" });
+    } catch (err) {
+        console.error("Error in deleteChat:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
 export {
     getServers,
     getServerInfo,
+    getFastInfoUserServer,
     createServer,
     joinServer,
     createChat,
-    getFastInfoUserServer,
+    updateServer,
+    deleteServer,
+    kickMember,
+    banMember,
+    unbanMember,
+    getServerChats,
+    getServerMembers,
+    getChatInfo,
+    deleteChat,
 };
+

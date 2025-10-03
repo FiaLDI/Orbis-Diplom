@@ -201,6 +201,60 @@ const rejectFriendInvite = async (req: Request, res: Response) => {
     }
 };
 
+const deleteFriend = async (req: Request, res: Response) => {
+    const id_user = Number(req.params.id);
+
+    try {
+        const token = req.headers["authorization"]?.split(" ")[1];
+        if (!token) return res.sendStatus(401);
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
+        if (!decoded) return res.sendStatus(401);
+
+        await prisma.friend_requests.deleteMany({
+            where: {
+                OR: [
+                    { from_user_id: decoded.id, to_user_id: id_user, status: "accepted" },
+                    { from_user_id: id_user, to_user_id: decoded.id, status: "accepted" },
+                ],
+            },
+        });
+
+        res.json({ message: "Friend removed" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+const getFriendStatus = async (req: Request, res: Response) => {
+    const id_user = Number(req.params.id);
+
+    try {
+        const token = req.headers["authorization"]?.split(" ")[1];
+        if (!token) return res.sendStatus(401);
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
+        if (!decoded) return res.sendStatus(401);
+
+        const relation = await prisma.friend_requests.findFirst({
+            where: {
+                OR: [
+                    { from_user_id: decoded.id, to_user_id: id_user },
+                    { from_user_id: id_user, to_user_id: decoded.id },
+                ],
+            },
+        });
+
+        if (!relation) {
+            return res.json({ status: "none" }); // нет отношений
+        }
+
+        res.json({ status: relation.status });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
 
 export {
     getUsersFriends,
@@ -209,4 +263,6 @@ export {
     getUsersInviteMe,
     confirmFriendInvite,
     rejectFriendInvite,
+    deleteFriend,
+    getFriendStatus,
 };
