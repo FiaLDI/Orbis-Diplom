@@ -84,5 +84,4 @@ export const {
     useConfirmUserMutation,
     useSendVerificationCodeMutation,
     useVerifyCodeMutation,
-    useRefreshTokenQueryQuery,
 } = authApi;

@@ -20,7 +20,7 @@ authRoutes.post("/verify", verifyCode);
 authRoutes.post("/register", register);
 authRoutes.post("/login", login);
 authRoutes.post("/logout", logout);
-authRoutes.post("/refresh", refresh);
+authRoutes.post("/refresh", authenticate, refresh);
 authRoutes.get("/me", getMe);
 authRoutes.post("/change-password", changePassword);
 authRoutes.post("/forgot-password", forgotPassword);

@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { config } from "@/config";
-import { useRefreshTokenQueryQuery } from "@/features/auth";
+import { useAppSelector } from "@/app/hooks";
 
 export const useServerJournalSocket = () => {
     const socketRef = useRef<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false);
-    const { data: tokenData, isSuccess } = useRefreshTokenQueryQuery({});
+    
+    const token = useAppSelector(s => s.auth.user?.access_token);
 
     useEffect(() => {
-        if (!isSuccess || !tokenData) return;
+        if (!token) return;
 
-        // Создаем новый сокет только если его еще нет
         if (!socketRef.current) {
             const newSocket = io(`${config.monoliteUrl}/journal`, {
-                auth: { token: tokenData.access_token },
+                auth: { token: token },
                 autoConnect: true,
                 reconnection: true,
                 reconnectionAttempts: 5,
@@ -38,7 +38,7 @@ export const useServerJournalSocket = () => {
 
             socketRef.current = newSocket;
         }
-    }, [isSuccess, tokenData]);
+    }, [token]);
 
     return {
         socket: socketRef.current,

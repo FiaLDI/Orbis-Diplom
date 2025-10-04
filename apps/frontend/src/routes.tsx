@@ -8,6 +8,8 @@ import AuthPageController from "@/page/Auth";
 import { CommunicatePage } from "@/page/Communicate";
 import { useRefreshTokenMutation } from "@/features/auth";
 import { SettingAppPage } from "./page/Settings";
+import { LoaderCircle } from "lucide-react";
+import { LoadingSpinner } from "./components/ui/Animate/LoadingSpinner";
 
 const ProtectedRoute: React.FC<{
     isAuth: boolean;
@@ -23,14 +25,13 @@ const ProtectedRoute: React.FC<{
 export const PagesRouter: React.FC = () => {
     const isAuth =
         useAppSelector((state) => state.auth.isAuthenticated) || false;
-    const [data, { isLoading }] = useRefreshTokenMutation({});
-    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [refresh] = useRefreshTokenMutation({});
+    const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
-    const refresh = async () => {
+    const refreshToken = async () => {
         try {
-            await data({});
+            await refresh({});
             setIsRefreshing(false);
-            console.log(isAuth);
         } catch (error) {
             console.error("Refresh failed:", error);
             setIsRefreshing(false);
@@ -38,11 +39,16 @@ export const PagesRouter: React.FC = () => {
     };
 
     useEffect(() => {
-        //refresh();
+        refreshToken();
     }, []);
 
-    if (isRefreshing) {
-        return <div className="main-app">Loading...</div>; // Показать индикатор загрузки, пока обновляется токен
+    if(isRefreshing){
+        return (
+        <div className="h-screen w-full flex justify-center items-center">
+            
+                <LoadingSpinner className="w-[300px] h-[300px]" />
+        
+        </div>);
     }
 
     return (
