@@ -14,16 +14,16 @@ export const NavBar: React.FC<{
                     : `top-40 flex-col bg-blue-950 w-full text-4xl ${styleContainer}`
             }
         >
-            <li className={`p-3 ${styleList}`}>
+            <li className={`lg:text-lg p-3 ${styleList}`}>
                 <a href="#start"> Загрузить</a>
             </li>
-            <li className={`p-3 ${styleList}`}>
+            <li className={`lg:text-lg  p-3 ${styleList}`}>
                 <a href="#more">Узнать больше</a>
             </li>
-            <li className={`p-3 ${styleList}`}>
+            <li className={`lg:text-lg  p-3 ${styleList}`}>
                 <a onClick={() => navigator("political")}></a>Политика
             </li>
-            <li className={`p-3 ${styleList}`}>
+            <li className={`lg:text-lg  p-3 ${styleList}`}>
                 <a href="#support">Поддержка</a>
             </li>
         </ul>

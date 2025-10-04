@@ -4,7 +4,7 @@ import { config } from "@/config";
 export const authApi = createApi({
     reducerPath: "authApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: `${config.monoliteUrl}/api`,
+        baseUrl: `${config.monoliteUrl}/api/auth`,
         credentials: "include",
     }),
     endpoints: (builder) => ({

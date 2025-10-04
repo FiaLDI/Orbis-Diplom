@@ -26,20 +26,20 @@ export const Support = () => {
     };
 
     return (
-        <div className="bg-[rgba(27,30,75,0.3)]" id="support">
-            <SectionLayout classListContainer="gap-10 lg:!max-w-2xl">
-                <div className="flex flex-col gap-5">
-                    <TitleSection>ПОДДЕРЖКА</TitleSection>
-                    <p className="text-2xl text-center">
-                        Здесь вы можете обратиться за помощью по любому
-                        интересующему вас вопросу
+        <div className="bg-[rgba(27,30,75,0.3)] " id="support">
+            <SectionLayout classListContainer="gap-10 lg:max-w-7xl lg:flex-row">
+                <div className="flex flex-col gap-5 w-full lg:p-5">
+                    <TitleSection><p className="lg:text-left ">Остались вопросы? <br />
+Мы на связи!</p></TitleSection>
+                    <p className="text-lg ">
+                        Здесь вы можете обратиться за помощью по любому интересующему вас вопросу — будь то настройка сервера, проблемы с аккаунтом или просто совет по использованию платформы. Наша команда и сообщество всегда готовы поддержать вас!
                     </p>
                 </div>
 
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     {...register}
-                    className="flex flex-col gap-10 items-center"
+                    className="flex w-full flex-col gap-10 items-center bg-[#2140dd2f] rounded-[20px] p-10"
                 >
                     <InputField<SupportFormData>
                         type="text"
@@ -60,10 +60,10 @@ export const Support = () => {
                         label="Почта"
                     />
                     <div className="flex flex-col gap-2 w-full">
-                        <label className="text-2xl">Описание проблемы</label>
+                        <label className="text-lg">Описание проблемы</label>
                         <textarea
                             placeholder={"Я хочу спросить о...."}
-                            className="border-2 p-2 border-white -m-2 w-full box-border outline-none text-3xl"
+                            className="border-2 p-2 border-white rounded-[20px] w-full box-content outline-none text-lg "
                             {...register("description", { required: "Required" })}
                         ></textarea>
                         {errors.description && <div>{errors.description.message}</div>}

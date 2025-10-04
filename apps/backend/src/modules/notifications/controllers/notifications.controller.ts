@@ -27,7 +27,7 @@ export const markNotificationRead = async (req: any, res: Response) => {
 
     const notif = await prisma.notifications.updateMany({
       where: { id, user_id: userId },
-      data: { read: true },
+      data: { is_read: true },
     });
 
     res.json({ message: "Notification marked as read", updated: notif.count });

@@ -8,10 +8,10 @@ export const Start = () => {
         <div className="" id="start">
             <SectionLayout classListContainer="gap-5">
                 <TitleSection>Начать общаться</TitleSection>
-                <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
+                <div className="py-10 flex flex-col gap-20 lg:flex-row lg:justify-between">
                     <div className="lg:w-1/2  flex flex-col gap-5 border-x-2 p-5 border-white -m-x-2">
-                        <h3 className="text-3xl">ПК и мобильный телефон</h3>
-                        <ul className="[&>li]:text-2xl">
+                        <h3 className="text-2xl">ПК и мобильный телефон</h3>
+                        <ul className="[&>li]:text-lg">
                             <li>Регистрация ссылке</li>
                             <li>Скачать по ссылке</li>
                             <li>Установка</li>
@@ -21,14 +21,14 @@ export const Start = () => {
                         </ul>
                     </div>
                     <div className="lg:w-1/2 flex flex-col gap-5 border-x-2 p-5 border-white -m-x-2">
-                        <h3 className="text-3xl">Сайт</h3>
-                        <ul className="[&>li]:text-2xl">
+                        <h3 className="text-2xl">Сайт</h3>
+                        <ul className="[&>li]:text-lg">
                             <li>Регистрация по ссылке</li>
                             <li>Авторизовывайся</li>
                             <li>Ищи друзей</li>
                         </ul>
                     </div>
-                </div>
+                </div >
                 <div
                     className=" flex justify-center items-center gap-10 flex-col
                     "

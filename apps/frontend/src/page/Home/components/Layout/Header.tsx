@@ -29,11 +29,11 @@ export const Header = () => {
     }, []);
 
     return (
-            <header className="  bg-[rgba(54,62,180,0.27)] text-white">
-                <div className="flex justify-between items-center py-10 px-5 lg:py-2  lg:max-w-7xl mx-auto">
-                    <div className="flex items-center gap-5">
+            <header className=" bg-[rgba(54,62,180,0.27)] text-white">
+                <div className="flex justify-between items-center py-10 px-5 lg:py-5  lg:max-w-7xl mx-auto">
+                    <div className="flex items-center gap-10 lg:gap-10">
                         <div className=" w-10 h-10">
-                            <img src="/img/ico.svg" alt="" className="absolute w-15 h-15 top-10 lg:top-2"/>
+                            <img src="/img/ico.svg" alt="" className="absolute w-15 h-15 top-10 lg:top-4"/>
                         </div>
                         <div
                             className="font-[sarpanch] text-5xl "

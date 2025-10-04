@@ -28,12 +28,12 @@ export const InputField = <T extends FieldValues>({
     validation,
 }: InputFieldProps<T>) => (
         <div className="flex flex-col gap-2 w-full">
-            {label ? <label className="flex text-2xl">{label}</label> : null}
+            {label ? <label className="flex text-lg">{label}</label> : null}
             <div className="border-b-2">
                 <input
                     type={type}
                     placeholder={placeholder}
-                    className="w-full box-border outline-none text-3xl p-2"
+                    className="w-full box-border outline-none text-lg p-2"
                     {...register(name, validation)}
                 />
             </div>
@@ -53,7 +53,7 @@ export const SubmitButton: React.FC<SubmitButtonProps> = ({
     <button
         type="submit"
         disabled={disabled}
-        className="text-2xl cursor-pointer border-b-2 p-2 px-10 w-fit"
+        className="text-lg cursor-pointer border-b-2 p-2 px-10 w-fit"
     >
         {label}
     </button>

@@ -8,8 +8,8 @@ export const Edge = () => {
         <div className="bg-[rgba(27,30,75,0.3)]">
             <SectionLayout classListContainer="flex flex-col gap-5 lg:max-w-7xl">
                 <TitleSection>Неважно где, важно с нами</TitleSection>
-                <ul className="[&>li]:flex [&>li]:text-2xl [&>li]:gap-5 [&>li]:w-[25rem]  flex flex-col justify-center text-white lg:flex-row lg:[&>li]:w-fit lg:justify-between">
-                    <li>
+                <ul className="[&>li]:flex [&>li]:text-2xl [&>li]:gap-5 [&>li]:w-[25rem] [&>li]:items-center  flex flex-col justify-center text-white lg:flex-row lg:[&>li]:w-fit lg:gap-20">
+                    <li className="">
                         <Circle
                             className="w-6 h-6 mt-1 lg:w-10 lg:h-10"
                             strokeWidth={0.5}

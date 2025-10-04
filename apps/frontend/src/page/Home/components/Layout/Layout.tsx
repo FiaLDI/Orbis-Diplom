@@ -8,7 +8,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     return (
         <>
             <Header />
-            <main className="w-full">{children}</main>
+            <main className="w-full flex flex-col gap-10">{children}</main>
             <Footer />
         </>
     );

@@ -63,6 +63,7 @@ model users {
   reports_resolved    reports[]            @relation("ReportResolver") // жалобы обработал
   message_reads       message_reads[]
   push_subscriptions  push_subscriptions[]
+  notifications       notifications[]
 }
 
 model user_preferences {
