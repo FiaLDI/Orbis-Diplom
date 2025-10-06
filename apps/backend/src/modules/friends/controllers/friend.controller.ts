@@ -46,64 +46,56 @@ const getUsersFriends = async (req: Request, res: Response) => {
     }
 };
 
-const getUserInvite = async (req: Request, res: Response) => {
+const getFriendRequests = async (req: Request, res: Response) => {
   try {
-    const token = req.headers['authorization']?.split(' ')[1];
+    const token = req.headers["authorization"]?.split(" ")[1];
     if (!token) return res.sendStatus(401);
 
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
     if (!decoded) return res.sendStatus(401);
 
-    // через Prisma
-    const friendRequests = await prisma.friend_requests.findMany({
-      where: {
-        from_user_id: decoded.id,
-        status: "pending",
-      },
-      include: {
-        to_user: true, // подтягиваем юзера, которому заявка отправлена
-      },
-    });
+    const userId = decoded.id;
+    const direction = req.query.direction as string;
 
-    // возвращаем именно список пользователей (аналог u.* из SQL)
-    const friends = friendRequests.map(fr => fr.to_user);
+    if (!direction || !["incoming", "outcoming"].includes(direction)) {
+      return res.status(400).json({ message: "Invalid direction param" });
+    }
 
-    res.status(200).json(friends);
+    let result;
+
+    if (direction === "outcoming") {
+      // заявки, которые отправил текущий пользователь
+      const requests = await prisma.friend_requests.findMany({
+        where: {
+          from_user_id: userId,
+          status: "pending",
+        },
+        include: {
+          to_user: true,
+        },
+      });
+
+      result = requests.map((r) => r.to_user);
+    } else {
+      // заявки, которые пришли текущему пользователю
+      const requests = await prisma.friend_requests.findMany({
+        where: {
+          to_user_id: userId,
+          status: "pending",
+        },
+        include: {
+          from_user: true,
+        },
+      });
+
+      result = requests.map((r) => r.from_user);
+    }
+
+    res.status(200).json(result);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
-};
-
-const getUsersInviteMe = async (req: Request, res: Response) => {
-    try {
-        const token = req.headers["authorization"]?.split(" ")[1];
-        if (!token) return res.sendStatus(401);
-
-        const decoded = jwt.verify(
-            token,
-            process.env.ACCESS_TOKEN_SECRET!,
-        ) as any;
-        if (!decoded) return res.sendStatus(401);
-
-        const userId = decoded.id;
-
-        const invites = await prisma.users.findMany({
-            where: {
-                friend_requests_from: {
-                    some: {
-                        to_user_id: userId,
-                        status: "pending",
-                    },
-                },
-            },
-        });
-
-        res.status(200).json(invites);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
-    }
 };
 
 const friendInvite = async (req: Request, res: Response) => {
@@ -258,9 +250,8 @@ const getFriendStatus = async (req: Request, res: Response) => {
 
 export {
     getUsersFriends,
-    getUserInvite,
+    getFriendRequests,
     friendInvite,
-    getUsersInviteMe,
     confirmFriendInvite,
     rejectFriendInvite,
     deleteFriend,

@@ -4,8 +4,7 @@ import {
     friendInvite,
     rejectFriendInvite,
     confirmFriendInvite,
-    getUsersInviteMe,
-    getUserInvite,
+    getFriendRequests,
     getUsersFriends,
     getFriendStatus,
     deleteFriend
@@ -14,8 +13,7 @@ import {
 export const friendRouter = express.Router();
 
 friendRouter.post("/:id/invite", friendInvite);
-friendRouter.get("/invme", getUsersInviteMe);
-friendRouter.get("/invi", getUserInvite);
+friendRouter.get("/requests", getFriendRequests);
 friendRouter.get("/", getUsersFriends);
 friendRouter.get("/:id/status", getFriendStatus);
 friendRouter.post("/:id/confirm", confirmFriendInvite);
