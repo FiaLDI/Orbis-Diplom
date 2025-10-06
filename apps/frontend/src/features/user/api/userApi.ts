@@ -52,7 +52,7 @@ export const userApi = createApi({
         }),
         getUserbyName: builder.query({
             query: (name) => ({
-                url: `/user/search?name=${name}`,
+                url: `/search/users?q=${name}`,
                 method: "GET",
             }),
         }),
