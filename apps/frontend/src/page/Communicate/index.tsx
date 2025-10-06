@@ -84,7 +84,7 @@ export const CommunicatePage: React.FC = () => {
                     <div className="w-full h-full lg:h-screen">
                         <Action />
                     </div>
-                ) : (<div className="w-full"></div>)}
+                ) : (hasActiveServer ? <div className="w-full"></div> : null)}
 
                 {/* {Список друзей} */}
                 {!hasActiveChat && !hasActiveServer && <FriendList />}

@@ -41,7 +41,7 @@ export const Action: React.FC = () => {
                     <div className="flex flex-col h-full p-5 rounded-[5px] lg:h-screen  ">
                         <div className="flex bg-[#2e3ed328] text-white text-1xl justify-between items-center flex-wrap shrink-0">
                             <div className="text-5xl lg:text-base pl-5 p-2">
-                                {activeChat.username}
+                                {activeChat.name}
                             </div>
                             <div className="flex gap-5 bg-[#2e3ed328] pr-10 lg:pr-5 pl-10 lg:pl-5 p-5 lg:p-2 w-full lg:w-auto justify-end">
                             <div className="w-full lg:w-auto 

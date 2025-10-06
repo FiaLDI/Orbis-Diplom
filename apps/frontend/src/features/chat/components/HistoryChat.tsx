@@ -121,7 +121,7 @@ const HistoryChat: React.FC<{
         return () => observer.disconnect();
     }, [activeChat, getMessages, hasMore]);
 
-    if (!history) return null;
+    if (!history) return <div className="overflow-y-auto bg-[#25309b88] p-4 h-[calc(100vh_-_370px)] lg:h-screen text-white flex flex-col gap-3"></div>;
 
     const handleOptionClick = (option: string) => {
         console.log(`[${history[0]?.username}] Вы выбрали: ${option}`);
