@@ -1,26 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { useGetFriendQuery, useLazyGetInfoUserQuery, useLazyGetFriendQuery,
-    useLazyGetInviteIQuery,
-    useLazyGetInviteMeQuery, 
-    useConfirmFriendMutation,
-    useRejectFriendMutation,
-    useStartChattingMutation} from "../../api/userApi";
+
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { setFriendMode, startSearch } from "../../userSlices";
 import { CircleMinus, CirclePlus, Menu, MessageSquare } from "lucide-react";
 import { DefaultButton } from "@/components/ui/Button/DefaultButton";
+import { useLazyGetInfoUserQuery } from "@/features/user";
+import { 
+    useLazyGetFriendQuery, 
+    useLazyGetOutcomingRequestsQuery, 
+    useLazyGetIncomingRequestsQuery, 
+    useConfirmFriendRequestMutation,
+    useRejectFriendRequestMutation,
+    useGetFriendQuery
+} from "../..";
+import { setFriendMode, startSearch } from "../../friendsSlice";
 
 const FriendList: React.FC = () => {
     const dispatch = useAppDispatch();
-    const mode = useAppSelector(s => s.user.friendsMode);
-    const friends = useAppSelector(s => s.user.friends);
+    const mode = useAppSelector(s => s.friends.friendsMode);
+    const friends = useAppSelector(s => s.friends.friends);
     const [trigger] = useLazyGetInfoUserQuery();
     const [getFriends] = useLazyGetFriendQuery();
-    const [getInvI] = useLazyGetInviteIQuery();
-    const [getInvMe] = useLazyGetInviteMeQuery();
-    const [confirm, {isSuccess: confirmSuccess}] = useConfirmFriendMutation();
-    const [reject, {isSuccess: confirmReject}] = useRejectFriendMutation();
-    const [startChatting] = useStartChattingMutation();
+    const [getInvI] = useLazyGetOutcomingRequestsQuery();
+    const [getInvMe] = useLazyGetIncomingRequestsQuery();
+    const [confirm, {isSuccess: confirmSuccess}] = useConfirmFriendRequestMutation();
+    const [reject, {isSuccess: confirmReject}] = useRejectFriendRequestMutation();
+
     const {} = useGetFriendQuery({});
     const [menuActive, setMenuActive] = useState(window.innerWidth > 1024 || false);
     
@@ -126,12 +130,12 @@ const FriendList: React.FC = () => {
                                     </button>
                                     </>
                                 } 
-                                
+{/*                                 
                                 <button className="" onClick={()=> {
                                     startChatting(val.id)
                                 }}>
                                     <MessageSquare color="white" className="w-15 h-15 lg:w-8 lg:h-8" strokeWidth={"1.25"}/>
-                                </button>
+                                </button> */}
                             </div>
                         </li>
                     ))}

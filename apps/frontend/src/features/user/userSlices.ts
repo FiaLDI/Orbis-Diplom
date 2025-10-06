@@ -1,7 +1,7 @@
 // features/authSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ModeKeys, UserInfo, userState } from "./types/user";
+import { UserInfo, userState } from "./types/user";
 import { userApi } from "./api/userApi";
 
 const initialState: userState = {
@@ -21,7 +21,6 @@ const initialState: userState = {
         `,
     },
     isOpenProfile: false,
-    friendsMode: "All",
 };
 
 const userSlice = createSlice({
@@ -34,15 +33,6 @@ const userSlice = createSlice({
         closeProfile(state) {
             state.isOpenProfile = false;
             state.openProfile = undefined;
-        },
-        startSearch(state) {
-            state.isSearchActive = true;
-        },
-        endSearch(state) {
-            state.isSearchActive = false;
-        },
-        setFriendMode(state, action: PayloadAction<ModeKeys>) {
-            state.friendsMode = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -62,33 +52,12 @@ const userSlice = createSlice({
                     state.chats = action.payload;
                 },
             )
-            .addMatcher(
-                userApi.endpoints.getFriend.matchFulfilled,
-                (state, action) => {
-                    state.friends = action.payload;
-                },
-            )
-            .addMatcher(
-                userApi.endpoints.getInviteI.matchFulfilled,
-                (state, action) => {
-                    state.friends = action.payload;
-                },
-            )
-            .addMatcher(
-                userApi.endpoints.getInviteMe.matchFulfilled,
-                (state, action) => {
-                    state.friends = action.payload;
-                },
-            );
     },
 });
 
 export const {
-    setFriendMode,
     setProfile,
     closeProfile,
-    startSearch,
-    endSearch,
 } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -39,7 +39,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/chats", chatRouter);
-app.use("/api/friend", friendRouter);
+app.use("/api/friends", friendRouter);
 app.use("/api/messages", messagesRouter);
 app.use("/api/moderation", moderationRouter);
 app.use("/api/notification", notificationRouter);

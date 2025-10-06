@@ -6,7 +6,7 @@ import {
     useLazyGetServersInsideQuery,
     useLazyGetServersMembersQuery,
 } from "@/features/server";
-import { FriendList, Search, UserProfile } from "@/features/user";
+import {  UserProfile } from "@/features/user";
 import React, { useEffect, useState } from "react";
 import { AppMenu } from "./components/AppMenu";
 import { MessageMenu } from "./components/personal/MessagesMenu";
@@ -14,6 +14,7 @@ import { MemberChatServer } from "./components/server/MemberChatServer";
 import { Action } from "./components/personal/ActionPersonal";
 import { ActionServer } from "./components/server/ActionServer";
 import { MessageServerMenu } from "./components/server/MessagesServerMenu";
+import { FriendList, SearchFriends } from "@/features/friends";
 
 export const CommunicatePage: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -74,7 +75,7 @@ export const CommunicatePage: React.FC = () => {
             <CreateServerForm />
 
             {/* {Поиск друзей} */}
-            <Search />
+            <SearchFriends />
             <div className="w-full flex h-full relative">
                 {/* {чаты пользователя} */}
                 {isMessageMenuOpen ? <MessageMenu /> : null}

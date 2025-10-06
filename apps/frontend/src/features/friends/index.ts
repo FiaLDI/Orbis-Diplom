@@ -1,12 +1,11 @@
 // Реэкспорт всего публичного API модуля auth
-export * from "./userSlices";
-export * from "./api/userApi";
-export * from "./types/user";
+export * from "./friendsSlice";
+export * from "./api/friendsApi";
+export * from "./types";
 
 // Компоненты
-export { default as UserProfile } from "./components/UserInfo/UserProfile";
-
-export type {UserInfo} from "./types/user"
+export { default as FriendList } from "./components/FriendList";
+export { default as SearchFriends } from "./components/SearchFriends";
 
 // Хуки
 // export { useAuth } from './hooks/useAuth';

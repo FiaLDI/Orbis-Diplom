@@ -32,42 +32,6 @@ export const userApi = createApi({
                 body: data,
             }),
         }),
-        getFriend: builder.query({
-            query: () => ({
-                url: `/friend`,
-                method: "GET",
-            }),
-        }),
-        getInviteMe: builder.query({
-            query: () => ({
-                url: `/friend/invme`,
-                method: "GET",
-            }),
-        }),
-        getInviteI: builder.query({
-            query: () => ({
-                url: `/friend/invi`,
-                method: "GET",
-            }),
-        }),
-        addFriend: builder.mutation({
-            query: (id) => ({
-                url: `/friend/${id}/invite`,
-                method: "POST",
-            }),
-        }),
-        confirmFriend: builder.mutation({
-            query: (id) => ({
-                url: `/friend/${id}/confirm`,
-                method: "POST",
-            }),
-        }),
-        rejectFriend: builder.mutation({
-            query: (id) => ({
-                url: `/friend/${id}/reject`,
-                method: "POST",
-            }),
-        }),
         getFastInfoUserFromServer: builder.query({
             query: (id) => ({
                 url: `/userserver/${id}/`,
@@ -98,16 +62,9 @@ export const userApi = createApi({
 export const {
     useGetChatsUsersQuery,
     useCreateChatUsersMutation,
-    useAddFriendMutation,
-    useGetFriendQuery,
     useGetFastInfoUserFromServerQuery,
     useGetInfoUserQuery,
     useLazyGetInfoUserQuery,
     useStartChattingMutation,
     useLazyGetUserbyNameQuery,
-    useLazyGetFriendQuery,
-    useLazyGetInviteIQuery,
-    useLazyGetInviteMeQuery,
-    useConfirmFriendMutation,
-    useRejectFriendMutation,
 } = userApi;

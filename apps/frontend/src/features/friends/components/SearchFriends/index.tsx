@@ -2,16 +2,15 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { ModalLayout } from "@/components/layout/Modal/Modal";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import {
-    useAddFriendMutation,
     useLazyGetUserbyNameQuery,
     useStartChattingMutation,
-} from "../../api/userApi";
-import { endSearch } from "@/features/user/userSlices";
+} from "@/features/user";
 import { addAction } from "@/features/action/index";
 import { ModalButton } from "@/components/ui/Button/ModalButton";
+import { endSearch, useSendRequestMutation } from "../..";
 
-const Search: React.FC = () => {
-    const check = useAppSelector((s) => s.user.isSearchActive);
+const SearchFriends: React.FC = () => {
+    const check = useAppSelector((s) => s.friends.isSearchActive);
     const dispatch = useAppDispatch();
     const [find, setFind] = useState<string>("");
     const searchRef = useRef<HTMLDivElement>(null);
@@ -21,7 +20,7 @@ const Search: React.FC = () => {
     const myid = useAppSelector((s) => s.auth.user?.info.id);
     const [startChatting, { isSuccess: isSuccessChat, isError: isErrorChat }] =
         useStartChattingMutation();
-    const [inviteFriend] = useAddFriendMutation();
+    const [inviteFriend] = useSendRequestMutation();
 
     const debounce = useCallback((value: string) => {
         if (timerRef.current) {
@@ -150,4 +149,4 @@ const Search: React.FC = () => {
     );
 };
 
-export default Search;
+export default SearchFriends;

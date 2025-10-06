@@ -2,10 +2,7 @@ export interface userState {
     loadedProfiles?: UserInfo[];
     openProfile?: UserInfo;
     isOpenProfile?: boolean;
-    isSearchActive?: boolean;
-    friends?: UserInfo[];
     chats?: any[];
-    friendsMode: ModeKeys;
 }
 
 export interface fastUserInfo {
@@ -22,5 +19,3 @@ export interface UserInfo {
     about: string;
 }
 
-export type ModeKeys = "Online" | "Offline" | "All" | "Invite" | "My Invite";
-export type ModeState = Record<ModeKeys, boolean>;
