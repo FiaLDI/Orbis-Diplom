@@ -18,11 +18,11 @@ export const MemberChatServer: React.FC = () => {
 
     return (
         <>
-            <div className="bg-[rgba(81,110,204,0.12)] text-white p-4 flex flex-col w-[200px]">
-                <h2 className="p-2 pt-1 pb-5">Участники: {users?.length}</h2>
-                <ul className=" flex flex-col gap-5 bg-[#2e3ed34f] h-full p-2">
+            <div className="bg-[rgba(81,110,204,0.12)] text-white p-4 flex flex-col w-[200px] lg:w-[400px]">
+                <h2 className="p-2 pt-1 pb-5 whitespace-nowrap">Участники: {users?.length}</h2>
+                <ul className=" flex flex-col gap-5  h-full p-2">
                     {users?.map((val: any, idx: number) => (
-                        <li>
+                        <li className="h-fit bg-[#2e3ed34f] p-2">
                             <button
                                 className="flex items-center gap-5 truncate"
                                 key={`${idx}-member-server`}

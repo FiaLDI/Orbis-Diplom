@@ -76,7 +76,7 @@ export const userApi = createApi({
         }),
         getInfoUser: builder.query({
             query: (id) => ({
-                url: `/user/${id}/`,
+                url: `/users/${id}/`,
                 method: "GET",
             }),
         }),

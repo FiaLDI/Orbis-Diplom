@@ -21,39 +21,39 @@ export const serverApi = createApi({
     endpoints: (builder) => ({
         GetServers: builder.query({
             query: () => ({
-                url: `/server`,
+                url: `/servers`,
                 method: "GET",
             }),
         }),
         CreateSever: builder.mutation({
             query: (data) => ({
-                url: `/server`,
+                url: `/servers`,
                 method: "POST",
                 body: data,
             }),
         }),
         GetServersInside: builder.query({
             query: (id) => ({
-                url: `/server/${id}/`,
+                url: `/servers/${id}/`,
                 method: "GET",
             }),
         }),
         CreateChat: builder.mutation({
             query: ({ id, data }) => ({
-                url: `/server/${id}/chat`,
+                url: `/servers/${id}/chats`,
                 method: "POST",
                 body: data,
             }),
         }),
         JoinServer: builder.mutation({
             query: (id) => ({
-                url: `/server/${id}/join`,
+                url: `/servers/${id}/join`,
                 method: "POST",
             }),
         }),
         GetServersMembers: builder.query({
             query: (id) => ({
-                url: `/server/${id}/members`,
+                url: `/servers/${id}/members`,
                 method: "GET",
             }),
         }),
