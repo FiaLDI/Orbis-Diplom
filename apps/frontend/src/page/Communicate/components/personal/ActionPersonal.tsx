@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
-import { HistoryChat, InputChat } from "@/features/chat";
+import { HistoryChat, InputChat } from "@/features/messages";
 import { Phone } from "lucide-react";
 
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {

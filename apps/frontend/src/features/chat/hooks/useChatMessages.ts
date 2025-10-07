@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useChatSocket } from "./useChatSocket";
 import { useAppSelector } from "../../../app/hooks";
 import { Message } from "../types/chat.types";
-import { useLazyGetMessagesQuery } from "../api/chatApi";
+import { useLazyGetMessagesQuery } from "@/features/messages";
 
 export const useChatMessages = () => {
     const [messages, setMessages] = useState<Message[]>([]);

@@ -3,14 +3,14 @@ import {
     useCreateMessagesMutation,
     useEditMessageMutation,
     useLazyGetMessagesQuery,
-} from "../../api/chatApi";
+} from "../../api/messageApi";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import {
     leaveEditMode,
     sendMessageVisual,
     setReply,
     setUploadState,
-} from "../../chatSlice";
+} from "../../messageSlice";
 import FileUploader from "./FileUploader";
 import { SendHorizontal } from "lucide-react";
 import { InputChatProps } from "../../types/chat.types";

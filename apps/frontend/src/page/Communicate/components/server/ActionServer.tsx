@@ -1,6 +1,6 @@
 import React, {  useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { HistoryChat, InputChat } from "@/features/chat";
+import { HistoryChat, InputChat } from "@/features/messages";
 
 export const ActionServer: React.FC = () => {
     const activeChat = useAppSelector(state => state.chat.activeChat);

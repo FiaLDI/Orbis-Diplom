@@ -3,7 +3,7 @@ import { Message, SingleMessageProps } from "../types/chat.types";
 import { useAppSelector } from "@/app/hooks";
 import { makeSelectIsMessageOpen } from "../chatSelector";
 import { config } from "@/config";
-import { useLazyGetMessageQuery } from "../api/chatApi";
+import { useLazyGetMessageQuery } from "../api/messageApi";
 
 const SingleMessageComponent: React.FC<SingleMessageProps> = ({
     message,
@@ -81,7 +81,6 @@ const SingleMessageComponent: React.FC<SingleMessageProps> = ({
     );
 };
 
-// мемоизация компонента
 export const SingleMessage = React.memo(
     SingleMessageComponent,
     (prevProps, nextProps) => prevProps.message === nextProps.message,

@@ -1,48 +1,15 @@
 // features/authSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Message } from "./types/chat.types";
 
-export interface chat {
-    id: number;
-    username: string;
-    name?: string;
-    type: string;
-    chat_id?: string;
-    lastmessage: string;
-    created_at: string;
-    updated_at: string;
-    avatar_url: string;
-    users: string[];
-    owner: number;
-}
+import { messageApi } from "./api/messageApi";
+import { Message, messageSliceState } from "./types/chat.types";
 
-interface chatState {
-    chat?: chat[];
-    activeHistory?: Message[];
-    activeChat?: chat | undefined;
-    openMessage?: Message;
-    uploadstate?: boolean;
-    uploadedFiles?: {
-        type: string;
-        url: string;
-    };
-    editmode?: {
-        enabled: boolean;
-        messagesId: string;
-        chatId: string;
-    };
-    reply?: string;
-}
+const initialState: messageSliceState = {};
 
-const initialState: chatState = {};
-
-const chatSlice = createSlice({
-    name: "chat",
+const messagesSlice = createSlice({
+    name: "messages",
     initialState,
     reducers: {
-        setActiveChat(state, action: PayloadAction<chat | undefined>) {
-            state.activeChat = action.payload;
-        },
         sendMessageVisual(state, action: PayloadAction<any>) {
             if (!state.activeHistory) return;
             state.activeHistory.push(action.payload);
@@ -74,16 +41,34 @@ const chatSlice = createSlice({
             state.reply = action.payload;
         },
     },
+    extraReducers: (builder) => {
+        builder
+           .addMatcher(
+  messageApi.endpoints.getMessages.matchFulfilled,
+  (state, { payload, meta }) => {
+    console.log('✅ Messages payload:', payload);
+    const offset = meta.arg.originalArgs.offset;
+    if (offset === 0) {
+      state.activeHistory = payload;
+    } else {
+      state.activeHistory = [
+        ...(payload || []),
+        ...(state.activeHistory || []),
+      ];
+    }
+  },
+)
+
+    },
 });
 
 export const {
-    setActiveChat,
     sendMessageVisual,
     setOpenMessage,
     setUploadState,
     setEditMode,
     leaveEditMode,
     setReply,
-} = chatSlice.actions;
+} = messagesSlice.actions;
 
-export default chatSlice.reducer;
+export default messagesSlice.reducer;

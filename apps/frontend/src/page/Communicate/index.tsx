@@ -35,10 +35,10 @@ export const CommunicatePage: React.FC = () => {
         }
     }, [activeServerId]);
 
-    useEffect(() => {
-        dispatch(setActiveServer(undefined));
-        dispatch(setActiveChat(undefined));
-    }, [dispatch]);
+    // useEffect(() => {
+    //     dispatch(setActiveServer(undefined));
+    //     dispatch(setActiveChat(undefined));
+    // }, [dispatch]);
 
     const {} = useChatMessages();
 

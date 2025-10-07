@@ -6,11 +6,11 @@ import {
     setEditMode,
     setOpenMessage,
     setReply,
-} from "../chatSlice";
+} from "../messageSlice";
 import {
     useLazyGetMessagesQuery,
     useRemoveMessageMutation,
-} from "../api/chatApi";
+} from "../api/messageApi";
 
 const HistoryChat: React.FC<{
     bottomRef: React.RefObject<HTMLDivElement>;
@@ -20,7 +20,7 @@ const HistoryChat: React.FC<{
     const [hasMore, setHasMore] = useState(true);
     const offsetRef = useRef(0); // актуальное значение offset для колбеков
     const fetchingRef = useRef(false); // блокировка запросов
-    const history = useAppSelector((s) => s.chat.activeHistory);
+    const history = useAppSelector((s) => s.message.activeHistory);
     const activeChat = useAppSelector((s) => s.chat.activeChat);
     const [getMessages] = useLazyGetMessagesQuery();
     const menuRef = useRef<HTMLUListElement>(null);
@@ -58,8 +58,7 @@ const HistoryChat: React.FC<{
         setHasMore(true);
         offsetRef.current = 0;
         setOffset(0);
-        console.log(activeChat.chat_id)
-        getMessages({ id: activeChat.chat_id, offset: 0 }).catch(() => {});
+        getMessages({ id: activeChat.id, offset: 0 }).catch(() => {});
     }, [activeChat, getMessages]);
 
     useEffect(() => {
@@ -72,7 +71,7 @@ const HistoryChat: React.FC<{
     useEffect(() => {
         const topEl = topRef?.current;
         const rootEl = containerRef.current;
-        if (!topEl || !rootEl || !activeChat || !hasMore) return; // если нет больше данных — не запускаем
+        if (!topEl || !rootEl || !activeChat || !hasMore) return; 
 
         const observer = new IntersectionObserver(
             async (entries) => {
@@ -90,7 +89,7 @@ const HistoryChat: React.FC<{
                 fetchingRef.current = true;
                 try {
                     const data = await getMessages({
-                        id: activeChat.chat_id,
+                        id: activeChat.id,
                         offset: newOffset,
                     });
 
@@ -121,7 +120,7 @@ const HistoryChat: React.FC<{
         return () => observer.disconnect();
     }, [activeChat, getMessages, hasMore]);
 
-    if (!history) return <div className="overflow-y-auto bg-[#25309b88] p-4 h-[calc(100vh_-_370px)] lg:h-screen text-white flex flex-col gap-3"></div>;
+    if (!history?.length) return <div className="overflow-y-auto bg-[#25309b88] p-4 h-[calc(100vh_-_370px)] lg:h-screen text-white flex flex-col gap-3"></div>;
 
     const handleOptionClick = (option: string) => {
         console.log(`[${history[0]?.username}] Вы выбрали: ${option}`);
