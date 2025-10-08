@@ -23,7 +23,6 @@ const options = {
 
 const app = express();
 const server = https.createServer(options, app);
-const PORT = process.env.PORT || 3006;
 const __dirnameResolved = path.resolve();
 
 // Redis client
@@ -206,7 +205,10 @@ app.use((req: Request, res: Response) => {
     res.status(404).send("Файл не найден");
 });
 
-server.listen(PORT, () => {
+const PORT = Number(process.env.PORT);
+const HOST = "0.0.0.0";
+
+server.listen(PORT, HOST, () => {
     console.log(`🚀 CDN-сервер запущен: https://localhost:${PORT}`);
     console.log(
         `Server for frontend: ${process.env.FRONTENDADDRES || "https://26.234.138.233:5173"}`,
