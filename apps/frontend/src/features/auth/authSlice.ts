@@ -93,12 +93,17 @@ const authSlice = createSlice({
                 },
             )
             .addMatcher(
-                authApi.endpoints.loginUser.matchRejected,
+                authApi.endpoints.loginUser.matchFulfilled,
                 (state, action) => {
-                    state.error = action.error.message || "Ошибка авторизации";
+                    state.user = {
+                    access_token: action.payload.access_token,
+                    info: action.payload.info,
+                    username: action.payload.username,
+                    };
+                    state.isAuthenticated = true;
                     state.loading = false;
                 },
-            )
+                )
             .addMatcher(
                 authApi.endpoints.logoutUser.matchFulfilled,
                 (state) => {
@@ -110,11 +115,12 @@ const authSlice = createSlice({
             .addMatcher(
                 authApi.endpoints.refreshToken.matchFulfilled,
                 (state, action) => {
-                    state.user = action.payload;
+                    if (state.user) {
+                    state.user.access_token = action.payload.access_token;
                     state.isAuthenticated = true;
-                    state.loading = false;
+                    }
                 },
-            );
+                )
     },
 });
 

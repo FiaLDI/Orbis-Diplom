@@ -20,8 +20,8 @@ export const userApi = createApi({
     }),
     endpoints: (builder) => ({
         GetChatsUsers: builder.query({
-            query: () => ({
-                url: `/chats`,
+            query: (id) => ({
+                url: `/users/${id}/chats`,
                 method: "GET",
             }),
         }),
@@ -61,6 +61,7 @@ export const userApi = createApi({
 
 export const {
     useGetChatsUsersQuery,
+    useLazyGetChatsUsersQuery,
     useCreateChatUsersMutation,
     useGetFastInfoUserFromServerQuery,
     useGetInfoUserQuery,

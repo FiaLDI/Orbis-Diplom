@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { config } from "../../../config";
+import { config } from "@/config";
 import { useAppSelector } from "@/app/hooks";
 
 export const useChatSocket = () => {

@@ -64,7 +64,6 @@ export const {
     useGetServersQuery,
     useLazyGetServersQuery,
     useCreateSeverMutation,
-    useGetServersInsideQuery,
     useLazyGetServersInsideQuery,
     useCreateChatMutation,
     useJoinServerMutation,

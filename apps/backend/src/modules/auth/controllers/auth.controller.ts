@@ -217,8 +217,9 @@ export const login = async (req: Request, res: Response) => {
 
         res.cookie("refresh_token", refreshToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: true,
+             sameSite: "none",
+  path: "/",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
@@ -239,6 +240,7 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const refresh = async (req: Request, res: Response) => {
+
     const refreshToken = req.cookies.refresh_token;
 
     if (!refreshToken) {

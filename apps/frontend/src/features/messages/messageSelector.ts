@@ -3,6 +3,6 @@ import { RootState } from "../../app/store";
 
 export const makeSelectIsMessageOpen = (messageId: string) =>
     createSelector(
-        (state: RootState) => state.chat.openMessage,
+        (state: RootState) => state.message.openMessage,
         (openMessage) => String(openMessage?.id) === messageId,
     );

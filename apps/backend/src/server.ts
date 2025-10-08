@@ -68,8 +68,9 @@ ioChat.on("connection", (socket) => {
     chatSocket(socket as AuthenticatedSocket)
 })
 
-const PORT = process.env.PORT;
-server.listen(PORT, () => {
+const PORT = Number(process.env.PORT);
+const HOST = "0.0.0.0";
+server.listen(PORT, HOST, () => {
     console.log(`Server is running on port ${PORT}`);
     console.log(`Server for frontend: ${process.env.FRONTENDADDRES}`);
 });

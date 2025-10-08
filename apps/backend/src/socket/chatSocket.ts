@@ -1,29 +1,43 @@
 import { ioChat } from "@/server";
-import { AuthenticatedSocket } from "./types/socket";
 import { Socket } from "socket.io";
 
 export const chatSocket = (socket: Socket) => {
-    console.log("New user chat:", socket.id);
+    console.log("🟢 Новый пользователь:", socket.id);
 
-    socket.on("join-chat", async (chatId: string) => {
-        console.log(
-            `Пользователь ${socket.id} подключился к чату ${chatId}`,
-        );
+    // вход в комнату
+    socket.on("join-chat", (chatId: string) => {
         socket.join(`chat_${chatId}`);
+        console.log(`📥 Пользователь ${socket.id} вошёл в chat_${chatId}`);
     });
 
-    socket.on("leave-chat", async (chatId: string) => {
-        console.log(
-            `Пользователь ${socket.id} отключился от чата ${chatId}`,
-        );
+    // выход из комнаты
+    socket.on("leave-chat", (chatId: string) => {
         socket.leave(`chat_${chatId}`);
+        console.log(`📤 Пользователь ${socket.id} покинул chat_${chatId}`);
     });
 
-    socket.on("send-message", async (chat_id: string) => {
-        ioChat.to(`chat_${chat_id}`).emit("new-message");
+    // ✏️ начало набора сообщения
+    socket.on("typing-start", (chatId: string, username?: string) => {
+        console.log(`⌨️ ${username ?? socket.id} печатает в chat_${chatId}`);
+        socket.to(`chat_${chatId}`).emit("user-typing-start", {
+            chatId,
+            username,
+            socketId: socket.id,
+        });
     });
 
+    // 🛑 конец набора
+    socket.on("typing-stop", (chatId: string, username?: string) => {
+        console.log(`🛑 ${username ?? socket.id} перестал печатать в chat_${chatId}`);
+        socket.to(`chat_${chatId}`).emit("user-typing-stop", {
+            chatId,
+            username,
+            socketId: socket.id,
+        });
+    });
+
+    // отключение
     socket.on("disconnect", () => {
-        console.log("Пользователь отключился");
+        console.log(`🔴 Пользователь отключился: ${socket.id}`);
     });
 };

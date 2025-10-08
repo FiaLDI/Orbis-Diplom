@@ -7,11 +7,13 @@ import {
     editMessage,
     getMessageById,
 } from "../controllers/messagesController";
+import { authenticate } from "@/modules/auth";
 
 export const messagesRouter = express.Router();
 
-messagesRouter.get("/chats/:chatId/messages", getMessages);
-messagesRouter.post("/chats/:chatId/messages", sendMessages);
+messagesRouter.use(authenticate);
+messagesRouter.get("/chats/:id/messages", getMessages);
+messagesRouter.post("/chats/:id/messages", sendMessages);
 messagesRouter.get("/:id", getMessageById);
 messagesRouter.put("/:id", editMessage);
 messagesRouter.delete("/:id", deleteMessage);

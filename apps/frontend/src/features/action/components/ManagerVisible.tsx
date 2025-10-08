@@ -4,7 +4,7 @@ import { useAppSelector } from "@/app/hooks";
 
 const ManagerVisible = () => {
     const actions = useAppSelector((s) => s.action.Action);
-    console.log(actions);
+    
     return (
         <>
             {actions.length > 0 && (

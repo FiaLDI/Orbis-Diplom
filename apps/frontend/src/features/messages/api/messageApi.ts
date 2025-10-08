@@ -31,12 +31,12 @@ export const messageApi = createApi({
                 method: "GET",
             }),
         }),
-        CreateMessages: builder.mutation({
-            query: ({ id, data }) => ({
-                url: `/messages/chats/${id}/messages`,
-                method: "POST",
-                body: data,
-            }),
+        createMessage: builder.mutation({
+        query: ({ chat_id, content, reply_to_id }) => ({
+            url: `/messages/chats/${chat_id}/messages`,
+            method: "POST",
+            body: { chat_id, content, reply_to_id },
+        }),
         }),
         RemoveMessage: builder.mutation({
             query: ({ chat_id, id }) => ({
@@ -55,7 +55,7 @@ export const messageApi = createApi({
 });
 
 export const {
-    useCreateMessagesMutation,
+    useCreateMessageMutation,
     useLazyGetMessagesQuery,
     useEditMessageMutation,
     useLazyGetMessageQuery,

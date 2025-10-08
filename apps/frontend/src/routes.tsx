@@ -46,7 +46,7 @@ export const PagesRouter: React.FC = () => {
         return (
         <div className="h-screen w-full flex justify-center items-center">
             
-                <LoadingSpinner className="w-[300px] h-[300px]" />
+            <LoadingSpinner className="w-[300px] h-[300px]" />
         
         </div>);
     }

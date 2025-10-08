@@ -9,7 +9,7 @@ import {
     useGetServersQuery,
     useLazyGetServersInsideQuery,
 } from "@/features/server";
-import { CirclePlus, LogOut, Menu, Settings } from "lucide-react";
+import { CirclePlus, LogOut, Menu, Bolt } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -28,14 +28,14 @@ export const AppMenu: React.FC = () => {
 
     // useEffect(()=> {
     //     dispatch(setActiveChat(undefined))
-
+        
     // }, [server.activeserver, ])
 
     return (
         <>
             <div className="order-10 lg:order-0 w-full flex lg:w-fit lg:flex-col justify-between items-center lg:h-full bg-[rgba(86,82,209,0.5)] p-3 pt-5 pb-5 relative">
-                <div className="flex lg:flex-col gap-5">
-                    <div className="">
+                <div className="flex lg:flex-col gap-2">
+                    <div className="flex lg:hidden">
                         <button
                             onClick={() => {
                                 dispatch(
@@ -112,12 +112,12 @@ export const AppMenu: React.FC = () => {
                 <div className="flex lg:block">
                     <div className="exit settings">
                         <button
-                            className=""
+                            className=" cursor-pointer"
                             onClick={() => {
                                 navigator("/app/settings");
                             }}
                         >
-                            <Settings
+                            <Bolt 
                                 color="#fff"
                                 strokeWidth={1.25}
                                 className="w-15 h-15 lg:w-10 lg:h-10"

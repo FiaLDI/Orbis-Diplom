@@ -41,7 +41,6 @@ export const RegisterForm: React.FC = () => {
     const codeForm = useForm<CodeFormData>();
     const registerForm = useForm<RegisterFormData>();
 
-    console.log(step);
     // Обработчики
     const handleEmailSubmit: SubmitHandler<EmailFormData> = async ({
         email,
@@ -58,7 +57,6 @@ export const RegisterForm: React.FC = () => {
     const handleCodeSubmit: SubmitHandler<CodeFormData> = async ({ code }) => {
         if (step == "code") {
             try {
-                console.log(code);
                 await verifyCode({ email, code }).unwrap();
                 setVerificationCode(code);
                 setStep("register");

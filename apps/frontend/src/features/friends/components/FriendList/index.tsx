@@ -62,7 +62,9 @@ const FriendList: React.FC = () => {
                         <button onClick={()=>{
                             if (window.innerWidth > 1024) return;
                             setMenuActive(prev => (window.innerWidth > 1024 || !prev))
-                        }}>
+                        }}
+                         className="lg:hidden"
+                        >
                             <Menu className="w-15 h-15 lg:w-10 lg:h-10"  />
                         </button>
                         

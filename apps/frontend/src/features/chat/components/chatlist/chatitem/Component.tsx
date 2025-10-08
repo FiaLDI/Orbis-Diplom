@@ -3,8 +3,8 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { chat, setActiveChat } from "@/features/chat";
 import { setActivePersonalCommunicate } from "@/features/action";
 
-export const ChatItem: React.FC<{ chat: chat }> = ({ chat }) => {
-    const active = useAppSelector((state) => state.chat.activeChat);
+export const Component: React.FC<{ chat: chat; isServer?: boolean }> = ({ chat, isServer }) => {
+    const activeChat = useAppSelector((state) => state.chat.activeChat);
     const dispatch = useAppDispatch();
 
     return (
@@ -22,18 +22,19 @@ export const ChatItem: React.FC<{ chat: chat }> = ({ chat }) => {
             >
                 <div
                     className={
-                        active?.chat_id == chat.chat_id
-                            ? "flex bg-[#ffffff3a] gap-3 items-center p-1 rounded-[5px]"
-                            : "flex gap-3 items-center p-1"
+                        activeChat?.id == chat.id
+                            ? "flex bg-[#ffffff3a] gap-3 items-center p-2 rounded-[5px]"
+                            : "flex gap-3 items-center p-2"
                     }
                 >
-                    <div className="w-fit">
+                    {!isServer ? <div className="w-fit">
                         <img
                             src={chat.avatar_url || '/img/icon.png'}
                             alt=""
                             className="w-20 h-20 lg:w-7 lg:h-7"
                         />
-                    </div>
+                    </div>: null}
+                    
                     <div className="text-3xl lg:text-base truncate w-full shrink-10 lg:max-w-50">
                         {chat.name}
                     </div>
