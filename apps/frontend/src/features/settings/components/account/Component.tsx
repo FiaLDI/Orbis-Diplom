@@ -1,23 +1,17 @@
-import { useAppSelector } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import React, { useState } from "react";
-import { SettingsButton } from "../ui/Button";
+import { activeChange } from "./interface";
+import { setAccountInfo } from "../../settingsSlice";
 
-interface activeChange {
-    username?: string;
-    password?: string;
-    email?: string;
-    number?: string;
-}
-
-const AccountSettings: React.FC = () => {
-    const [activeChanged, setActiveChanged] = useState<activeChange>({});
+export const Component: React.FC = () => {
     const user = useAppSelector((s) => s.auth.user?.info);
+    const settings = useAppSelector((s) => s.settings);
+    const dispatch = useAppDispatch();
 
     const changeHandler = (name: string, value: string) => {
-        setActiveChanged((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        dispatch(setAccountInfo({
+            [name]: value
+        }))
     };
 
     return (
@@ -29,7 +23,7 @@ const AccountSettings: React.FC = () => {
                     <div className="">
                     <input
                         type="text"
-                        value={activeChanged.username}
+                        value={settings.accountInfoUpdated?.username}
                         onChange={(e) =>
                             changeHandler("username", e.target.value)
                         }
@@ -48,13 +42,13 @@ const AccountSettings: React.FC = () => {
                 <div className="p">
                     <input
                         type="text"
-                        value={activeChanged.password}
+                        value={settings.accountInfoUpdated?.username}
                         onChange={(e) =>
                             changeHandler("password", e.target.value)
                         }
                         className="w-full rounded-none focus:outline-none focus-visible:outline-none border-b border-[#ffffff11] focus-visible:border-[#ffffff]"
                         placeholder="Enter new password"
-                    
+                        disabled
                     />
                 </div>
                 </div>
@@ -75,7 +69,7 @@ const AccountSettings: React.FC = () => {
                 <div className="p">
                     <input
                         type="text"
-                        value={activeChanged.email}
+                        value={settings.accountInfoUpdated?.email}
                         onChange={(e) => changeHandler("email", e.target.value)}
                         className="w-full rounded-none focus:outline-none focus-visible:outline-none border-b border-[#ffffff11] focus-visible:border-[#ffffff]"
                         placeholder="Enter new email"
@@ -91,7 +85,7 @@ const AccountSettings: React.FC = () => {
                 <div className="p">
                     <input
                         type="text"
-                        value={activeChanged.number}
+                        value={settings.accountInfoUpdated?.number}
                         onChange={(e) =>
                             changeHandler("number", e.target.value)
                         }
@@ -104,5 +98,3 @@ const AccountSettings: React.FC = () => {
         </div>
     );
 };
-
-export default AccountSettings;

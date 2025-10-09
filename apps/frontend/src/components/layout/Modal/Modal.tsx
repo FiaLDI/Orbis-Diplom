@@ -1,13 +1,59 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-export const ModalLayout: React.FC<{ children: React.ReactNode }> = ({
-    children,
+interface ModalLayoutProps {
+  children: React.ReactNode;
+  open?: boolean;
+  onClose?: () => void;
+}
+
+export const ModalLayout: React.FC<ModalLayoutProps> = ({
+  children,
+  open,
+  onClose,
 }) => {
-    return (
-        <div className="fixed z-1000 flex justify-center items-center w-full h-full">
-            <div className=" bg-[#3247be] min-w-3/4 min-h-3/5 lg:min-w-2/7 lg:min-h-3/6">
-                {children}
-            </div>
-        </div>
-    );
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // локальный стейт (используется если open не проброшен)
+  const [internalOpen, setInternalOpen] = useState(true);
+  const isControlled = open !== undefined;
+  const visible = isControlled ? open : internalOpen;
+
+  // Закрытие по клику вне модалки или по Esc
+  useEffect(() => {
+    if (!visible) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        if (isControlled) onClose?.();
+        else setInternalOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        if (isControlled) onClose?.();
+        else setInternalOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [visible, isControlled, onClose]);
+
+  if (!visible) return null;
+
+  return (
+    <div className="fixed inset-0 z-[1000] flex justify-center items-center bg-black/50 backdrop-blur-sm">
+      <div
+        ref={modalRef}
+        className="bg-[#3247be] rounded-2xl p-6 shadow-xl min-w-[75%] min-h-[60%] lg:min-w-[40%] lg:h-[50%]"
+      >
+        {children}
+      </div>
+    </div>
+  );
 };

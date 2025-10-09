@@ -8,7 +8,7 @@ import {
     NotificationSettings,
     ProfileSettings,
     SettingsController,
-} from "@/features/usersettings";
+} from "@/features/settings";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
