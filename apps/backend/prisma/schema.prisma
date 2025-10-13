@@ -142,12 +142,17 @@ model servers {
 }
 
 model role_server {
-  id   Int    @id @default(autoincrement())
-  name String @db.VarChar(50)
+  id        Int     @id @default(autoincrement())
+  server_id Int
+  name      String  @db.VarChar(50)
 
+  server          servers         @relation(fields: [server_id], references: [id])
   role_permission role_permission[]
   user_server     user_server[]
+
+  @@index([server_id])
 }
+
 
 model role_permission {
   role_id       Int

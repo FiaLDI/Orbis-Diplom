@@ -21,4 +21,5 @@ export interface serverState {
     isCreatingServer?: boolean;
     messegerChange?: boolean;
     userChange?: boolean;
+    isSettingsActive?: boolean;
 }

@@ -5,6 +5,7 @@ import { server, serverState } from "../types";
 
 const initialState: serverState = {
     isCreatingServer: false,
+    isSettingsActive: false,
 };
 
 const serverSlice = createSlice({
@@ -29,6 +30,9 @@ const serverSlice = createSlice({
         clearChange(state) {
             state.messegerChange = undefined;
         },
+        setSettingsActive(state, action: PayloadAction<boolean>) {
+            state.isSettingsActive = action.payload;
+        }
     },
     extraReducers: (builder) => {
         // Обработка состояний для регистрации и авторизации
@@ -69,6 +73,7 @@ export const {
     finallyCreateServer,
     needChange,
     clearChange,
+    setSettingsActive,
 } = serverSlice.actions;
 
 export default serverSlice.reducer;

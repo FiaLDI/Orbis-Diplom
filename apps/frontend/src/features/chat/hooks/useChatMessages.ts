@@ -42,7 +42,6 @@ export const useChatMessages = () => {
     getMessages({ id: activeChat.id, offset: 0 })
       .unwrap()
       .then((data) => {
-        console.log("📜 Загружена история:", data);
         dispatch(setActiveHistory(data));
       })
       .catch((err) => console.error("Ошибка загрузки истории:", err));

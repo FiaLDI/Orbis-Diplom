@@ -145,7 +145,6 @@ const createServer = async (req: Request, res: Response) => {
             return res.status(401).json({ message: "Invalid token" });
         }
 
-        // Создаем сервер и добавляем запись в user_server в одной транзакции
         const result = await prisma.$transaction(async (tx: any) => {
             const server = await tx.servers.create({
                 data: {
@@ -156,10 +155,25 @@ const createServer = async (req: Request, res: Response) => {
                 },
             });
 
+            const role = await tx.role_server.create({
+                data: {
+                    name: "creator",
+                },
+            })
+
+            const perms = await tx.permission_type.findMany();
+
+            await tx.role_permission.createMany({
+            data: perms.map((p: { id: number }) => ({
+                role_id: role.id,
+                permission_id: p.id,
+            })),});
+
             await tx.user_server.create({
                 data: {
                     user_id: decoded.id,
                     server_id: server.id,
+                    role_id: role.id,
                     created_at: new Date(),
                 },
             });
@@ -411,27 +425,58 @@ const getServerMembers = async (req: Request, res: Response) => {
 
     try {
         const members = await prisma.users.findMany({
-            where: {
-                user_server: { some: { server_id: serverId } },
-            },
+    where: {
+        user_server: { some: { server_id: serverId } },
+    },
+    select: {
+        id: true,
+        username: true,
+        user_profile: {
+        select: {
+            avatar_url: true,
+            about: true,
+        },
+        },
+        user_server: {
+        where: { server_id: serverId },
+        select: {
+            role: {
             select: {
                 id: true,
-                username: true,
-                user_profile: {
-                    select: {
-                        avatar_url: true,
-                        about: true,
-                    },
+                name: true,
+                role_permission: {
+                select: {
+                    permission: { select: { id: true, name: true } },
+                },
                 },
             },
-        });
+            },
+        },
+        },
+    },
+    });
 
-        res.json(members);
-    } catch (err) {
-        console.error("Error in getServerMembers:", err);
-        res.status(500).json({ message: "Internal server error" });
-    }
+    const mapped = members.map((m) => ({
+    ...m,
+    user_server: m.user_server.map((us) => ({
+        ...us,
+        role: us.role
+        ? {
+            ...us.role,
+            permissions: us.role.role_permission.map((rp) => rp.permission),
+            }
+        : null,
+    })),
+    }));
+
+    res.json(mapped);
+
+  } catch (err) {
+    console.error("Error in getServerMembers:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
+
 
 // GET /servers/:id/chats/:chatId
 const getChatInfo = async (req: Request, res: Response) => {

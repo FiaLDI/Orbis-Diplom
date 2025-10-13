@@ -32,7 +32,10 @@ export const Component: React.FC = () => {
 
             <HistoryChatComponent bottomRef={bottomRef} topRef={topRef} />
 
-            <InputChatComponent scrollToBottom={scrollToBottom} />
+            <InputChatComponent 
+            
+           // scrollToBottom={scrollToBottom} 
+            />
         </div>
     );
 };

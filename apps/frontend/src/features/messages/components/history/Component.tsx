@@ -173,8 +173,6 @@ export const Component: React.FC<{
     setMenuVisible(false);
   };
 
-  console.log(activeHistory)
-
   /** отображение */
   return (
     <div

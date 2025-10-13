@@ -5,18 +5,21 @@ import { MenuButton } from "../ui/Button";
 import { addAction } from "@/features/action";
 import { useNavigate } from "react-router-dom";
 import { useServerJournalContext } from "@/contexts/ServerJournalSocketContext";
-import { useCreateChatMutation, useLazyGetServersInsideQuery } from "@/features/server";
+import { setSettingsActive, useCreateChatMutation, useLazyGetServersInsideQuery } from "@/features/server";
 import { useLazyGetChatsUsersQuery } from "@/features/user";
 import { Bolt, Target } from "lucide-react";
 
 export const Component: React.FC = () => {
-    const activeServer = useAppSelector(s => s.server.activeserver)
+    const { userId, isSettingsActive, activeServer } = useAppSelector((s) => ({
+        userId: s.auth.user?.info.id,
+        isSettingsActive: s.server.isSettingsActive,
+        activeServer: s.server.activeserver,
+      }));
     const dispatch = useAppDispatch();
     const navigator = useNavigate();
     const { socket } = useServerJournalContext();
     const [ trigger ] = useLazyGetServersInsideQuery();
     const [ getPersonalChats ] = useLazyGetChatsUsersQuery();
-    const userId = useAppSelector(s => s.auth.user?.info.id);
 
     const isChat = !activeServer?.id;
     
@@ -63,11 +66,16 @@ export const Component: React.FC = () => {
     };
 
     const handleContextMenu = (e: React.MouseEvent<HTMLElement>) => {
-
         e.preventDefault();
         setMenuPosition({ x: e.pageX, y: e.pageY });
         setMenuVisible(true);
     };
+
+    const hadleServerSettings = () => {
+        if (isChat) return;
+
+        dispatch(setSettingsActive(!isSettingsActive))
+    }
         
 
     return (
@@ -79,7 +87,7 @@ export const Component: React.FC = () => {
                         <button className="cursor-pointer">
                             <Target />
                         </button>
-                        <button className="cursor-pointer">
+                        <button className="cursor-pointer" onClick={hadleServerSettings}>
                             <Bolt  />
                         </button>
                     </div>
