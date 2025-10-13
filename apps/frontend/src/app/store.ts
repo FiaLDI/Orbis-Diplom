@@ -1,19 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { chatApi } from "../features/chat/api/chatApi";
-import authReducer from "../features/auth/authSlice";
-import chatReducer from "../features/chat/chatSlice";
-import messageReducer from "@/features/messages/messageSlice";
-import serverReducer from "../features/server/serverSlices";
-import userReducer from "../features/user/userSlices";
-import uploadReducer from "../features/upload/uploadSlice";
-import actionReducer from "../features/action/actionSlice";
+import authReducer from "@/features/auth/slice";
+import chatReducer from "@/features/chat/slice";
+import messageReducer from "@/features/messages/slice";
+import serverReducer from "@/features/server/slice";
+import userReducer from "@/features/user/slice";
+import uploadReducer from "@/features/upload/slice";
+import actionReducer from "@/features/action/slice";
 import settingsReducer from "@/features/settings";
-import friendsReducer from "../features/friends/friendsSlice";
-import { serverApi } from "../features/server/api/serverApi";
+import friendsReducer from "@/features/friends/slice";
+import { serverApi } from "@/features/server";
 import { authApi } from "@/features/auth";
 import { userApi } from "@/features/user";
 import { friendsApi } from "@/features/friends";
 import { messageApi } from "@/features/messages";
+import { chatApi } from "@/features/chat";
 
 export const store = configureStore({
     reducer: {

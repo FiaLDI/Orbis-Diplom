@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { friendsApi } from "./api/friendsApi";
-import { friendState, ModeKeys } from "./types";
+import { friendsApi } from "../api";
+import { friendState, ModeKeys } from "../types";
 
 const initialState: friendState = {
     friends: [],

@@ -1,8 +1,7 @@
-// features/authSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { serverApi } from "./api/serverApi";
-import { server, serverState } from "./types/server.types";
+import { serverApi } from "../api";
+import { server, serverState } from "../types";
 
 const initialState: serverState = {
     isCreatingServer: false,

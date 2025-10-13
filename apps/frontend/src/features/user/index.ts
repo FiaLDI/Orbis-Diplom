@@ -1,16 +1,7 @@
-// Реэкспорт всего публичного API модуля auth
-export * from "./userSlices";
-export * from "./api/userApi";
-export * from "./types/user";
+export * from "./slice";
+export * from "./api";
+export * from "./types";
 
-// Компоненты
 export { default as UserProfile } from "./components/UserInfo/UserProfile";
 
-export type {UserInfo} from "./types/user"
-
-// Хуки
-// export { useAuth } from './hooks/useAuth';
-// export { useUserSession } from './hooks/useUserSession';
-
-// Утилиты (по необходимости)
-// export { validateEmail } from './utils/authHelpers';
+export type { UserInfo } from "./types"

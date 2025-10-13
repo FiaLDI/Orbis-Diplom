@@ -1,5 +1,5 @@
-export * from "./chatSlice";
-export * from "./api/chatApi";
+export * from "./slice";
+export * from "./api";
 export * from "./types";
 
 export { Component as ChatComponent } from "./components/chat"

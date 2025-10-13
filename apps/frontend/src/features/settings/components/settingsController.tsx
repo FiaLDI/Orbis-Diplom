@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { SettingsButton } from "./ui/Button";
-import { useUpdateAccountMutation } from "../api/settingsApi";
+import { useUpdateAccountMutation } from "../api";
 import {Component as ChangeModal} from "./overall"
 import { useAppSelector } from "@/app/hooks";
 

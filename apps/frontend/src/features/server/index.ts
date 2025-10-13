@@ -1,7 +1,7 @@
-export * from "./serverSlices";
-export * from "./api/serverApi";
-export { default as CreateServerForm } from "./components/Forms/CreateServerForm";
-export { Component as MemberServer } from "./components/MemberServer"
-export * from "./types/server.types";
+export * from "./slice";
+export * from "./api";
+export { default as CreateServerForm } from "./components/crm/CreateServerForm";
+export { Component as MemberServer } from "./components/member"
+export * from "./types";
 
 export { useServerJournalSocket } from "./hook/useServerJournalSocket";

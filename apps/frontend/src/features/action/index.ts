@@ -1,5 +1,5 @@
-export * from "./actionSlice";
-export * from "./types/visible";
+export * from "./slice";
+export * from "./types";
 
 // Компоненты
 

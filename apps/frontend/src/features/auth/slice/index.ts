@@ -1,7 +1,6 @@
-// features/authSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AuthState, UserData } from "./types/user";
-import { authApi } from "./api/authApi";
+import { AuthState, UserData } from "../types";
+import { authApi } from "../api";
 
 const initialState: AuthState = {
     user: null,
@@ -14,7 +13,6 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        // Авторизация
         loginStart(
             state,
             action: PayloadAction<{ email: string; password: string }>,

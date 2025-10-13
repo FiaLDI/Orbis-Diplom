@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import React, { useState } from "react";
 import { activeChange } from "./interface";
-import { setAccountInfo } from "../../settingsSlice";
+import { setAccountInfo } from "../../slice";
 
 export const Component: React.FC = () => {
     const user = useAppSelector((s) => s.auth.user?.info);

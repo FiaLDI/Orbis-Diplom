@@ -1,6 +1,6 @@
 // Реэкспорт всего публичного API модуля auth
-export * from "./friendsSlice";
-export * from "./api/friendsApi";
+export * from "./slice";
+export * from "./api";
 export * from "./types";
 
 // Компоненты

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useRefreshTokenMutation } from "../api/authApi";
+import { useRefreshTokenMutation } from "../api";
 import { useAppSelector } from "@/app/hooks";
 
 export const useAutoRefreshToken = (intervalMinutes = 10) => {

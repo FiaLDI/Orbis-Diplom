@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import React from "react";
-import { setLanguage, setNotification } from "../../settingsSlice";
+import { setLanguage, setNotification } from "../../slice";
 
 export const Component: React.FC = () => {
   const settings = useAppSelector((s) => s.settings);

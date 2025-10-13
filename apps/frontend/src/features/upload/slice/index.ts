@@ -2,24 +2,7 @@
 import { config } from "@/config";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-
-export interface UploadResponse {
-  uploaded: string[];
-}
-
-export interface UploadFileState {
-  name: string;
-  progress: number;
-  url?: string;
-  error?: string;
-}
-
-export interface UploadState {
-  files: UploadFileState[];
-  overallProgress: number;
-  loading: boolean;
-  error?: string;
-}
+import { UploadResponse, UploadState } from "../types";
 
 const initialState: UploadState = {
   files: [],

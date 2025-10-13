@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useLoginUserMutation } from "../../api/authApi";
+import { useLoginUserMutation } from "../../api";
 import { InputField, SubmitButton } from "./AuthForm";
 import { useNavigate } from "react-router-dom";
 

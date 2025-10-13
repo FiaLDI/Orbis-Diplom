@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { activeChange } from "./interface";
-import {  setProfileInfo } from "../../settingsSlice";
+import {  setProfileInfo } from "../../slice";
 
 
 export const Component: React.FC = () => {

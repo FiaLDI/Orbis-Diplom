@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { ModalLayout } from "@/components/layout/Modal/Modal";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { closeProfile } from "../../userSlices";
+import { closeProfile } from "../../slice";
 
 const Profile: React.FC = () => {
     const [infoStage, setInfoStage] = useState<number>(0);

@@ -1,5 +1,5 @@
-export { default } from "./settingsSlice";
-export * from "./api/settingsApi";
+export { default } from "./slice";
+export * from "./api";
 export * from "./types";
 
 export { Component as AccountSettings } from "./components/account";

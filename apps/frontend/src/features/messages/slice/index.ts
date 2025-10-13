@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { messageApi } from "./api/messageApi";
-import { Message, messageSliceState } from "./types";
+import { messageApi } from "../api";
+import { Message, messageSliceState } from "../types";
 
 const initialState: messageSliceState = {
   activeHistory: [],

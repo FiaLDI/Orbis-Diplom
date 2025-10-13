@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { ModalLayout } from "@/components/layout/Modal/Modal";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { finallyCreateServer } from "../../serverSlices";
+import { finallyCreateServer } from "../../slice";
 import {
     useCreateSeverMutation,
     useJoinServerMutation,
     useLazyGetServersQuery,
-} from "../../api/serverApi";
+} from "@/features/server";
 import { ModalButton } from "@/components/ui/Button/ModalButton";
 import { ModalInput } from "@/components/ui/Input/ModalInput";
 

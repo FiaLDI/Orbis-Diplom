@@ -1,8 +1,8 @@
 // features/authSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { UserInfo, userState } from "./types/user";
-import { userApi } from "./api/userApi";
+import { UserInfo, userState } from "../types";
+import { userApi } from "../api";
 
 const initialState: userState = {
     loadedProfiles: undefined,

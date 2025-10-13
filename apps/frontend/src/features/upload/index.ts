@@ -1,1 +1,1 @@
-export * from "./uploadSlice";
+export * from "./slice";

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { action, actionSlicis } from "./types/visible";
+import { action, actionSlicis } from "../types";
 
 const initialState: actionSlicis = {
     Action: [],

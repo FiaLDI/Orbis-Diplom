@@ -1,15 +1,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { config } from "../../../config";
+import { config } from "@/config";
 
-export const chatApi = createApi({
-    reducerPath: "chatApi",
+export const settingsApi = createApi({
+    reducerPath: "userApi",
     baseQuery: fetchBaseQuery({
         baseUrl: `${config.monoliteUrl}/api`,
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             const state = getState() as {
                 auth: { user: { access_token?: string } };
-            };
+            }; 
             const token = state.auth.user?.access_token;
 
             if (token) {
@@ -19,16 +19,22 @@ export const chatApi = createApi({
         },
     }),
     endpoints: (builder) => ({
-        getChatInfo: builder.query({
+        updateProfile: builder.mutation({
             query: (id) => ({
-                url: `/chats/${id}`,
-                method: "GET",
+                url: `/user`,
+                method: "PUT",
+            }),
+        }),
+        updateAccount: builder.mutation({
+            query: (id) => ({
+                url: `/user`,
+                method: "PUT",
             }),
         }),
     }),
 });
 
 export const {
-    useLazyGetChatInfoQuery,
-    useGetChatInfoQuery,
-} = chatApi;
+    useUpdateAccountMutation,
+    useUpdateProfileMutation
+} = settingsApi;

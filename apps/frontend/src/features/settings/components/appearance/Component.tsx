@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import React from "react";
-import { setTheme } from "../../settingsSlice";
+import { setTheme } from "../../slice";
 
 export const Component: React.FC = () => {
     const settings = useAppSelector((s) => s.settings);

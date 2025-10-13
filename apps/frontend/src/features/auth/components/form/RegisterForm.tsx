@@ -4,7 +4,7 @@ import {
     useSendVerificationCodeMutation,
     useVerifyCodeMutation,
     useRegisterUserMutation,
-} from "../../api/authApi";
+} from "../../api";
 import { InputField, SubmitButton } from "./AuthForm";
 import { useNavigate } from "react-router-dom";
 

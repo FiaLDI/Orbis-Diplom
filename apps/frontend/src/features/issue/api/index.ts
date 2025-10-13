@@ -1,15 +1,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { config } from "@/config";
 
-export const settingsApi = createApi({
-    reducerPath: "userApi",
+export const issueApi = createApi({
+    reducerPath: "issueApi",
     baseQuery: fetchBaseQuery({
         baseUrl: `${config.monoliteUrl}/api`,
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             const state = getState() as {
                 auth: { user: { access_token?: string } };
-            }; // Type assertion for state
+            };
             const token = state.auth.user?.access_token;
 
             if (token) {
@@ -19,22 +19,9 @@ export const settingsApi = createApi({
         },
     }),
     endpoints: (builder) => ({
-        updateProfile: builder.mutation({
-            query: (id) => ({
-                url: `/user`,
-                method: "PUT",
-            }),
-        }),
-        updateAccount: builder.mutation({
-            query: (id) => ({
-                url: `/user`,
-                method: "PUT",
-            }),
-        }),
+        
     }),
 });
 
 export const {
-    useUpdateAccountMutation,
-    useUpdateProfileMutation
-} = settingsApi;
+} = issueApi;

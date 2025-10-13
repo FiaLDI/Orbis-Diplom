@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useAppDispatch } from "@/app/hooks";
-import { removeAction } from "@/features/action/actionSlice";
-import { Visible } from "../types/visible";
+import { removeAction } from "@/features/action/slice";
+import { Visible } from "../types";
 
 export const ActionLayout: React.FC<{
     type: Visible;

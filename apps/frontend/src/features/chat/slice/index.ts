@@ -1,7 +1,5 @@
-// features/authSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { chat, chatState } from "./types";
-
+import { chat, chatState } from "../types";
 
 
 const initialState: chatState = {};

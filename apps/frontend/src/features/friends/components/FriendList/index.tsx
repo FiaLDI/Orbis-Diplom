@@ -12,7 +12,7 @@ import {
     useRejectFriendRequestMutation,
     useGetFriendQuery
 } from "../..";
-import { setFriendMode, startSearch } from "../../friendsSlice";
+import { setFriendMode, startSearch } from "../../slice";
 
 const FriendList: React.FC = () => {
     const dispatch = useAppDispatch();
