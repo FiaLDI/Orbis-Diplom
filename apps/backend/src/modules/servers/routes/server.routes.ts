@@ -25,20 +25,13 @@ serverRouter.get("/:id", getServerInfo);
 serverRouter.patch("/:id", updateServer);
 serverRouter.delete("/:id", deleteServer);
 
-// Работа с участниками (members)
 serverRouter.get("/:id/members", getServerMembers);
 serverRouter.post("/:id/join", joinServer); 
 serverRouter.delete("/:id/members/:userId", kickMember);
 serverRouter.post("/:id/members/:userId/ban", banMember);
 serverRouter.delete("/:id/members/:userId/ban", unbanMember);
 
-// Работа с чатами внутри сервера
 serverRouter.get("/:id/chats", getServerChats);
 serverRouter.post("/:id/chats", createChat);
 serverRouter.get("/:id/chats/:chatId", getChatInfo);
 serverRouter.delete("/:id/chats/:chatId", deleteChat);
-
-// serverRouter.get("/:id/roles", getServerRoles); 
-// serverRouter.post("/:id/roles", createRole); 
-// serverRouter.patch("/:id/roles/:roleId", updateRole); 
-// serverRouter.delete("/:id/roles/:roleId", deleteRole);

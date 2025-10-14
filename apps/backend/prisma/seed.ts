@@ -16,8 +16,6 @@ async function main() {
     "SEND_MESSAGES",
     "ATTACH_FILES",
     "MANAGE_INVITES",
-    "CHANGE_NICKNAME",
-    "MANAGE_NICKNAMES",
     "VIEW_CHANNEL",
   ];
 

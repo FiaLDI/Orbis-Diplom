@@ -1,23 +1,24 @@
 import { Request, Response } from "express";
 import { prisma } from "@/config";
-import jwt from "jsonwebtoken";
 
 /**
  * GET /servers/:id/roles
+ * Получить все роли сервера
  */
 export const getServerRoles = async (req: Request, res: Response) => {
   const serverId = parseInt(req.params.id, 10);
 
   try {
     const roles = await prisma.role_server.findMany({
-      where: {
-        user_server: {
-          some: { server_id: serverId },
-        },
-      },
+      where: { server_id: serverId },
       include: {
-        role_permission: {
-          include: { permission: true },
+        role_permission: { include: { permission: true } },
+        members: {
+          include: {
+            user_server: {
+              include: { user: { include: { user_profile: true } } },
+            },
+          },
         },
       },
     });
@@ -31,6 +32,7 @@ export const getServerRoles = async (req: Request, res: Response) => {
 
 /**
  * POST /servers/:id/roles
+ * Создать новую роль в сервере
  */
 export const createServerRole = async (req: Request, res: Response) => {
   const serverId = parseInt(req.params.id, 10);
@@ -40,9 +42,7 @@ export const createServerRole = async (req: Request, res: Response) => {
     const role = await prisma.role_server.create({
       data: {
         name,
-        user_server: {
-          create: [], // пока пусто, можно назначать позже
-        },
+        server_id: serverId,
         role_permission: {
           create: (permissions || []).map((permId: number) => ({
             permission_id: permId,
@@ -60,19 +60,36 @@ export const createServerRole = async (req: Request, res: Response) => {
 
 /**
  * PATCH /servers/:id/roles/:roleId
+ * Обновить имя/права роли
  */
 export const updateServerRole = async (req: Request, res: Response) => {
   const roleId = parseInt(req.params.roleId, 10);
-  const { name, permissions } = req.body;
+  const serverId = parseInt(req.params.id, 10);
+  const { name, color, permissions } = req.body;
 
   try {
+    const role = await prisma.role_server.findUnique({
+      where: { id: roleId },
+    });
+
+    if (!role || role.server_id !== serverId) {
+      return res.status(404).json({ message: "Role not found in this server" });
+    }
+
+    // ❌ Запрещаем менять имя системных ролей
+    if ((role.name === "creator" || role.name === "default") && name && name !== role.name) {
+      return res.status(400).json({ message: "Cannot rename system role" });
+    }
+
     const updated = await prisma.role_server.update({
       where: { id: roleId },
       data: {
-        name,
+        // имя обновляем только если не системная
+        name: role.name === "creator" || role.name === "default" ? role.name : name,
+        color,
         role_permission: permissions
           ? {
-              deleteMany: {}, // удалить старые
+              deleteMany: {},
               create: permissions.map((permId: number) => ({
                 permission_id: permId,
               })),
@@ -90,11 +107,31 @@ export const updateServerRole = async (req: Request, res: Response) => {
 
 /**
  * DELETE /servers/:id/roles/:roleId
+ * Удалить роль
+ */
+/**
+ * DELETE /servers/:id/roles/:roleId
  */
 export const deleteServerRole = async (req: Request, res: Response) => {
   const roleId = parseInt(req.params.roleId, 10);
+  const serverId = parseInt(req.params.id, 10);
 
   try {
+    // Находим роль
+    const role = await prisma.role_server.findUnique({
+      where: { id: roleId },
+    });
+
+    if (!role || role.server_id !== serverId) {
+      return res.status(404).json({ message: "Role not found in this server" });
+    }
+
+    // ❌ Блокируем удаление системных ролей
+    if (role.name === "creator" || role.name === "default") {
+      return res.status(400).json({ message: "Cannot delete system role" });
+    }
+
+    // Удаляем
     await prisma.role_server.delete({
       where: { id: roleId },
     });
@@ -106,8 +143,10 @@ export const deleteServerRole = async (req: Request, res: Response) => {
   }
 };
 
+
 /**
  * POST /servers/:id/members/:userId/role/:roleId
+ * Выдать роль пользователю
  */
 export const assignRoleToMember = async (req: Request, res: Response) => {
   const serverId = parseInt(req.params.id, 10);
@@ -115,11 +154,12 @@ export const assignRoleToMember = async (req: Request, res: Response) => {
   const roleId = parseInt(req.params.roleId, 10);
 
   try {
-    await prisma.user_server.update({
-      where: {
-        user_id_server_id: { user_id: userId, server_id: serverId },
+    await prisma.user_server_roles.create({
+      data: {
+        user_id: userId,
+        server_id: serverId,
+        role_id: roleId,
       },
-      data: { role_id: roleId },
     });
 
     res.json({ message: "Role assigned to user" });
@@ -131,22 +171,95 @@ export const assignRoleToMember = async (req: Request, res: Response) => {
 
 /**
  * DELETE /servers/:id/members/:userId/role/:roleId
+ * Убрать роль у пользователя
  */
 export const removeRoleFromMember = async (req: Request, res: Response) => {
   const serverId = parseInt(req.params.id, 10);
   const userId = parseInt(req.params.userId, 10);
+  const roleId = parseInt(req.params.roleId, 10);
 
   try {
-    await prisma.user_server.update({
+    await prisma.user_server_roles.delete({
       where: {
-        user_id_server_id: { user_id: userId, server_id: serverId },
+        user_id_server_id_role_id: {
+          user_id: userId,
+          server_id: serverId,
+          role_id: roleId,
+        },
       },
-      data: { role_id: null },
     });
 
     res.json({ message: "Role removed from user" });
   } catch (err) {
     console.error("Error removeRoleFromMember:", err);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+/**
+ * GET /roles/permissions
+ * Получить список всех возможных прав
+ */
+export const getAllPermissions = async (req: Request, res: Response) => {
+  try {
+    const permissions = await prisma.permission_type.findMany({
+      select: { id: true, name: true },
+      orderBy: { id: "asc" },
+    });
+    res.json(permissions);
+  } catch (error) {
+    console.error("Error fetching permissions:", error);
+    res.status(500).json({ message: "Failed to fetch permissions" });
+  }
+};
+
+/**
+ * GET /roles/:roleId/permissions
+ * Получить права конкретной роли
+ */
+export const getRolePermissions = async (req: Request, res: Response) => {
+  try {
+    const { roleId } = req.params;
+
+    const role = await prisma.role_server.findUnique({
+      where: { id: Number(roleId) },
+      include: {
+        role_permission: { include: { permission: true } },
+      },
+    });
+
+    if (!role) return res.status(404).json({ message: "Role not found" });
+
+    res.json(role.role_permission.map((rp) => rp.permission));
+  } catch (err) {
+    console.error("Error getRolePermissions:", err);
+    res.status(500).json({ message: "Failed to fetch role permissions" });
+  }
+};
+
+/**
+ * PATCH /roles/:roleId/permissions
+ * Обновить permissions роли
+ */
+export const updateRolePermissions = async (req: Request, res: Response) => {
+  try {
+    const { roleId } = req.params;
+    const { permissions } = req.body; // массив permission_id
+
+    await prisma.role_permission.deleteMany({
+      where: { role_id: Number(roleId) },
+    });
+
+    await prisma.role_permission.createMany({
+      data: permissions.map((pid: number) => ({
+        role_id: Number(roleId),
+        permission_id: pid,
+      })),
+    });
+
+    res.json({ message: "Role permissions updated" });
+  } catch (err) {
+    console.error("updateRolePermissions error:", err);
+    res.status(500).json({ message: "Failed to update role permissions" });
   }
 };

@@ -55,12 +55,12 @@ model users {
   friend_requests_to   friend_requests[] @relation("RequestTo")
   created_servers      servers[]         @relation("UserCreatedServers")
 
-  server_bans         server_bans[]        // как забаненный
-  bans_made           server_bans[]        @relation("BanActor") // как банящий
-  invites             invites[]            // инвайты создал
-  audit_logs          audit_logs[]         // действия в логах
-  reports_made        reports[]            @relation("ReportReporter") // жалобы создал
-  reports_resolved    reports[]            @relation("ReportResolver") // жалобы обработал
+  server_bans         server_bans[]        
+  bans_made           server_bans[]        @relation("BanActor") 
+  invites             invites[]            
+  audit_logs          audit_logs[]         
+  reports_made        reports[]            @relation("ReportReporter") 
+  reports_resolved    reports[]            @relation("ReportResolver") 
   message_reads       message_reads[]
   push_subscriptions  push_subscriptions[]
   notifications       notifications[]
@@ -70,7 +70,7 @@ model user_preferences {
   user_id          Int    @id
   privacy_settings String?
   timezone         String? @db.VarChar(50)
-  theme            String? @db.VarChar(20) // "light" | "dark" | "system"
+  theme            String? @db.VarChar(20)
   created_at       DateTime?
   updated_at       DateTime?
   confirmed_at     DateTime?
@@ -134,6 +134,8 @@ model servers {
   creator users?       @relation("UserCreatedServers", fields: [creator_id], references: [id])
   user_server  user_server[]
   server_chats server_chats[]
+
+  roles role_server[]
   
   server_bans   server_bans[]    
   invites       invites[]        
@@ -145,14 +147,14 @@ model role_server {
   id        Int     @id @default(autoincrement())
   server_id Int
   name      String  @db.VarChar(50)
+  color     String? @db.VarChar(7) 
 
-  server          servers         @relation(fields: [server_id], references: [id])
+  server          servers             @relation(fields: [server_id], references: [id])
   role_permission role_permission[]
-  user_server     user_server[]
+  members         user_server_roles[]   // 👈 связь многие-ко-многим с user_server
 
   @@index([server_id])
 }
-
 
 model role_permission {
   role_id       Int
@@ -170,19 +172,30 @@ model role_permission {
 model user_server {
   user_id    Int
   server_id  Int
-  role_id    Int?
   created_at DateTime?
 
-  user   users        @relation(fields: [user_id], references: [id])
-  server servers      @relation(fields: [server_id], references: [id])
-  role   role_server? @relation(fields: [role_id], references: [id])
+  user   users   @relation(fields: [user_id], references: [id])
+  server servers @relation(fields: [server_id], references: [id])
+
+  roles user_server_roles[]   // 👈 список ролей
 
   @@id([user_id, server_id])
   @@index([server_id])
+}
+
+model user_server_roles {
+  user_id   Int
+  server_id Int
+  role_id   Int
+
+  user_server user_server @relation(fields: [user_id, server_id], references: [user_id, server_id])
+  role        role_server @relation(fields: [role_id], references: [id])
+
+  @@id([user_id, server_id, role_id]) 
   @@index([role_id])
 }
 
-/* Серверные баны (локальные для конкретного сервера) */
+/* Серверные баны */
 model server_bans {
   server_id  Int
   user_id    Int
@@ -261,7 +274,7 @@ model chat_users {
   @@index([role_id])
 }
 
-/* Опционально: пер-канальные роли (если нужны overrides поверх серверных) */
+/* Опционально: пер-канальные роли */
 model role_chat {
   id   Int    @id @default(autoincrement())
   name String @db.VarChar(50)
@@ -292,24 +305,20 @@ model messages {
   is_edited    Boolean?
   updated_at   DateTime?
   created_at   DateTime?
-  content_text String?   // денормализация текста для быстрого поиска
+  content_text String?   
 
   chat     chats?    @relation(fields: [chat_id], references: [id])
   user     users?    @relation(fields: [user_id], references: [id])
 
-  // self-relation для ответов
   reply_to messages?  @relation("MessageReply", fields: [reply_to_id], references: [id])
   replies  messages[] @relation("MessageReply")
 
   messages_content messages_content[]
-
   reports reports[]
 
   @@index([chat_id, created_at])
   @@index([user_id, created_at])
-  @@index([content_text]) // для PostgreSQL сделай GIN в raw SQL миграции
-
-
+  @@index([content_text]) 
 }
 
 model content {
@@ -322,7 +331,7 @@ model content {
 
 model messages_content {
   id_messages Int
-  type        String?  @db.VarChar(50) // "text" | "image" | "file" | ...
+  type        String?  @db.VarChar(50) 
   size        Int?
   uploaded_at DateTime?
   id_content  String
@@ -341,9 +350,9 @@ model audit_logs {
   id         Int       @id @default(autoincrement())
   server_id  Int
   actor_id   Int
-  action     String    @db.VarChar(50) // e.g. CHANNEL_CREATE, MESSAGE_DELETE, ROLE_ASSIGN, BAN_ADD...
-  target_id  String?   // id сущности (channelId, messageId, userId)
-  metadata   String?   // JSON строка
+  action     String    @db.VarChar(50) 
+  target_id  String?   
+  metadata   String?   
   created_at DateTime? @default(now())
 
   server servers @relation(fields: [server_id], references: [id])
@@ -358,7 +367,7 @@ model reports {
   message_id  Int?
   reporter_id Int
   reason      String?
-  status      String    @default("open") // open|resolved|rejected
+  status      String    @default("open") 
   created_at  DateTime? @default(now())
   resolved_by Int?
 
@@ -375,10 +384,10 @@ model reports {
    ========================= */
 
 model message_reads {
-  user_id             Int
-  chat_id             Int
+  user_id              Int
+  chat_id              Int
   last_read_message_id Int?
-  updated_at          DateTime? @default(now())
+  updated_at           DateTime? @default(now())
 
   user users @relation(fields: [user_id], references: [id])
   chat chats @relation(fields: [chat_id], references: [id])
@@ -389,11 +398,11 @@ model message_reads {
 
 model notifications {
   id         Int      @id @default(autoincrement())
-  user_id    Int      // кому принадлежит уведомление
-  type       String   @db.VarChar(50) // "friend_request" | "message" | "server_invite" | ...
+  user_id    Int      
+  type       String   @db.VarChar(50) 
   title      String   @db.VarChar(255)
-  body       String?  // текст уведомления
-  data       String?  // JSON строка с доп. инфо (например id чата/сообщения)
+  body       String?  
+  data       String?  
   is_read    Boolean  @default(false)
   created_at DateTime @default(now())
 
@@ -401,7 +410,6 @@ model notifications {
 
   @@index([user_id])
 }
-
 
 /* Web Push подписки */
 model push_subscriptions {
