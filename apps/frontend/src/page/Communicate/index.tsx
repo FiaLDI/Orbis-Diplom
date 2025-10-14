@@ -17,14 +17,16 @@ import { UserProfile } from "@/features/user";
 import { AppMenu } from "./components/AppMenu";
 import { Component as MessageMenu } from "./components/MessageMenu";
 import { FriendList, SearchFriends } from "@/features/friends";
+import { IssueComponent, ProjectComponent, setOpenProject, useLazyGetProjectQuery, useLazyGetStatusesQuery, useLazyGetPriorityQuery } from "@/features/issue";
 
 export const CommunicatePage: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  const { activeChat, isSettingsActive, activeserver } = useAppSelector((s) => ({
+  const { activeChat, isSettingsActive, activeserver, openProjectId } = useAppSelector((s) => ({
     activeChat: s.chat.activeChat,
     isSettingsActive: s.server.isSettingsActive,
     activeserver: s.server.activeserver,
+    openProjectId: s.issue.openProjectId
   }));
   const issueMode = true;
 
@@ -32,9 +34,11 @@ export const CommunicatePage: React.FC = () => {
   const [getServer] = useLazyGetServersInsideQuery();
   const [getPermission] = useLazyGetPermissionsQuery();
   const [getServerRoles] = useLazyGetServersRolesQuery();
+  const [getProject] = useLazyGetProjectQuery();
+  const [getStatuses] = useLazyGetStatusesQuery();
+  const [getPriority] = useLazyGetPriorityQuery()
   const [isMessageMenuOpen, setIsMessageMenuOpen] = useState(true);
   
-
   const activeServerId = activeserver?.id;
   const hasActiveChat = Boolean(activeChat);
   const hasActiveServer = Boolean(activeserver);
@@ -46,22 +50,23 @@ export const CommunicatePage: React.FC = () => {
       [
         triggerMembers(activeServerId), 
         getServer(activeServerId), 
-        getServerRoles(activeServerId)
+        getServerRoles(activeServerId),
+        getProject(activeServerId),
+        getPermission({}),
+        getStatuses({}),
+        getPriority({})
       ]
     );
     dispatch(setActiveChat(undefined));
+    dispatch(setOpenProject(null))
     dispatch(setSettingsActive(false));
-  }, [activeServerId, triggerMembers, getServer, dispatch]);
+  }, [activeServerId, triggerMembers, getServer, getServerRoles, getProject, dispatch]);
 
   useEffect(() => {
     fetchServerData();
   }, [fetchServerData]);
 
-  useEffect(()=>{
-    getPermission({});
-  }, [])
 
-  // Условия отображения
   const showChat = !isSettingsActive && hasActiveChat;
   const showEmptyServer = !isSettingsActive && hasActiveServer && !hasActiveChat && !issueMode;
 
@@ -94,7 +99,10 @@ export const CommunicatePage: React.FC = () => {
         {/* Если нет ни чата, ни сервера → показываем список друзей */}
         {!hasActiveChat && !hasActiveServer && <FriendList />}
 
-        {!hasActiveChat && hasActiveServer && issueMode && <div className="w-full">issue</div>}
+        {!hasActiveChat && hasActiveServer && issueMode && <div className="w-full">
+            {openProjectId ? <IssueComponent name={activeserver?.name} serverid={activeServerId} projectId={openProjectId}/> : <ProjectComponent name={activeserver?.name} serverid={activeServerId}/>}
+          </div>
+        }
 
         {/* Участники сервера */}
         <MemberServer />

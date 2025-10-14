@@ -43,7 +43,7 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
 
   const save = async () => {
     if (roleName.toLowerCase() === "creator") {
-      return; // ❌ creator не редактируем вообще
+      return;
     }
 
     await updateServerRole({ roleId, serverId, data: { name, color } });

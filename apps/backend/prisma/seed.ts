@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-     const permissions = [
+  const permissions = [
     "ADMIN",
     "MANAGE_SERVER",
     "MANAGE_ROLES",
@@ -19,11 +19,21 @@ async function main() {
     "VIEW_CHANNEL",
   ];
 
-for (const perm of permissions) {
-    await prisma.permission_type.upsert({
-      where: { name: perm },
+  for (const perm of permissions) {
+      await prisma.permission_type.upsert({
+        where: { name: perm },
+        update: {},
+        create: { name: perm },
+      });
+    }
+  
+  const statuses = ["Open", "In Progress", "Review", "Done", "Closed"];
+
+  for (const status of statuses) {
+    await prisma.issue_status.upsert({
+      where: { name: status },
       update: {},
-      create: { name: perm },
+      create: { name: status },
     });
   }
 }

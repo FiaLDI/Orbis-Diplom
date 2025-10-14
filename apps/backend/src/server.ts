@@ -5,7 +5,7 @@ import cors from "cors";
 import fs from "fs";
 import https from "https";
 import { connectRedis } from "./config";
-import { authRoutes, chatRouter, moderationRouter, notificationRouter, rolesRouter, searchRouter } from "@/modules";
+import { authRoutes, chatRouter, moderationRouter, notificationRouter, planningRouter, rolesRouter, searchRouter } from "@/modules";
 import { userRouter } from "@/modules";
 import { Server } from "socket.io";
 import { AuthenticatedSocket, chatSocket, journalSocket, planningSocket } from "./socket";
@@ -47,6 +47,7 @@ app.use("/api/servers", rolesRouter);
 app.use("/api/search", searchRouter);
 app.use("/api/servers", serverRouter);
 app.use("/api/users", userRouter);
+app.use("/api/servers", planningRouter)
 
 const server = https.createServer(options, app);
 

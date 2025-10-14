@@ -11,29 +11,35 @@ import {
   addChatToIssue,
   getIssueChats,
   getIssueStatuses,
+  updateProject,
+  deleteProject,
+  getIssuePriorities,
 } from "../controllers";
 
-const router = Router();
+export const planningRouter = Router();
 
 // Projects
-router.get("/servers/:id/projects", getProjects);
-router.post("/servers/:id/projects", createProject);
+planningRouter.get("/:id/projects", getProjects);
+planningRouter.post("/:id/projects", createProject);
+planningRouter.patch("/:id/projects/:projectId", updateProject);
+planningRouter.delete("/:id/projects/:projectId", deleteProject);
 
 // Issues
-router.get("/projects/:id/issues", getProjectIssues);
-router.post("/projects/:id/issues", createIssue);
-router.patch("/issues/:id", updateIssue);
-router.delete("/issues/:id", deleteIssue);
+planningRouter.get("/projects/:id/issues", getProjectIssues);
+planningRouter.post("/projects/:id/issues", createIssue);
+planningRouter.patch("/issues/:id", updateIssue);
+planningRouter.delete("/issues/:id", deleteIssue);
 
 // Assignees
-router.post("/issues/:id/assignees/:userId", assignUserToIssue);
-router.delete("/issues/:id/assignees/:userId", unassignUserFromIssue);
+planningRouter.post("/issues/:id/assignees/:userId", assignUserToIssue);
+planningRouter.delete("/issues/:id/assignees/:userId", unassignUserFromIssue);
 
 // Chats
-router.post("/issues/:id/chats", addChatToIssue);
-router.get("/issues/:id/chats", getIssueChats);
+planningRouter.post("/issues/:id/chats", addChatToIssue);
+planningRouter.get("/issues/:id/chats", getIssueChats);
 
 // Statuses
-router.get("/issues/statuses", getIssueStatuses);
+planningRouter.get("/issues/statuses", getIssueStatuses);
+planningRouter.get("/issues/priorities", getIssuePriorities);
 
-export default router;
+

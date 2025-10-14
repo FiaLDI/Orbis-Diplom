@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "@/config";
 import { ioPlanning } from "@/server";
+import { IssuePriority } from "@prisma/client";
 
 /* =======================
    PROJECTS
@@ -23,7 +24,6 @@ export const getProjects = async (req: Request, res: Response) => {
   }
 };
 
-// POST /servers/:id/projects
 export const createProject = async (req: Request, res: Response) => {
   const serverId = Number(req.params.id);
   const { name, description } = req.body;
@@ -37,6 +37,58 @@ export const createProject = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+/**
+ * PATCH /planning/:id/projects/:projectId
+ */
+export const updateProject = async (req: Request, res: Response) => {
+  const serverId = parseInt(req.params.id, 10);
+  const projectId = parseInt(req.params.projectId, 10);
+  const { name, description } = req.body;
+
+  try {
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+    });
+
+    if (!project || project.server_id !== serverId) {
+      return res.status(404).json({ message: "Project not found in this server" });
+    }
+
+    const updated = await prisma.project.update({
+      where: { id: projectId },
+      data: { name, description },
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error("updateProject error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+/**
+ * DELETE /planning/:id/projects/:projectId
+ */
+export const deleteProject = async (req: Request, res: Response) => {
+  const serverId = parseInt(req.params.id, 10);
+  const projectId = parseInt(req.params.projectId, 10);
+
+  try {
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+    });
+
+    if (!project || project.server_id !== serverId) {
+      return res.status(404).json({ message: "Project not found in this server" });
+    }
+
+    await prisma.project.delete({ where: { id: projectId } });
+    res.json({ message: "Project deleted" });
+  } catch (err) {
+    console.error("deleteProject error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 /* =======================
    ISSUES
@@ -46,20 +98,32 @@ export const createProject = async (req: Request, res: Response) => {
 export const getProjectIssues = async (req: Request, res: Response) => {
   const projectId = Number(req.params.id);
   try {
-    const issues = await prisma.project_issues.findMany({
-      where: { project_id: projectId },
+   const issues = await prisma.project_issues.findMany({
+  where: { project_id: projectId },
+  include: {
+    issue: {
       include: {
-        issue: {
+        status: true,
+        assignees: { include: { user: true } },
+        chat_issues: { include: { chat: true } },
+        subtasks: {
+          where: {
+            project_issues: { some: { project_id: projectId } },
+          },
           include: {
             status: true,
             assignees: { include: { user: true } },
-            chat_issues: { include: { chat: true } },
-            subtasks: true,
-            parent: true
-          }
-        }
-      }
-    });
+          },
+        },
+        parent: {
+          include: { project_issues: true },
+        },
+      },
+    },
+  },
+});
+
+
     res.json(issues.map(pi => pi.issue));
   } catch (err) {
     console.error("getProjectIssues error:", err);
@@ -87,7 +151,6 @@ export const createIssue = async (req: Request, res: Response) => {
       include: { status: true }
     });
 
-    // 🔥 отправляем событие в комнату проекта
     ioPlanning.to(`project:${projectId}`).emit("issue:created", issue);
 
     res.status(201).json(issue);
@@ -117,14 +180,35 @@ export const updateIssue = async (req: Request, res: Response) => {
 // DELETE /issues/:id
 export const deleteIssue = async (req: Request, res: Response) => {
   const issueId = Number(req.params.id);
+
   try {
-    await prisma.issue.delete({ where: { id: issueId } });
-    res.json({ message: "Issue deleted" });
+    // Сначала удаляем все связи с проектами
+    await prisma.project_issues.deleteMany({
+      where: { issue_id: issueId },
+    });
+
+    // Если есть связи с чатами — тоже удаляем
+    await prisma.chat_issues.deleteMany({
+      where: { issue_id: issueId },
+    });
+
+    // Если есть исполнители — удаляем
+    await prisma.issue_assignee.deleteMany({
+      where: { issue_id: issueId },
+    });
+
+    // Наконец, удаляем сам issue
+    await prisma.issue.delete({
+      where: { id: issueId },
+    });
+
+    res.status(204).send();
   } catch (err) {
     console.error("deleteIssue error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 /* =======================
    ASSIGNEES
@@ -209,5 +293,14 @@ export const getIssueStatuses = async (_req: Request, res: Response) => {
   } catch (err) {
     console.error("getIssueStatuses error:", err);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getIssuePriorities = async (req: Request, res: Response) => {
+  try {
+    res.json(Object.values(IssuePriority));
+  } catch (err) {
+    console.error("Error fetching priorities:", err);
+    res.status(500).json({ message: "Failed to fetch priorities" });
   }
 };

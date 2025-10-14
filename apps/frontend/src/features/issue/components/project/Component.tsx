@@ -1,0 +1,71 @@
+import React from "react";
+import { Props } from "./interface";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { Plus } from "lucide-react";
+import { useCreateProjectMutation, useLazyGetIssuesQuery } from "../../api";
+import { Component as EditProject } from "./edit"
+import { setOpenProject } from "../..";
+
+export const Component: React.FC<Props> = ({serverid, name}) => {
+    const projects = useAppSelector(s => s.issue.project);
+    const dispatch = useAppDispatch();
+
+    const [createProject] = useCreateProjectMutation();
+    const [getIssue] = useLazyGetIssuesQuery();
+
+    const handlerCreateProject = () => {
+        createProject({id: serverid, data: {name: "default", description: "default" }})
+    }
+
+    const open = (id: number) => {
+        dispatch(setOpenProject(id));
+        
+        getIssue(id)
+    }
+
+    if (!serverid) return null;
+    if (!name) return null;
+    return (
+        <div>
+            <div className="bg-[#2e3ed34f] p-5 flex w-full justify-between items-center">
+                <h4 className="truncate text-lg  text-white">
+                Projects {name}
+                </h4>
+                <button
+              className="cursor-pointer px-1 py-1 bg-[#2e3ed328] rounded-full"
+              onClick={handlerCreateProject}
+            >
+              <Plus color="white"/>
+            </button>
+            </div>
+            <div className="h-full w-full flex flex-col text-white">
+            {projects.map((val: any, index: number)=> {
+
+                return (
+                    <div 
+                        key={`projects-${val.id}-${index}`} 
+                        className=" bg-[#2d3dee]/5 flex w-full items-center justify-between"
+                    >
+                        <div className="w-full "> 
+                            <button 
+                                className="w-full border p-5 hover:text-black text-left cursor-pointer" 
+                                onClick={()=> open(val.id)}
+                            >
+                                {val.name}
+                            </button>
+                        </div>
+                        <div className="">
+                            <EditProject 
+                                projectName={val.name} 
+                                projectDescription={val.description} 
+                                projectId={val.id} 
+                                serverId={serverid}
+                            />
+                        </div>
+                    </div>
+                )
+            })}
+            </div>
+        </div>
+  )
+};
