@@ -9,30 +9,37 @@ import {
   useLazyGetMessagesQuery
 } from "@/features/messages";
 
-
 export const useChatMessages = () => {
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
 
-  const { socket } = useChatSocket();
+  const { socket, isConnected: isSocketConnected } = useChatSocket();
   const dispatch = useAppDispatch();
   const activeChat = useAppSelector((s) => s.chat.activeChat);
   const activeHistory = useAppSelector((s) => s.message.activeHistory);
   const [getMessages] = useLazyGetMessagesQuery();
 
-  /** 🔌 Подключение к сокету и join/leave комнаты **/
+    /** 🔌 Подключение к комнате **/
   useEffect(() => {
     if (!socket || !activeChat?.id) return;
 
     const chatId = activeChat.id;
+
+    // ✅ проверка, чтобы не заходить второй раз
+    if ((socket as any)._joinedChatId === chatId) {
+      return;
+    }
+
     console.log("📡 join-chat", chatId);
     socket.emit("join-chat", chatId);
+    (socket as any)._joinedChatId = chatId;
 
     return () => {
       console.log("🚪 leave-chat", chatId);
       socket.emit("leave-chat", chatId);
+      (socket as any)._joinedChatId = null;
     };
   }, [socket, activeChat?.id]);
+
 
   /** 🧾 Первичная загрузка сообщений **/
   useEffect(() => {
@@ -45,17 +52,16 @@ export const useChatMessages = () => {
         dispatch(setActiveHistory(data));
       })
       .catch((err) => console.error("Ошибка загрузки истории:", err));
-  }, [activeChat?.id]);
+  }, [activeChat?.id, dispatch, getMessages]);
 
   /** 🔁 Подписка на события от сокета **/
   useEffect(() => {
     if (!socket) return;
 
     const handleNewMessage = (message: Message) => {
-        if (message.chat_id !== activeChat?.id) return;
-        dispatch(addMessage(message));
-        };
-
+      if (message.chat_id !== activeChat?.id) return;
+      dispatch(addMessage(message));
+    };
 
     const handleEditMessage = (payload: { message_id: number; newContent: string }) => {
       if (!activeHistory) return;
@@ -79,24 +85,16 @@ export const useChatMessages = () => {
       dispatch(setActiveHistory(updated));
     };
 
-    const handleConnect = () => setIsSocketConnected(true);
-    const handleDisconnect = () => setIsSocketConnected(false);
-
-    socket.off("new-message");
     socket.on("new-message", handleNewMessage);
     socket.on("edit-message", handleEditMessage);
     socket.on("delete-message", handleDeleteMessage);
-    socket.on("connect", handleConnect);
-    socket.on("disconnect", handleDisconnect);
 
     return () => {
       socket.off("new-message", handleNewMessage);
       socket.off("edit-message", handleEditMessage);
       socket.off("delete-message", handleDeleteMessage);
-      socket.off("connect", handleConnect);
-      socket.off("disconnect", handleDisconnect);
     };
-  }, [socket, activeChat?.id]);
+  }, [socket, activeChat?.id, activeHistory, dispatch]);
 
   /** ⌨️ Индикатор "печатает..." **/
   useEffect(() => {
@@ -104,16 +102,16 @@ export const useChatMessages = () => {
 
     const handleTypingStart = (data: { chatId: number; username?: string }) => {
       if (data.chatId !== activeChat.id || !data.username) return;
+      if (!data.username) return;
+      setTypingUsers((prev) =>
+        prev.includes(data.username as string) ? prev : [...prev, data.username as string]
+      );
 
-      setTypingUsers((prev) => {
-        if (prev.includes(data.username!)) return prev;
-        return [...prev, data.username!];
-      });
+
     };
 
     const handleTypingStop = (data: { chatId: number; username?: string }) => {
       if (data.chatId !== activeChat.id || !data.username) return;
-
       setTypingUsers((prev) => prev.filter((u) => u !== data.username));
     };
 
@@ -126,7 +124,7 @@ export const useChatMessages = () => {
     };
   }, [socket, activeChat?.id]);
 
-  /** 🧠 Опционально: группировка сообщений для UI **/
+  /** 🧠 Группировка сообщений для UI **/
   const groupedMessages = useMemo(() => {
     if (!activeHistory?.length) return [];
     return groupMessagesByMinuteAndUserId(activeHistory);

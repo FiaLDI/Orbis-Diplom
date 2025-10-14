@@ -1,17 +1,12 @@
 import { chat } from "@/features/chat";
-import { fastUserInfo } from "@/features/user";
-
-export interface voice {
-    id: number;
-    name: string;
-}
+import { fastUserInfo, permission } from "@/features/user";
 
 export interface server {
     id: number;
     name: string;
-    voices: voice[];
     chats: chat[];
     users: fastUserInfo[];
+    roles: any
 }
 
 export interface serverState {
@@ -22,4 +17,5 @@ export interface serverState {
     messegerChange?: boolean;
     userChange?: boolean;
     isSettingsActive?: boolean;
+    allPermission?: permission[]
 }

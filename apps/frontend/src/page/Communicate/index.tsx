@@ -8,8 +8,10 @@ import {
   setActiveServer,
   setSettingsActive,
   SettingsServer,
+  useLazyGetPermissionsQuery,
   useLazyGetServersInsideQuery,
   useLazyGetServersMembersQuery,
+  useLazyGetServersRolesQuery,
 } from "@/features/server";
 import { UserProfile } from "@/features/user";
 import { AppMenu } from "./components/AppMenu";
@@ -27,17 +29,24 @@ export const CommunicatePage: React.FC = () => {
 
   const [triggerMembers] = useLazyGetServersMembersQuery();
   const [getServer] = useLazyGetServersInsideQuery();
+  const [getPermission] = useLazyGetPermissionsQuery();
+  const [getServerRoles] = useLazyGetServersRolesQuery();
   const [isMessageMenuOpen, setIsMessageMenuOpen] = useState(true);
 
   const activeServerId = activeserver?.id;
   const hasActiveChat = Boolean(activeChat);
   const hasActiveServer = Boolean(activeserver);
 
-  // Загружаем данные при смене сервера
   const fetchServerData = useCallback(async () => {
     if (!activeServerId) return;
 
-    await Promise.all([triggerMembers(activeServerId), getServer(activeServerId)]);
+    await Promise.all(
+      [
+        triggerMembers(activeServerId), 
+        getServer(activeServerId), 
+        getServerRoles(activeServerId)
+      ]
+    );
     dispatch(setActiveChat(undefined));
     dispatch(setSettingsActive(false));
   }, [activeServerId, triggerMembers, getServer, dispatch]);
@@ -45,6 +54,10 @@ export const CommunicatePage: React.FC = () => {
   useEffect(() => {
     fetchServerData();
   }, [fetchServerData]);
+
+  useEffect(()=>{
+    getPermission({});
+  }, [])
 
   // Условия отображения
   const showChat = !isSettingsActive && hasActiveChat;

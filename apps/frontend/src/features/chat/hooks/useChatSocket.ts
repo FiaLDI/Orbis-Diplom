@@ -1,47 +1,45 @@
-import { useEffect, useRef, useState } from "react";
-import { io, Socket } from "socket.io-client";
-import { config } from "@/config";
+import { useEffect, useState } from "react";
+import { initSocket, getSocket, disconnectSocket } from "../socket";
 import { useAppSelector } from "@/app/hooks";
+import type { Socket } from "socket.io-client";
 
 export const useChatSocket = () => {
-    const socketRef = useRef<Socket | null>(null);
-    const [isConnected, setIsConnected] = useState(false);
+  const token = useAppSelector((s) => s.auth.user?.access_token);
+  const [socket, setSocket] = useState<Socket | null>(getSocket());
+  const [isConnected, setIsConnected] = useState(false);
 
-    const token = useAppSelector(s => s.auth.user?.access_token);
+  useEffect(() => {
+    if (!token) return;
 
-    useEffect(() => {
-        if (!token) return;
+    let s = getSocket();
+    if (!s) {
+      s = initSocket(token);
+    }
+    setSocket(s);
 
-        if (!socketRef.current) {
-            const newSocket = io(`${config.monoliteUrl}/chat`, {
-                auth: { token: token },
-                autoConnect: true,
-                reconnection: true,
-                reconnectionAttempts: 5,
-                reconnectionDelay: 3000,
-            },);
-
-            newSocket.on("connect", () => {
-                console.log("[TextSocket] Connected");
-                setIsConnected(true);
-            });
-
-            newSocket.on("disconnect", () => {
-                console.log("[TextSocket] Disconnected");
-                setIsConnected(false);
-            });
-
-            newSocket.on("connect_error", (err) => {
-                console.error("[TextSocket] Connection error:", err);
-                setIsConnected(false);
-            });
-
-            socketRef.current = newSocket;
-        }
-    }, [token]);
-
-    return {
-        socket: socketRef.current,
-        isConnected,
+    const handleConnect = () => {
+      console.log("[Socket] Connected");
+      setIsConnected(true);
     };
+    const handleDisconnect = () => {
+      console.log("[Socket] Disconnected");
+      setIsConnected(false);
+    };
+    const handleError = (err: any) => {
+      console.error("[Socket] Error:", err);
+      setIsConnected(false);
+    };
+
+    s.on("connect", handleConnect);
+    s.on("disconnect", handleDisconnect);
+    s.on("connect_error", handleError);
+
+    return () => {
+      s?.off("connect", handleConnect);
+      s?.off("disconnect", handleDisconnect);
+      s?.off("connect_error", handleError);
+    };
+  }, [token]);
+
+  return { socket, isConnected, disconnectSocket };
 };

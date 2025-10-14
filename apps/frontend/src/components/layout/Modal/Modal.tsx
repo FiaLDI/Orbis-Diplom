@@ -50,7 +50,7 @@ export const ModalLayout: React.FC<ModalLayoutProps> = ({
     <div className="fixed inset-0 z-[1000] flex justify-center items-center bg-black/50 backdrop-blur-sm">
       <div
         ref={modalRef}
-        className="bg-[#3247be] rounded-2xl p-6 shadow-xl min-w-[75%] min-h-[60%] lg:min-w-[40%] lg:h-[50%]"
+        className="bg-[#3247be] rounded-2xl p-6 shadow-xl"
       >
         {children}
       </div>

@@ -62,7 +62,47 @@ const serverSlice = createSlice({
                         ...action.payload,
                     };
                 },
-            );
+            )
+            .addMatcher(
+                serverApi.endpoints.GetPermissions.matchFulfilled,
+                (state, action) => {
+                    state.allPermission = action.payload;
+                },
+            )
+            .addMatcher(
+                serverApi.endpoints.GetServersRoles.matchFulfilled,
+                (state, action) => {
+                    if (!state.activeserver) return;
+                    state.activeserver = {
+                        ...state.activeserver,
+                        roles: action.payload,
+                    };
+                },
+            ).addMatcher(
+            serverApi.endpoints.UpdateServerRole.matchFulfilled,
+            (state, action) => {
+                if (!state.activeserver || !state.activeserver.roles) return;
+                state.activeserver.roles = state.activeserver.roles.map((role: any) =>
+                role.id === action.meta.arg.originalArgs.roleId
+                    ? { ...role, ...action.meta.arg.originalArgs.data }
+                    : role
+                );
+            },
+            ).addMatcher(
+      serverApi.endpoints.UpdateRolePermissions.matchFulfilled,
+      (state, action) => {
+        if (!state.activeserver || !state.activeserver.roles) return;
+        const roleId = action.meta.arg.originalArgs.roleId;
+        const permissions = action.meta.arg.originalArgs.permissions;
+
+        state.activeserver.roles = state.activeserver.roles.map((role: any) =>
+          role.id === roleId
+            ? { ...role, permissions }
+            : role
+        );
+      },
+    )
+            ;
     },
 });
 

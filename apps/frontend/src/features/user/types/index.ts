@@ -8,6 +8,7 @@ export interface userState {
 export interface permission {
   id: string;
   name: string;
+  color?: string;
 }
 
 export interface fastUserInfo {
@@ -18,11 +19,12 @@ export interface fastUserInfo {
     is_online: boolean;
   };
   user_server: {
-    role: {
+    roles: {
       id: string;
       name: string;
-      permissions: permission[]; // ✅ готовый массив
-    };
+      color?: string;
+      permissions: permission[];
+    }[];
   }[];
 }
 
