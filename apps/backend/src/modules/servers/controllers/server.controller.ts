@@ -360,27 +360,56 @@ const updateServer = async (req: Request, res: Response) => {
 
 // DELETE /servers/:id
 const deleteServer = async (req: Request, res: Response) => {
-    const serverId = parseInt(req.params.id);
+  const serverId = parseInt(req.params.id);
 
-    try {
-        const token = req.headers["authorization"]?.split(" ")[1];
-        if (!token) return res.sendStatus(401);
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
+  try {
+    const token = req.headers["authorization"]?.split(" ")[1];
+    if (!token) return res.sendStatus(401);
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
 
-        const server = await prisma.servers.findUnique({ where: { id: serverId } });
-        if (!server) return res.status(404).json({ message: "Server not found" });
+    const server = await prisma.servers.findUnique({ where: { id: serverId } });
+    if (!server) return res.status(404).json({ message: "Server not found" });
 
-        if (server.creator_id !== decoded.id) {
-            return res.status(403).json({ message: "Forbidden" });
-        }
-
-        await prisma.servers.delete({ where: { id: serverId } });
-        res.json({ message: "Server deleted" });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Internal server error" });
+    if (server.creator_id !== decoded.id) {
+      return res.status(403).json({ message: "Forbidden" });
     }
+
+    await prisma.$transaction(async (tx) => {
+      // удаляем все user_server_roles
+      await tx.user_server_roles.deleteMany({ where: { server_id: serverId } });
+
+      // удаляем все user_server
+      await tx.user_server.deleteMany({ where: { server_id: serverId } });
+
+      // удаляем все роли
+      await tx.role_permission.deleteMany({
+        where: { role: { server_id: serverId } },
+      });
+      await tx.role_server.deleteMany({ where: { server_id: serverId } });
+
+      // удаляем все server_chats и сами чаты
+      await tx.server_chats.deleteMany({ where: { id_server: serverId } });
+      await tx.chats.deleteMany({
+        where: { server_chats: { some: { id_server: serverId } } },
+      });
+
+      // удаляем баны, инвайты, логи, репорты
+      await tx.server_bans.deleteMany({ where: { server_id: serverId } });
+      await tx.invites.deleteMany({ where: { server_id: serverId } });
+      await tx.audit_logs.deleteMany({ where: { server_id: serverId } });
+      await tx.reports.deleteMany({ where: { server_id: serverId } });
+
+      // сам сервер
+      await tx.servers.delete({ where: { id: serverId } });
+    });
+
+    res.json({ message: "Server and all related data deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
+
 
 // DELETE /servers/:id/members/:userId
 const kickMember = async (req: Request, res: Response) => {

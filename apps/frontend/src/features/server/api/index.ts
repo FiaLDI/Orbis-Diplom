@@ -106,15 +106,21 @@ export const serverApi = createApi({
             method: "PATCH",
             body: data,
             }),
-            invalidatesTags: (res, err, { roleId }) => [{ type: "Roles", id: roleId }],
+            invalidatesTags: (result, error, { serverId }) => [
+                { type: "Roles", id: "LIST" },
+                { type: "ServerMembers", id: serverId },
+            ],
         }),
-        DeleteRole: builder.mutation({
+        deleteRole: builder.mutation<void, { serverId: number; roleId: number }>({
             query: ({ serverId, roleId }) => ({
-            url: `/servers/${serverId}/roles/${roleId}`,
-            method: "DELETE",
+                url: `/servers/${serverId}/roles/${roleId}`,
+                method: "DELETE",
             }),
-            invalidatesTags: [{ type: "Roles", id: "LIST" }],
-        }),
+            invalidatesTags: (result, error, { serverId }) => [
+                { type: "Roles", id: "LIST" },
+                { type: "ServerMembers", id: serverId },
+            ],
+            }),
 
         AssignRoleToMember: builder.mutation({
             query: ({ serverId, userId, roleId }) => ({

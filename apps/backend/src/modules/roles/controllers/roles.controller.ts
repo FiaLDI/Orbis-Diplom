@@ -76,7 +76,11 @@ export const updateServerRole = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Role not found in this server" });
     }
 
-    // ❌ Запрещаем менять имя системных ролей
+    if (["creator", "default"].includes(role.name.toLowerCase()) && name && name.toLowerCase() !== role.name.toLowerCase()) {
+      return res.status(400).json({ message: "Cannot rename system role" });
+    }
+
+
     if ((role.name === "creator" || role.name === "default") && name && name !== role.name) {
       return res.status(400).json({ message: "Cannot rename system role" });
     }
@@ -109,15 +113,11 @@ export const updateServerRole = async (req: Request, res: Response) => {
  * DELETE /servers/:id/roles/:roleId
  * Удалить роль
  */
-/**
- * DELETE /servers/:id/roles/:roleId
- */
 export const deleteServerRole = async (req: Request, res: Response) => {
   const roleId = parseInt(req.params.roleId, 10);
   const serverId = parseInt(req.params.id, 10);
 
   try {
-    // Находим роль
     const role = await prisma.role_server.findUnique({
       where: { id: roleId },
     });
@@ -126,14 +126,25 @@ export const deleteServerRole = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Role not found in this server" });
     }
 
-    // ❌ Блокируем удаление системных ролей
-    if (role.name === "creator" || role.name === "default") {
+    if (["creator", "default"].includes(role.name.toLowerCase())) {
       return res.status(400).json({ message: "Cannot delete system role" });
     }
 
-    // Удаляем
-    await prisma.role_server.delete({
-      where: { id: roleId },
+    await prisma.$transaction(async (tx) => {
+      // удаляем связи user ↔ role
+      await tx.user_server_roles.deleteMany({
+        where: { role_id: roleId, server_id: serverId },
+      });
+
+      // удаляем права
+      await tx.role_permission.deleteMany({
+        where: { role_id: roleId },
+      });
+
+      // удаляем саму роль
+      await tx.role_server.delete({
+        where: { id: roleId },
+      });
     });
 
     res.json({ message: "Role deleted" });
@@ -142,6 +153,7 @@ export const deleteServerRole = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 /**
@@ -154,6 +166,18 @@ export const assignRoleToMember = async (req: Request, res: Response) => {
   const roleId = parseInt(req.params.roleId, 10);
 
   try {
+    const role = await prisma.role_server.findUnique({
+      where: { id: roleId },
+    });
+
+    if (!role || role.server_id !== serverId) {
+      return res.status(404).json({ message: "Role not found in this server" });
+    }
+
+    if (role.name.toLowerCase() === "creator") {
+      return res.status(400).json({ message: "Cannot assign creator role manually" });
+    }
+
     await prisma.user_server_roles.create({
       data: {
         user_id: userId,
@@ -168,6 +192,7 @@ export const assignRoleToMember = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 /**
  * DELETE /servers/:id/members/:userId/role/:roleId
@@ -244,7 +269,14 @@ export const getRolePermissions = async (req: Request, res: Response) => {
 export const updateRolePermissions = async (req: Request, res: Response) => {
   try {
     const { roleId } = req.params;
-    const { permissions } = req.body; // массив permission_id
+    const { permissions } = req.body;
+
+    const role = await prisma.role_server.findUnique({ where: { id: Number(roleId) } });
+    if (!role) return res.status(404).json({ message: "Role not found" });
+
+    if (role.name.toLowerCase() === "creator") {
+      return res.status(400).json({ message: "Cannot update permissions of creator role" });
+    }
 
     await prisma.role_permission.deleteMany({
       where: { role_id: Number(roleId) },

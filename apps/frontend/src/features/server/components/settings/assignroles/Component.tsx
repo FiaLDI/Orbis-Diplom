@@ -52,18 +52,20 @@ export const Component: React.FC<ComponentProps> = ({
       </button>
 
       <ModalLayout open={open} onClose={() => setOpen(false)}>
-        <div className="p-4 space-y-2">
-          <h3 className="text-lg font-semibold mb-3">Assign roles</h3>
+        <div className="p-0">
+          <h3 className="text-lg font-semibold px-10 py-3 bg-[#4354ee8f] rounded">Assign roles</h3>
 
-          {availableRoles.map((role) => (
-            <div key={role.id} className="flex justify-between items-center">
-              <span style={{ color: role.color || "white" }}>{role.name}</span>
-              <input
-                type="checkbox"
-                checked={localRoles.has(role.id)}
-                onChange={() => toggleRole(role.id)}
-              />
-            </div>
+          {availableRoles
+            .filter((role) => role.name.toLowerCase() !== "creator")
+            .map((role) => (
+              <div key={role.id} className="flex justify-between items-center p-3 border-b border-white/30">
+                <span style={{ color: role.color || "white" }}>{role.name}</span>
+                <input
+                  type="checkbox"
+                  checked={localRoles.has(role.id)}
+                  onChange={() => toggleRole(role.id)}
+                />
+              </div>
           ))}
 
           <button

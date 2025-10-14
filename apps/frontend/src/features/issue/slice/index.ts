@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 const initialState = {};
 
 const issueSlice = createSlice({
-    name: "chat",
+    name: "issue",
     initialState,
     reducers: {
     },

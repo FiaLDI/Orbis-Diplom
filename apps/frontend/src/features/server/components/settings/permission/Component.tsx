@@ -42,13 +42,16 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
   };
 
   const save = async () => {
-    // обновляем имя и цвет
+    if (roleName.toLowerCase() === "creator") {
+      return; // ❌ creator не редактируем вообще
+    }
+
     await updateServerRole({ roleId, serverId, data: { name, color } });
-    // обновляем permissions
-    await updateRolePermissions({ roleId, permissions: rolePermissions });
+    if (roleName.toLowerCase() !== "creator") {
+      await updateRolePermissions({ roleId, permissions: rolePermissions });
+    }
     setOpen(false);
   };
-
   return (
     <>
       <button
@@ -60,8 +63,8 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
       </button>
 
       <ModalLayout open={open} onClose={() => setOpen(false)}>
-        <div className="p-4 space-y-4">
-          {/* Имя роли */}
+        <div className="p-0">
+          <h4 className="text-lg font-semibold px-30 py-3 bg-[#4354ee8f] rounded text-center">Role editor</h4>
           <div>
             <label className="block text-sm font-medium mb-1">Role name</label>
             <input
@@ -69,7 +72,7 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full border rounded px-2 py-1"
-              disabled={roleName === "creator" || roleName === "default"}
+              disabled={["creator", "default"].includes(roleName.toLowerCase())}
             />
           </div>
 
@@ -85,17 +88,21 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
           </div>
 
           {/* Permissions */}
-          <div className="space-y-2">
-            {allPermissions.map((perm: any) => (
-              <div key={perm.id} className="flex justify-between items-center">
-                <span>{perm.name}</span>
-                <input
-                  type="checkbox"
-                  checked={rolePermissions.includes(perm.id)}
-                  onChange={() => togglePermission(perm.id)}
-                />
-              </div>
-            ))}
+          <div className="">
+            {roleName.toLowerCase() === "creator" ? (
+              <div className="text-sm text-gray-400">Permissions cannot be changed for creator</div>
+            ) : (
+              allPermissions.map((perm: any) => (
+                <div key={perm.id} className="flex justify-between items-center">
+                  <span>{perm.name}</span>
+                  <input
+                    type="checkbox"
+                    checked={rolePermissions.includes(perm.id)}
+                    onChange={() => togglePermission(perm.id)}
+                  />
+                </div>
+              ))
+            )}
           </div>
 
           {/* Save button */}

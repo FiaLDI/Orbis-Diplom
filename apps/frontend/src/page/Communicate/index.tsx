@@ -26,12 +26,14 @@ export const CommunicatePage: React.FC = () => {
     isSettingsActive: s.server.isSettingsActive,
     activeserver: s.server.activeserver,
   }));
+  const issueMode = true;
 
   const [triggerMembers] = useLazyGetServersMembersQuery();
   const [getServer] = useLazyGetServersInsideQuery();
   const [getPermission] = useLazyGetPermissionsQuery();
   const [getServerRoles] = useLazyGetServersRolesQuery();
   const [isMessageMenuOpen, setIsMessageMenuOpen] = useState(true);
+  
 
   const activeServerId = activeserver?.id;
   const hasActiveChat = Boolean(activeChat);
@@ -61,7 +63,7 @@ export const CommunicatePage: React.FC = () => {
 
   // Условия отображения
   const showChat = !isSettingsActive && hasActiveChat;
-  const showEmptyServer = !isSettingsActive && hasActiveServer && !hasActiveChat;
+  const showEmptyServer = !isSettingsActive && hasActiveServer && !hasActiveChat && !issueMode;
 
   return (
     <div className="flex flex-col lg:flex-row h-screen w-screen">
@@ -91,6 +93,8 @@ export const CommunicatePage: React.FC = () => {
 
         {/* Если нет ни чата, ни сервера → показываем список друзей */}
         {!hasActiveChat && !hasActiveServer && <FriendList />}
+
+        {!hasActiveChat && hasActiveServer && issueMode && <div className="w-full">issue</div>}
 
         {/* Участники сервера */}
         <MemberServer />
