@@ -8,12 +8,14 @@ import uploadReducer from "@/features/upload/slice";
 import actionReducer from "@/features/action/slice";
 import settingsReducer from "@/features/settings";
 import friendsReducer from "@/features/friends/slice";
+import issueReducer from "@/features/issue/slice";
 import { serverApi } from "@/features/server";
 import { authApi } from "@/features/auth";
 import { userApi } from "@/features/user";
 import { friendsApi } from "@/features/friends";
 import { messageApi } from "@/features/messages";
 import { chatApi } from "@/features/chat";
+import { issueApi } from "@/features/issue";
 
 export const store = configureStore({
     reducer: {
@@ -26,12 +28,14 @@ export const store = configureStore({
         action: actionReducer,
         settings: settingsReducer,
         friends: friendsReducer,
+        issue: issueReducer,
         [authApi.reducerPath]: authApi.reducer,
         [messageApi.reducerPath]: messageApi.reducer,
         [chatApi.reducerPath]: chatApi.reducer,
         [serverApi.reducerPath]: serverApi.reducer,
         [userApi.reducerPath]: userApi.reducer,
         [friendsApi.reducerPath]: friendsApi.reducer,
+        [issueApi.reducerPath]: issueApi.reducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
@@ -41,6 +45,7 @@ export const store = configureStore({
             serverApi.middleware,
             userApi.middleware,
             friendsApi.middleware,
+            issueApi.middleware,
         ),
 });
 
