@@ -8,7 +8,7 @@ import { connectRedis } from "./config";
 import { authRoutes, chatRouter, moderationRouter, notificationRouter, rolesRouter, searchRouter } from "@/modules";
 import { userRouter } from "@/modules";
 import { Server } from "socket.io";
-import { AuthenticatedSocket, chatSocket, journalSocket } from "./socket";
+import { AuthenticatedSocket, chatSocket, journalSocket, planningSocket } from "./socket";
 import { messagesRouter } from "@/modules";
 import { friendRouter } from "@/modules";
 import { serverRouter } from "@/modules";
@@ -67,6 +67,12 @@ export const ioChat = io.of("/chat");
 ioChat.on("connection", (socket) => {
     chatSocket(socket as AuthenticatedSocket)
 })
+
+export const ioPlanning = io.of("/planning");
+
+ioPlanning.on("connection", (socket) => {
+  planningSocket(socket as AuthenticatedSocket);
+});
 
 const PORT = Number(process.env.PORT);
 const HOST = "0.0.0.0";

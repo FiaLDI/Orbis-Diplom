@@ -1,3 +1,4 @@
 export * from "./chatSocket";
 export * from "./journalSocket";
-export type * from "./types/socket"
+export * from "./planningSocket";
+export type * from "./types/socket";

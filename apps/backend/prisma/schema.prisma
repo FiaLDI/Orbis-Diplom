@@ -54,6 +54,7 @@ model users {
   friend_requests_from friend_requests[] @relation("RequestFrom")
   friend_requests_to   friend_requests[] @relation("RequestTo")
   created_servers      servers[]         @relation("UserCreatedServers")
+  issue_assignee issue_assignee[] 
 
   server_bans         server_bans[]        
   bans_made           server_bans[]        @relation("BanActor") 
@@ -136,6 +137,8 @@ model servers {
   server_chats server_chats[]
 
   roles role_server[]
+
+  project project[]
   
   server_bans   server_bans[]    
   invites       invites[]        
@@ -177,7 +180,7 @@ model user_server {
   user   users   @relation(fields: [user_id], references: [id])
   server servers @relation(fields: [server_id], references: [id])
 
-  roles user_server_roles[]   // 👈 список ролей
+  roles user_server_roles[]
 
   @@id([user_id, server_id])
   @@index([server_id])
@@ -244,6 +247,7 @@ model chats {
   messages      messages[]
   server_chats  server_chats[]
   message_reads message_reads[]
+  chat_issues   chat_issues []
 }
 
 model server_chats {
@@ -424,4 +428,84 @@ model push_subscriptions {
 
   @@unique([user_id, endpoint])
   @@index([user_id])
+}
+/* =========================
+   ПЛАНИРОВАНИЕ / ПРОЕКТЫ / ЗАДАЧИ
+   ========================= */
+
+model project {
+  id          Int       @id @default(autoincrement())
+  server_id   Int
+  name        String    @db.VarChar(100)
+  description String?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  server servers @relation(fields: [server_id], references: [id])
+
+  project_issues project_issues[]
+}
+
+model issue {
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(200)
+  description String?
+  priority    IssuePriority @default(MEDIUM)
+  status_id   Int
+  due_date    DateTime?        // дедлайн
+  parent_id   Int?             // ссылка на родительскую задачу
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  status  issue_status @relation(fields: [status_id], references: [id])
+  parent  issue?       @relation("IssueParent", fields: [parent_id], references: [id])
+  subtasks issue[]     @relation("IssueParent")
+
+  assignees      issue_assignee[]
+  project_issues project_issues[]
+  chat_issues    chat_issues[]
+}
+
+enum IssuePriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model project_issues {
+  project_id Int
+  issue_id   Int
+
+  project project @relation(fields: [project_id], references: [id])
+  issue   issue   @relation(fields: [issue_id], references: [id])
+
+  @@id([project_id, issue_id])
+}
+
+model chat_issues {
+  chat_id  Int
+  issue_id Int
+
+  chat  chats @relation(fields: [chat_id], references: [id])
+  issue issue @relation(fields: [issue_id], references: [id])
+
+  @@id([chat_id, issue_id])
+}
+
+model issue_status {
+  id    Int    @id @default(autoincrement())
+  name  String @db.VarChar(50) @unique
+
+  issues issue[]
+}
+
+model issue_assignee {
+  issue_id Int
+  user_id  Int
+
+  issue issue @relation(fields: [issue_id], references: [id])
+  user  users @relation(fields: [user_id], references: [id])
+
+  @@id([issue_id, user_id])
 }
