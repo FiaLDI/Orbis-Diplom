@@ -1,47 +1,27 @@
-import { useEffect, useRef, useState } from "react";
-import { io, Socket } from "socket.io-client";
-import { config } from "@/config";
+// hooks/useServerJournalSocket.ts
+import { useEffect, useState } from "react";
+import { getJournalSocket } from "../socket";
 import { useAppSelector } from "@/app/hooks";
 
 export const useServerJournalSocket = () => {
-    const socketRef = useRef<Socket | null>(null);
-    const [isConnected, setIsConnected] = useState(false);
-    
-    const token = useAppSelector(s => s.auth.user?.access_token);
+  const [isConnected, setIsConnected] = useState(false);
+  const token = useAppSelector((s) => s.auth.user?.access_token);
 
-    useEffect(() => {
-        if (!token) return;
+  useEffect(() => {
+    if (!token) return;
+    const socket = getJournalSocket(token);
 
-        if (!socketRef.current) {
-            const newSocket = io(`${config.monoliteUrl}/journal`, {
-                auth: { token: token },
-                autoConnect: true,
-                reconnection: true,
-                reconnectionAttempts: 5,
-                reconnectionDelay: 3000,
-            });
+    const onConnect = () => setIsConnected(true);
+    const onDisconnect = () => setIsConnected(false);
 
-            newSocket.on("connect", () => {
-                console.log("[JournalSocket] Connected");
-                setIsConnected(true);
-            });
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
 
-            newSocket.on("disconnect", () => {
-                console.log("[JournalSocket] Disconnected");
-                setIsConnected(false);
-            });
-
-            newSocket.on("connect_error", (err) => {
-                console.error("[JournalSocket] Connection error:", err);
-                setIsConnected(false);
-            });
-
-            socketRef.current = newSocket;
-        }
-    }, [token]);
-
-    return {
-        socket: socketRef.current,
-        isConnected,
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
     };
+  }, [token]);
+
+  return { socket: token ? getJournalSocket(token) : null, isConnected };
 };

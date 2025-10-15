@@ -18,44 +18,75 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    // Проверяем доступ
+    // ✅ Проверка доступа (оставляем как у тебя)
     const serverChat = await prisma.server_chats.findFirst({
       where: { id_chats: chatId },
       select: { id_server: true },
     });
 
     let hasAccess = false;
+    let serverId: number | null = null;
 
     if (serverChat) {
+      serverId = serverChat.id_server;
       const inServer = await prisma.user_server.findFirst({
         where: {
           user_id: req.user.id,
-          server_id: serverChat.id_server,
+          server_id: serverId,
         },
       });
       hasAccess = !!inServer;
     } else {
-      const inChat = await prisma.chat_users.findFirst({
-        where: {
-          chat_id: chatId,
-          user_id: req.user.id,
+      const chatIssue = await prisma.chat_issues.findFirst({
+        where: { chat_id: chatId },
+        include: {
+          issue: {
+            include: {
+              project_issues: {
+                include: { project: true },
+              },
+            },
+          },
         },
       });
-      hasAccess = !!inChat;
+
+      if (chatIssue?.issue?.project_issues?.length) {
+        serverId = chatIssue.issue.project_issues[0].project.server_id;
+        const inServer = await prisma.user_server.findFirst({
+          where: {
+            user_id: req.user.id,
+            server_id: serverId,
+          },
+        });
+        hasAccess = !!inServer;
+      } else {
+        const inChat = await prisma.chat_users.findFirst({
+          where: { chat_id: chatId, user_id: req.user.id },
+        });
+        hasAccess = !!inChat;
+      }
     }
 
     if (!hasAccess) {
       return res.status(403).json({ message: "Access denied to this chat" });
     }
 
-    // 💬 Загружаем сообщения
+    // 💬 Загружаем сообщения + аватар
     const messages = await prisma.messages.findMany({
       where: { chat_id: chatId },
       orderBy: { created_at: "desc" },
       take: 20,
       skip: offset * 20,
       include: {
-        user: { select: { id: true, username: true } },
+        user: {
+          select: {
+            id: true,
+            username: true,
+            user_profile: {
+              select: { avatar_url: true },
+            },
+          },
+        },
         messages_content: {
           include: {
             content: { select: { id: true, text: true, url: true } },
@@ -69,6 +100,7 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
       chat_id: msg.chat_id,
       user_id: msg.user?.id ?? null,
       username: msg.user?.username ?? "Unknown",
+      avatar_url: msg.user?.user_profile?.avatar_url ?? null, // 🔹 теперь в ответе
       reply_to_id: msg.reply_to_id,
       is_edited: msg.is_edited ?? false,
       content: msg.messages_content.map((mc) => ({
@@ -77,7 +109,6 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
         text: mc.content.text ?? "",
         url: mc.content.url ?? "",
       })),
-      // ✅ теперь ISO вместо toLocaleTimeString
       timestamp: msg.created_at ? msg.created_at.toISOString() : null,
       updated_at: msg.updated_at ? msg.updated_at.toISOString() : null,
     }));
@@ -88,6 +119,8 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
 
 export const sendMessages = async (req: AuthRequest, res: Response) => {
   const { chat_id, content, reply_to_id } = req.body;

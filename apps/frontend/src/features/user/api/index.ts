@@ -46,7 +46,7 @@ export const userApi = createApi({
         }),
         startChatting: builder.mutation({
             query: (id) => ({
-                url: `/user/${id}/chatstart`,
+                url: `/chats/start/${id}`,
                 method: "POST",
             }),
         }),

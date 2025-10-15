@@ -1,70 +1,117 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ModalLayout } from "@/components/layout/Modal/Modal";
 import { Props } from "./interface";
-import { useCreateIssueMutation } from "@/features/issue";
+import { selectAllIssues, selectIssueById, useCreateIssueMutation, useLazyGetIssuesQuery, useUpdateIssueMutation } from "@/features/issue";
 import { Plus } from "lucide-react";
 import { useAppSelector } from "@/app/hooks";
 
-export const Component: React.FC<Props> = ({ projectId, serverId, statuses, priorities }) => {
+interface FormProps extends Props {
+  initialData?: any | null;   // данные для редактирования
+  onClose?: () => void;       // колбэк для закрытия
+}
+
+
+export const Component: React.FC<FormProps> = ({
+  projectId,
+  serverId,
+  statuses,
+  priorities,
+  initialData = null,
+  onClose,
+}) => {
   const [open, setOpen] = useState(false);
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [statusId, setStatusId] = useState<number | null>(null);
-  const [priority, setPriority] = useState<string | null>(null);
-  const [dueDate, setDueDate] = useState<string>("");
-  const [parentId, setParentId] = useState<number | null>(null);
+  const [title, setTitle] = useState(initialData?.title ?? "");
+  const [description, setDescription] = useState(initialData?.description ?? "");
+  const [statusId, setStatusId] = useState<number | null>(initialData?.status_id ?? null);
+  const [priority, setPriority] = useState<string | null>(initialData?.priority ?? null);
+  const [dueDate, setDueDate] = useState(
+    initialData?.due_date ? new Date(initialData.due_date).toISOString().slice(0, 10) : ""
+  );
+  const [parentId, setParentId] = useState<number | null>(initialData?.parent_id ?? null);
 
   const [createIssue] = useCreateIssueMutation();
+  const [updateIssue] = useUpdateIssueMutation();
+  const [getIssue] = useLazyGetIssuesQuery();
 
-  // берем уже существующие issues из стора
-  const issues = useAppSelector((s) => s.issue.issues);
+  const issues = useAppSelector(selectAllIssues);
+
+  // ⚡ Если создаём новую задачу — выставляем дефолтный статус (первый из списка)
+  useEffect(() => {
+    if (!initialData && statuses.length > 0 && statusId === null) {
+      setStatusId(statuses[0].id);
+    }
+  }, [statuses, initialData, statusId]);
 
   const rem = () => {
     setOpen(false);
-    setTitle("");
-    setDescription("");
-    setStatusId(null);
-    setPriority(null);
-    setDueDate("");
-    setParentId(null);
+    if (!initialData) {
+      setTitle("");
+      setDescription("");
+      setStatusId(null);
+      setPriority(null);
+      setDueDate("");
+      setParentId(null);
+    }
+    if (onClose) onClose();
+
+    getIssue(projectId)
   };
 
   const save = async () => {
-    if (!title || !statusId || !priority) return;
+  if (!title || statusId === null || !priority) return;
 
-    try {
-      await createIssue({
-        id: projectId,
+  try {
+    if (initialData) {
+      // update
+      await updateIssue({
+        projectId,                // 👈 теперь передаём projectId
+        issueId: initialData.id,
         data: {
           title,
           description,
           statusId,
           priority,
           due_date: dueDate ? new Date(dueDate).toISOString() : null,
-          parent_id: parentId || null, // теперь реально связываем
+          parent_id: parentId || null,
         },
       }).unwrap();
-
-      rem();
-    } catch (err) {
-      console.error("Failed to create issue:", err);
+    } else {
+      // create
+      await createIssue({
+        projectId,                // 👈 у тебя раньше было id, но лучше единообразно projectId
+        data: {
+          title,
+          description,
+          statusId,
+          priority,
+          due_date: dueDate ? new Date(dueDate).toISOString() : null,
+          parent_id: parentId || null,
+        },
+      }).unwrap();
     }
-  };
+
+    rem();
+  } catch (err) {
+    console.error("Failed to save issue:", err);
+  }
+};
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className="cursor-pointer p-5 rounded text-sm hover:text-black"
-      >
-        <Plus />
-      </button>
+      {!initialData && (
+        <button
+          onClick={() => setOpen(true)}
+          className="cursor-pointer rounded text-sm hover:text-black"
+        >
+          <Plus />
+        </button>
+      )}
 
-      <ModalLayout open={open} onClose={() => setOpen(false)}>
+      <ModalLayout open={open || !!initialData} onClose={() => setOpen(false)}>
         <div className="p-4 text-white space-y-4">
           <h4 className="text-lg font-semibold py-3 bg-[#4354ee8f] rounded text-center">
-            Issue creator
+            {initialData ? "Edit Issue" : "Create Issue"}
           </h4>
 
           {/* Title */}
@@ -142,11 +189,13 @@ export const Component: React.FC<Props> = ({ projectId, serverId, statuses, prio
               className="w-full border rounded px-2 py-1 text-black"
             >
               <option value="">-- No parent --</option>
-              {issues.map((iss: any) => (
-                <option key={iss.id} value={iss.id}>
-                  {iss.title}
-                </option>
-              ))}
+              {issues
+                .filter((iss: any) => iss.id !== initialData?.id) // нельзя выбрать сам себя
+                .map((iss: any) => (
+                  <option key={iss.id} value={iss.id}>
+                    {iss.title}
+                  </option>
+                ))}
             </select>
           </div>
 

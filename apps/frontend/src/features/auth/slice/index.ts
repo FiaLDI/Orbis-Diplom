@@ -112,12 +112,15 @@ const authSlice = createSlice({
             .addMatcher(
                 authApi.endpoints.refreshToken.matchFulfilled,
                 (state, action) => {
-                    if (state.user) {
-                    state.user.access_token = action.payload.access_token;
+                    state.user = {
+                    access_token: action.payload.access_token,
+                    info: action.payload.info,
+                    username: action.payload.username,
+                    };
                     state.isAuthenticated = true;
-                    }
-                },
-                )
+                    state.loading = false;
+                }
+            )
     },
 });
 

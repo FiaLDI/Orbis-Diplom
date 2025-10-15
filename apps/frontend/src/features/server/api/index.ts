@@ -47,6 +47,12 @@ export const serverApi = createApi({
                 body: data,
             }),
         }),
+        DeleteChat: builder.mutation({
+            query: ({id, chatId}) => ({
+                url: `/servers/${id}/chats/${chatId}`,
+                method: "DELETE",
+            }),
+        }),
         JoinServer: builder.mutation({
             query: (id) => ({
                 url: `/servers/${id}/join`,
@@ -150,6 +156,7 @@ export const {
     useCreateSeverMutation,
     useLazyGetServersInsideQuery,
     useCreateChatMutation,
+    useDeleteChatMutation,
     useJoinServerMutation,
     useLazyGetServersMembersQuery,
     useGetPermissionsQuery,
@@ -162,6 +169,6 @@ export const {
     useCreateRoleMutation,
     useAssignRoleToMemberMutation,
     useRemoveRoleFromMemberMutation,
-  useDeleteRoleMutation,
-  useGetServersRolesQuery,
+    useDeleteRoleMutation,
+    useGetServersRolesQuery,
 } = serverApi;

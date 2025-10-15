@@ -1,100 +1,153 @@
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import React, { useState } from "react";
-import { activeChange } from "./interface";
-import { setAccountInfo } from "../../slice";
+import React from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useAppSelector } from "@/app/hooks";
+import { useUpdateAccountMutation } from "@/features/settings";
+
+interface AccountFormData {
+  username: string;
+  email: string;
+  password: string;
+  number: string;
+}
 
 export const Component: React.FC = () => {
-    const user = useAppSelector((s) => s.auth.user?.info);
-    const settings = useAppSelector((s) => s.settings);
-    const dispatch = useAppDispatch();
+  const user = useAppSelector((s) => s.auth.user?.info);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AccountFormData>({
+    defaultValues: {
+      username: user?.username || "",
+      email: user?.email || "",
+      password: "",
+      number: user?.number || "",
+    },
+  });
 
-    const changeHandler = (name: string, value: string) => {
-        dispatch(setAccountInfo({
-            [name]: value
-        }))
-    };
+  const [updateAccount, { isLoading, error }] = useUpdateAccountMutation();
 
-    return (
-        <div className="flex gap-5 flex-wrap ">
-            <div className="flex flex-col gap-1 border-1 border-[#ffffff11] w-[300px]">
-                <div className="bg-[#ffffff11] p-2">User name</div>
-                <div className="flex flex-col w-full gap-2 p-2">
-                    <div className="">{user?.username}</div>
-                    <div className="">
-                    <input
-                        type="text"
-                        value={settings.accountInfoUpdated?.username}
-                        onChange={(e) =>
-                            changeHandler("username", e.target.value)
-                        }
-                        className="w-full rounded-none focus:outline-none focus-visible:outline-none border-b border-[#ffffff11] focus-visible:border-[#ffffff]"
-                        placeholder="Enter new username"
-                    
-                    />
-                </div>
-                </div>
-                
-            </div>
-            <div className="flex flex-col gap-1 border-1 border-[#ffffff11] w-[300px]">
-                <div className="bg-[#ffffff11] p-2">Password</div>
-                <div className="flex flex-col w-full gap-2 p-2">
-                <div className="">****************</div>
-                <div className="p">
-                    <input
-                        type="text"
-                        value={settings.accountInfoUpdated?.username}
-                        onChange={(e) =>
-                            changeHandler("password", e.target.value)
-                        }
-                        className="w-full rounded-none focus:outline-none focus-visible:outline-none border-b border-[#ffffff11] focus-visible:border-[#ffffff]"
-                        placeholder="Enter new password"
-                        disabled
-                    />
-                </div>
-                </div>
-            </div>
-            <div className="flex flex-col gap-1 border-1 border-[#ffffff11] w-[300px]">
-                <div className="bg-[#ffffff11] p-2">Email</div>
-                <div className="flex flex-col w-full gap-2 p-2">
-                <div className="">
-                    {user &&
-                        user.email &&
-                        user?.email
-                            .split(".")
-                            .map((val, idx) =>
-                                idx === 0 ? val.replace(/\*/g, "✱") : val,
-                            )
-                            .join(".")}{" "}
-                </div>
-                <div className="p">
-                    <input
-                        type="text"
-                        value={settings.accountInfoUpdated?.email}
-                        onChange={(e) => changeHandler("email", e.target.value)}
-                        className="w-full rounded-none focus:outline-none focus-visible:outline-none border-b border-[#ffffff11] focus-visible:border-[#ffffff]"
-                        placeholder="Enter new email"
-                    
-                    />
-                </div>
-                </div>
-            </div>
-            <div className="flex flex-col gap-1 border-1 border-[#ffffff11] w-[300px]">
-                <div className="bg-[#ffffff11] p-2">Number</div>
-                <div className="flex flex-col w-full gap-2 p-2">
-                <div className="">************</div>
-                <div className="p">
-                    <input
-                        type="text"
-                        value={settings.accountInfoUpdated?.number}
-                        onChange={(e) =>
-                            changeHandler("number", e.target.value)
-                        }
-                        className="w-full rounded-none focus:outline-none focus-visible:outline-none border-b border-[#ffffff11] focus-visible:border-[#ffffff]"
-                        placeholder="Enter new number"
-                    />
-                </div>
-                </div>
-            </div>
+  const onSubmit: SubmitHandler<AccountFormData> = async (data) => {
+    try {
+      if (!user?.id) return;
+
+      // если поле пустое → не отправляем его на бэк
+      const cleaned = Object.fromEntries(
+        Object.entries(data).filter(([_, v]) => v !== "")
+      );
+
+      await updateAccount({ id: Number(user.id), data: cleaned }).unwrap();
+    } catch (err) {
+      console.error("Update account error:", err);
+    }
+  };
+
+  return (
+    <div className="p-10 bg-[#04122f80] text-white rounded-lg">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        autoComplete="off"
+        className="flex flex-col gap-8"
+      >
+        <h1 className="text-4xl lg:text-2xl text-center">
+          Настройки аккаунта
+        </h1>
+
+        {/* Username */}
+        <div>
+          <label className="block mb-2">Имя пользователя</label>
+          <input
+            type="text"
+            {...register("username", { required: "Введите имя" })}
+            className="w-full rounded border border-[#ffffff22] bg-transparent p-2 focus:outline-none focus:border-white"
+          />
+          {errors.username && (
+            <span className="text-red-400 text-sm">
+              {errors.username.message}
+            </span>
+          )}
         </div>
-    );
+
+        {/* Email */}
+        <div>
+          <label className="block mb-2">Email</label>
+          <input
+            type="email"
+            {...register("email", {
+              required: user?.email ? "Введите email" : false,
+              pattern: {
+                value: /^\S+@\S+\.\S+$/,
+                message: "Неверный формат email",
+              },
+            })}
+            className="w-full rounded border border-[#ffffff22] bg-transparent p-2 focus:outline-none focus:border-white"
+          />
+          {errors.email && (
+            <span className="text-red-400 text-sm">
+              {errors.email.message}
+            </span>
+          )}
+        </div>
+
+        {/* Password */}
+        <div>
+          <label className="block mb-2">Пароль</label>
+          <input
+            type="password"
+            {...register("password", {
+              minLength: {
+                value: 6,
+                message: "Минимум 6 символов",
+              },
+            })}
+            placeholder="Введите новый пароль"
+            className="w-full rounded border border-[#ffffff22] bg-transparent p-2 focus:outline-none focus:border-white"
+          />
+          {errors.password && (
+            <span className="text-red-400 text-sm">
+              {errors.password.message}
+            </span>
+          )}
+        </div>
+
+        {/* Number */}
+        <div>
+          <label className="block mb-2">Номер телефона</label>
+          <input
+            type="text"
+            {...register("number", {
+              required: user?.number ? "Введите номер" : false,
+              pattern: {
+                value: /^[0-9+()\s-]{7,20}$/,
+                message: "Неверный формат номера",
+              },
+            })}
+            placeholder="Введите телефон"
+            className="w-full rounded border border-[#ffffff22] bg-transparent p-2 focus:outline-none focus:border-white"
+          />
+          {errors.number && (
+            <span className="text-red-400 text-sm">
+              {errors.number.message}
+            </span>
+          )}
+        </div>
+
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="px-4 py-2 bg-green-600 hover:bg-green-500 rounded text-white disabled:opacity-50"
+        >
+          {isLoading ? "Сохраняем..." : "Сохранить изменения"}
+        </button>
+
+        {/* Error */}
+        {error && (
+          <div className="text-red-400 text-sm">
+            Ошибка: {(error as any).data?.message}
+          </div>
+        )}
+      </form>
+    </div>
+  );
 };

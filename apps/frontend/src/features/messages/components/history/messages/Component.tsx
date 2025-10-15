@@ -4,16 +4,26 @@ import { useAppSelector } from "@/app/hooks";
 import { makeSelectIsMessageOpen } from "@/features/messages";
 import { config } from "@/config";
 
-const CoreComponent: React.FC<SingleMessageProps> = ({ message, onClick }) => {
+const CoreComponent: React.FC<SingleMessageProps> = ({ message, onClick, currentUser }) => {
   const selectIsOpen = useMemo(
     () => makeSelectIsMessageOpen(String(message.id)),
     [message.id],
   );
   const isOpen = useAppSelector(selectIsOpen);
 
+  // 🔹 Выбираем аватар (или дефолт)
+  const avatarSrc =
+  message.user_id === currentUser?.id && currentUser?.avatar_url
+    ? currentUser.avatar_url // всегда берём актуальный из стора
+    : message.avatar_url
+    ? (message.avatar_url.startsWith("http")
+        ? message.avatar_url
+        : `${config.cdnServiceUrl}/${message.avatar_url}`)
+    : "img/icon.png";
+
   return (
     <div
-      onContextMenu={onClick}
+      onContextMenu={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => onClick?.(e, message)}
       className={
         isOpen
           ? "bg-[#7895f3] flex gap-5 lg:gap-3"
@@ -23,9 +33,9 @@ const CoreComponent: React.FC<SingleMessageProps> = ({ message, onClick }) => {
       {/* 👤 Аватар */}
       <div className="self-start p-1">
         <img
-          src="/img/icon.png"
+          src={avatarSrc}
           alt={`Аватар ${message.username}`}
-          className="w-20 h-20 lg:w-10 lg:h-10 rounded-full object-cover"
+          className="w-20 h-20 lg:w-10 lg:h-10 rounded-full object-cover border border-[#ffffff33]"
         />
       </div>
 
@@ -34,7 +44,10 @@ const CoreComponent: React.FC<SingleMessageProps> = ({ message, onClick }) => {
         <h3 className="text-3xl lg:text-base font-semibold">
           {message.username}{" "}
           <span className="text-2xl lg:text-sm opacity-70">
-            {new Date(message.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            {new Date(message.timestamp).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </span>
         </h3>
 
@@ -55,9 +68,7 @@ const CoreComponent: React.FC<SingleMessageProps> = ({ message, onClick }) => {
           }
 
           // 🖼️ Изображения
-          if (val.type === "image") {
-            
-            if (!val.url) return null;
+          if (val.type === "image" && val.url) {
             return (
               <div key={val.id} className="my-2">
                 <img
@@ -74,9 +85,7 @@ const CoreComponent: React.FC<SingleMessageProps> = ({ message, onClick }) => {
           }
 
           // 📁 Файлы
-          if (val.type === "file") {
-            
-            if (!val.url) return null;
+          if (val.type === "file" && val.url) {
             return (
               <div
                 key={val.id}

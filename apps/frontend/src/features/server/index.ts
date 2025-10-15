@@ -9,3 +9,4 @@ export * from "./types";
 
 export { useServerJournalSocket } from "./hook/useServerJournalSocket";
 export { useServerUpdates } from "./hook/useServerUpdates";
+export { useEmitServerUpdate } from "./hook/useEmitServerUpdate";

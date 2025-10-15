@@ -2,12 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { Component as SingleMessage } from "./messages";
 import {
-  leaveEditMode,
   setEditMode,
   setOpenMessage,
   setReply,
   clearActiveHistory,
-  setActiveChat,
   setActiveHistory,
 } from "@/features/messages";
 import {
@@ -30,6 +28,8 @@ export const Component: React.FC<{
   const activeChat = useAppSelector((s) => s.chat.activeChat);
   const activeHistory = useAppSelector((s) => s.message.activeHistory);
   const allHistories = useAppSelector((s) => s.message.histories);
+  const currentUser = useAppSelector(s => s.auth.user?.info);
+
 
   const [getMessages] = useLazyGetMessagesQuery();
   const [removeMessage] = useRemoveMessageMutation();
@@ -185,6 +185,7 @@ export const Component: React.FC<{
           key={`single-${message.chat_id}-${idx}`}
           message={message}
           onClick={(e) => handleMessageClick(e, message)}
+          currentUser={currentUser}
         />
       ))}
       <div ref={bottomRef} />

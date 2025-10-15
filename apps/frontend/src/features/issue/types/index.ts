@@ -8,6 +8,9 @@ export interface issueState {
         id: number
     }[];
     priorities: Priorities[];
+    issueMode: boolean;
+    openIssue: number | null;
+    issueChat: any;
 }
 
 export type Statuses = "Open" | "In Progress" | "Review" | "Done" | "Closed";

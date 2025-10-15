@@ -1,10 +1,10 @@
 import React from "react";
 import { Props } from "./interface";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { Plus } from "lucide-react";
+import { MoveLeft, Plus, Target } from "lucide-react";
 import { useCreateProjectMutation, useLazyGetIssuesQuery } from "../../api";
 import { Component as EditProject } from "./edit"
-import { setOpenProject } from "../..";
+import { setOpenProject, toggleIssueMode } from "../..";
 
 export const Component: React.FC<Props> = ({serverid, name}) => {
     const projects = useAppSelector(s => s.issue.project);
@@ -23,13 +23,20 @@ export const Component: React.FC<Props> = ({serverid, name}) => {
         getIssue(id)
     }
 
+    const handleProject = () => {
+        dispatch(toggleIssueMode());
+    };
+
     if (!serverid) return null;
     if (!name) return null;
     return (
         <div>
             <div className="bg-[#2e3ed34f] p-5 flex w-full justify-between items-center">
-                <h4 className="truncate text-lg  text-white">
-                Projects {name}
+                <h4 className="truncate text-lg  text-white w-full flex items-center gap-5">
+                    
+                <button className="cursor-pointer" aria-label="Target" onClick={handleProject}>
+        <MoveLeft />
+      </button>Projects {name}
                 </h4>
                 <button
               className="cursor-pointer px-1 py-1 bg-[#2e3ed328] rounded-full"

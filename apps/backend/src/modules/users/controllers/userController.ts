@@ -14,14 +14,36 @@ export const getUsers = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 export const getUserById = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
-    const user = await prisma.users.findUnique({ where: { id } });
+
+    const user = await prisma.users.findUnique({
+      where: { id },
+      include: {
+        user_profile: true,       // 🔹 добавили профиль
+        user_preferences: true,   // если нужны настройки
+      },
+    });
+
     if (!user) return res.sendStatus(404);
-    res.json(user);
+
+    // 🔹 Делаем плоский объект (удобно для фронта)
+    res.json({
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      number: user.number,
+      avatar_url: user.user_profile?.avatar_url || null,
+      about: user.user_profile?.about || null,
+      first_name: user.user_profile?.first_name || null,
+      last_name: user.user_profile?.last_name || null,
+      birth_date: user.user_profile?.birth_date || null,
+      gender: user.user_profile?.gender || null,
+      location: user.user_profile?.location || null,
+    });
   } catch (err) {
+    console.error("❌ getUserById error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -37,20 +59,63 @@ export const createUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
+// controllers/userController.ts
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
-    const { email, username, number } = req.body;
+    const {
+      email,
+      username,
+      number,
+      first_name,
+      last_name,
+      birth_date,
+      avatar_url,
+      gender,
+      location,
+      about,
+    } = req.body;
+
     const updated = await prisma.users.update({
       where: { id },
-      data: { email, username, number },
+      data: {
+        email,
+        username,
+        number,
+        user_profile: {
+          upsert: {
+            update: {
+              first_name,
+              last_name,
+              birth_date: birth_date ? new Date(birth_date) : undefined,
+              avatar_url,
+              gender,
+              location,
+              about,
+            },
+            create: {
+              first_name,
+              last_name,
+              birth_date: birth_date ? new Date(birth_date) : undefined,
+              avatar_url,
+              gender,
+              location,
+              about,
+            },
+          },
+        },
+      },
+      include: { user_profile: true },
     });
+
     res.json(updated);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {

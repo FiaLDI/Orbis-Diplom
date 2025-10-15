@@ -95,41 +95,57 @@ export const deleteProject = async (req: Request, res: Response) => {
    ======================= */
 
 // GET /projects/:id/issues
+// controllers/planning.ts
 export const getProjectIssues = async (req: Request, res: Response) => {
   const projectId = Number(req.params.id);
+
   try {
-   const issues = await prisma.project_issues.findMany({
-  where: { project_id: projectId },
-  include: {
-    issue: {
+    // 1. Тянем все задачи проекта
+    const projectIssues = await prisma.project_issues.findMany({
+      where: { project_id: projectId },
       include: {
-        status: true,
-        assignees: { include: { user: true } },
-        chat_issues: { include: { chat: true } },
-        subtasks: {
-          where: {
-            project_issues: { some: { project_id: projectId } },
-          },
+        issue: {
           include: {
             status: true,
             assignees: { include: { user: true } },
+            chat_issues: { include: { chat: true } },
           },
         },
-        parent: {
-          include: { project_issues: true },
-        },
       },
-    },
-  },
-});
+    });
 
+    const allIssues = projectIssues.map((pi) => pi.issue);
 
-    res.json(issues.map(pi => pi.issue));
+    type IssueWithSubs = {
+      id: number;
+      title: string;
+      description?: string | null;
+      priority: string;
+      status: any;
+      parent_id?: number | null;
+      subtasks?: IssueWithSubs[];   // рекурсивно
+      [key: string]: any;           // чтобы не падало на других полях
+    };
+
+    // 2. Строим дерево
+    const buildTree = (issues: IssueWithSubs[], parentId: number | null = null): IssueWithSubs[] => {
+    return issues
+      .filter((i) => i.parent_id === parentId)
+      .map((i) => ({
+        ...i,
+        subtasks: buildTree(issues, i.id),
+      }));
+  };
+
+    const tree = buildTree(allIssues);
+
+    res.json(tree);
   } catch (err) {
     console.error("getProjectIssues error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 // POST /projects/:id/issues
 export const createIssue = async (req: Request, res: Response) => {
@@ -160,6 +176,33 @@ export const createIssue = async (req: Request, res: Response) => {
   }
 };
 
+export const getIssue = async (req: Request, res: Response) => {
+  try {
+    const issueId = Number(req.params.id);
+
+    if (isNaN(issueId)) {
+      return res.status(400).json({ error: "Invalid issue ID" });
+    }
+
+    const issue = await prisma.issue.findUnique({
+      where: { id: issueId },
+      include: {
+        status: true,
+        subtasks: true,
+        parent: true,
+      },
+    });
+
+    if (!issue) {
+      return res.status(404).json({ error: "Issue not found" });
+    }
+
+    res.json(issue);
+  } catch (err) {
+    console.error("❌ Error getIssue:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 // PATCH /issues/:id
 export const updateIssue = async (req: Request, res: Response) => {
@@ -251,10 +294,10 @@ export const unassignUserFromIssue = async (req: Request, res: Response) => {
 // POST /issues/:id/chats
 export const addChatToIssue = async (req: Request, res: Response) => {
   const issueId = Number(req.params.id);
-  const { chatName } = req.body;
+  const { name } = req.body;
   try {
     const chat = await prisma.chats.create({
-      data: { name: chatName, created_at: new Date() }
+      data: { name: name, created_at: new Date() }
     });
     await prisma.chat_issues.create({
       data: { issue_id: issueId, chat_id: chat.id }

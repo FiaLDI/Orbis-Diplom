@@ -312,6 +312,7 @@ const createChat = async (req: Request, res: Response) => {
                         id_server: Number(id),
                     },
                 },
+                
             },
         });
 
@@ -581,7 +582,9 @@ const getChatInfo = async (req: Request, res: Response) => {
 };
 
 // DELETE /servers/:id/chats/:chatId
+// DELETE /servers/:id/chats/:chatId
 const deleteChat = async (req: Request, res: Response) => {
+    const serverId = parseInt(req.params.id);
     const chatId = parseInt(req.params.chatId);
 
     try {
@@ -590,6 +593,17 @@ const deleteChat = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "Chat not found" });
         }
 
+        // удалить связь сервер-чат по составному ключу
+        await prisma.server_chats.delete({
+            where: {
+                id_server_id_chats: {
+                    id_server: serverId,
+                    id_chats: chatId,
+                },
+            },
+        });
+
+        // удалить сам чат
         await prisma.chats.delete({ where: { id: chatId } });
 
         res.json({ message: "Chat deleted" });

@@ -1,12 +1,21 @@
+export interface MessageContent {
+  id: string;
+  type: "text" | "image" | "file";
+  text?: string;
+  url?: string;
+}
+
 export interface Message {
   id: number;
-  content: Content[];
-  user_id: number;
   chat_id: number;
+  user_id: number;
   username: string;
-  is_edited: boolean;
-  timestamp: string;
+  avatar_url?: string | null;   // 🔹 новое поле
   reply_to_id?: number | null;
+  is_edited: boolean;
+  content: MessageContent[];
+  timestamp: string;
+  updated_at?: string | null;
 }
 
 export interface Content {

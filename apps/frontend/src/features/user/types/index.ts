@@ -1,8 +1,8 @@
 export interface userState {
-    loadedProfiles?: UserInfo[];
-    openProfile?: UserInfo;
-    isOpenProfile?: boolean;
-    chats?: any[];
+  loadedProfiles?: UserInfo[];
+  openProfile?: UserInfo;
+  isOpenProfile?: boolean;
+  chats?: any[];
 }
 
 export interface permission {
@@ -15,7 +15,7 @@ export interface fastUserInfo {
   id: number;
   username: string;
   user_profile: {
-    avatar_url: string;
+    avatar_url: string | null;
     is_online: boolean;
   };
   user_server: {
@@ -29,9 +29,17 @@ export interface fastUserInfo {
 }
 
 export interface UserInfo {
-    id: number;
-    username: string;
-    avatar_url: string;
-    about: string;
-}
+  id: number;
+  username: string;
+  email?: string | null;
+  number?: string | null;
 
+  avatar_url?: string | null;
+  about?: string | null;
+
+  first_name?: string | null;
+  last_name?: string | null;
+  birth_date?: string | null;
+  gender?: string | null;
+  location?: string | null;
+}

@@ -1,11 +1,14 @@
 import React, { useRef } from "react";
-import { useAppSelector } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { HistoryChatComponent, InputChatComponent } from "@/features/messages";
+import { X } from "lucide-react";
+import { setActiveChat } from "../..";
 
 export const Component: React.FC = () => {
     const activeChat = useAppSelector(state => state.chat.activeChat);
     const topRef = useRef<HTMLDivElement>(null);
     const bottomRef = useRef<HTMLDivElement>(null);
+    const dispatch = useAppDispatch();
 
     const scrollToBottom = () => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -21,12 +24,10 @@ export const Component: React.FC = () => {
                 <div className="text-5xl lg:text-base pl-5 p-2">
                     {activeChat.name}
                 </div>
-                <div className="flex gap-5 bg-[#2e3ed328] pr-10 lg:pr-5 pl-10 lg:pl-5 p-5 lg:p-2 w-full lg:w-auto justify-end">
+                
                 <div className="w-full lg:w-auto 
                 ">
-                    <input type="text" className="w-full lg:w-auto text-5xl lg:text-base rounded-[5px] bg-[#2e3ed328] pl-1" placeholder="Search" />
-                </div>
-                
+                    <button className="cursor-pointer pl-5 p-2" onClick={()=> dispatch(setActiveChat(undefined))}><X /></button>
                 </div>
             </div>
 

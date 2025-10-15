@@ -13,22 +13,39 @@ import {
   useLazyGetServersMembersQuery,
   useLazyGetServersRolesQuery,
 } from "@/features/server";
-import { UserProfile } from "@/features/user";
 import { AppMenu } from "./components/AppMenu";
 import { Component as MessageMenu } from "./components/MessageMenu";
 import { FriendList, SearchFriends } from "@/features/friends";
-import { IssueComponent, ProjectComponent, setOpenProject, useLazyGetProjectQuery, useLazyGetStatusesQuery, useLazyGetPriorityQuery } from "@/features/issue";
+import {
+  IssueComponent,
+  ProjectComponent,
+  setOpenProject,
+  useLazyGetProjectQuery,
+  useLazyGetStatusesQuery,
+  useLazyGetPriorityQuery,
+} from "@/features/issue";
 
 export const CommunicatePage: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  const { activeChat, isSettingsActive, activeserver, openProjectId } = useAppSelector((s) => ({
-    activeChat: s.chat.activeChat,
-    isSettingsActive: s.server.isSettingsActive,
-    activeserver: s.server.activeserver,
-    openProjectId: s.issue.openProjectId
-  }));
-  const issueMode = true;
+  const { activeChat, isSettingsActive, activeserver, issues } = useAppSelector(
+    (s) => ({
+      activeChat: s.chat.activeChat,
+      isSettingsActive: s.server.isSettingsActive,
+      activeserver: s.server.activeserver,
+      issues: s.issue,
+    })
+  );
+
+
+  const issueMode = issues.issueMode;
+  const activeServerId = activeserver?.id;
+
+  const hasActiveServer = Boolean(activeserver);
+  const hasActiveChat = Boolean(activeChat);
+  const isPersonalChat = activeChat && activeChat.id && !hasActiveServer;
+  
+  const isServerChat = activeChat && !!activeChat.id;
 
   const [triggerMembers] = useLazyGetServersMembersQuery();
   const [getServer] = useLazyGetServersInsideQuery();
@@ -36,76 +53,108 @@ export const CommunicatePage: React.FC = () => {
   const [getServerRoles] = useLazyGetServersRolesQuery();
   const [getProject] = useLazyGetProjectQuery();
   const [getStatuses] = useLazyGetStatusesQuery();
-  const [getPriority] = useLazyGetPriorityQuery()
+  const [getPriority] = useLazyGetPriorityQuery();
+
   const [isMessageMenuOpen, setIsMessageMenuOpen] = useState(true);
-  
-  const activeServerId = activeserver?.id;
-  const hasActiveChat = Boolean(activeChat);
-  const hasActiveServer = Boolean(activeserver);
 
   const fetchServerData = useCallback(async () => {
     if (!activeServerId) return;
 
-    await Promise.all(
-      [
-        triggerMembers(activeServerId), 
-        getServer(activeServerId), 
-        getServerRoles(activeServerId),
-        getProject(activeServerId),
-        getPermission({}),
-        getStatuses({}),
-        getPriority({})
-      ]
-    );
-    dispatch(setActiveChat(undefined));
-    dispatch(setOpenProject(null))
+    await Promise.all([
+      triggerMembers(activeServerId),
+      getServer(activeServerId),
+      getServerRoles(activeServerId),
+      getProject(activeServerId),
+      getPermission({}),
+      getStatuses({}),
+      getPriority({}),
+    ]);
+
     dispatch(setSettingsActive(false));
-  }, [activeServerId, triggerMembers, getServer, getServerRoles, getProject, dispatch]);
+  }, [
+    activeServerId,
+    triggerMembers,
+    getServer,
+    getServerRoles,
+    getProject,
+    getPermission,
+    getStatuses,
+    getPriority,
+    dispatch,
+    isServerChat,
+  ]);
+
+  useEffect(() => {
+    if (activeServerId) {
+      dispatch(setActiveChat(undefined));
+      dispatch(setOpenProject(null));
+    }
+  }, [activeServerId]);
+
 
   useEffect(() => {
     fetchServerData();
   }, [fetchServerData]);
-
-
-  const showChat = !isSettingsActive && hasActiveChat;
-  const showEmptyServer = !isSettingsActive && hasActiveServer && !hasActiveChat && !issueMode;
 
   return (
     <div className="flex flex-col lg:flex-row h-screen w-screen">
       {/* Sidebar (левое меню) */}
       <aside className="flex flex-col">
         <AppMenu />
-        <UserProfile />
         <CreateServerForm />
         <SearchFriends />
       </aside>
 
       {/* Main content */}
       <main className="w-full flex h-full relative">
-        {/* Чаты */}
-        {isMessageMenuOpen && <MessageMenu />}
+        {/* Меню чатов */}
+        {!issueMode && isMessageMenuOpen && <MessageMenu />}
 
-        {/* Контент по условиям */}
-        {showChat && (
+        {/* --- Issue mode */}
+        {hasActiveServer && issueMode && (
+          <div className="w-full">
+            {issues.openProjectId ? (
+              <IssueComponent
+                name={activeserver?.name}
+                serverid={activeServerId}
+                projectId={issues.openProjectId}
+              />
+            ) : (
+              <ProjectComponent
+                name={activeserver?.name}
+                serverid={activeServerId}
+              />
+            )}
+          </div>
+        )}
+
+        {/* --- Персональные чаты */}
+        {isPersonalChat && (
           <div className="w-full h-full lg:h-screen">
             <ChatComponent />
           </div>
         )}
 
-        {showEmptyServer && <div className="w-full"></div>}
+        {/* --- Серверные чаты */}
+        {isServerChat && !isSettingsActive && !isPersonalChat && (
+          <div className="w-full h-full lg:h-screen">
+            <ChatComponent />
+          </div>
+        )}
 
+        {/* --- Пустой сервер без чата */}
+        {hasActiveServer && !hasActiveChat && !issueMode && (
+          <div className="w-full"></div>
+        )}
+
+        {/* --- Настройки сервера */}
         {isSettingsActive && <SettingsServer />}
 
-        {/* Если нет ни чата, ни сервера → показываем список друзей */}
-        {!hasActiveChat && !hasActiveServer && <FriendList />}
+        {/* --- Если нет ни сервера, ни персонального чата → показываем друзей */}
+        {!hasActiveServer && !isPersonalChat && <FriendList />}
 
-        {!hasActiveChat && hasActiveServer && issueMode && <div className="w-full">
-            {openProjectId ? <IssueComponent name={activeserver?.name} serverid={activeServerId} projectId={openProjectId}/> : <ProjectComponent name={activeserver?.name} serverid={activeServerId}/>}
-          </div>
-        }
-
-        {/* Участники сервера */}
-        <MemberServer />
+        {/* --- Участники сервера */}
+        {issueMode ? null : <MemberServer />}
       </main>
     </div>
   );

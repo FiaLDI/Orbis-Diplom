@@ -25,7 +25,6 @@ export const sendCodeCheck = async (req: Request, res: Response) => {
         res.json({
             message: "Verification code generated and stored",
             email,
-            code, // В продакшне не возвращайте код в ответе!
         });
     } catch (err) {
         console.error("Error in sendCodeCheck:", err);
@@ -172,7 +171,6 @@ export const register = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
-
 export const login = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
@@ -208,6 +206,7 @@ export const login = async (req: Request, res: Response) => {
             { expiresIn: "7d" },
         );
 
+        // Сброс старого refresh токена
         res.clearCookie("refresh_token", {
             httpOnly: true,
             secure: false,
@@ -215,11 +214,12 @@ export const login = async (req: Request, res: Response) => {
             path: "/",
         });
 
+        // Установка нового refresh токена
         res.cookie("refresh_token", refreshToken, {
             httpOnly: true,
             secure: true,
-             sameSite: "none",
-  path: "/",
+            sameSite: "none",
+            path: "/",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
@@ -229,8 +229,19 @@ export const login = async (req: Request, res: Response) => {
             info: {
                 id: user.id,
                 username: user.username,
-                avatar_url: user.user_profile?.avatar_url || null,
                 email: user.email,
+                avatar_url: user.user_profile?.avatar_url || null,
+                birthDate: user.user_profile?.birth_date || null,
+                first_name: user.user_profile?.first_name || null,
+                last_name: user.user_profile?.last_name || null,
+                gender: user.user_profile?.gender || null,
+                location: user.user_profile?.location || null,
+                about: user.user_profile?.about || null,
+                number: user.number || null,
+                displayName:
+                    [user.user_profile?.first_name, user.user_profile?.last_name]
+                        .filter(Boolean)
+                        .join(" ") || user.username,
             },
         });
     } catch (error) {
@@ -238,6 +249,7 @@ export const login = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
 
 export const refresh = async (req: Request, res: Response) => {
 

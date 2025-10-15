@@ -14,8 +14,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const AppMenu: React.FC = () => {
-    const [avatarUrl, setAvatarUrl] = useState<string>();
-    const [logout] = useLogoutUserMutation();
+    const avatarUrl = useAppSelector(s => s.auth.user?.info.avatar_url);
     const {} = useGetServersQuery({});
     const dispatch = useAppDispatch();
     const navigator = useNavigate();
@@ -60,11 +59,8 @@ export const AppMenu: React.FC = () => {
                             }}
                             className="cursor-pointer"
                         >
-                            {avatarUrl ? null : (
-                                <>
-                                    <img src="/img/icon.png" alt="" className="w-15 h-15 lg:w-10 lg:h-10"/>
-                                </>
-                            )}
+                            <img src={avatarUrl ? avatarUrl : "/img/icon.png"} alt="" className="w-15 h-15 lg:w-10 lg:h-10 rounded-2xl"/>
+                               
                         </button>
                     </div>
                     <div className="flex gap-2 flex-col justify-center">

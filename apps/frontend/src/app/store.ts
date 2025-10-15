@@ -16,6 +16,7 @@ import { friendsApi } from "@/features/friends";
 import { messageApi } from "@/features/messages";
 import { chatApi } from "@/features/chat";
 import { issueApi } from "@/features/issue";
+import { settingsApi } from "@/features/settings";
 
 export const store = configureStore({
     reducer: {
@@ -35,7 +36,8 @@ export const store = configureStore({
         [serverApi.reducerPath]: serverApi.reducer,
         [userApi.reducerPath]: userApi.reducer,
         [friendsApi.reducerPath]: friendsApi.reducer,
-        [issueApi.reducerPath]: issueApi.reducer
+        [issueApi.reducerPath]: issueApi.reducer,
+        [settingsApi.reducerPath]: settingsApi.reducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
@@ -46,6 +48,7 @@ export const store = configureStore({
             userApi.middleware,
             friendsApi.middleware,
             issueApi.middleware,
+            settingsApi.middleware
         ),
 });
 

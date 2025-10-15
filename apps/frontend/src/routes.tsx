@@ -26,14 +26,14 @@ export const PagesRouter: React.FC = () => {
     const isAuth =
         useAppSelector((state) => state.auth.isAuthenticated) || false;
     const [refresh] = useRefreshTokenMutation({});
-    const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+    const [isRefreshing, setIsRefreshing] = useState<boolean>(true);
 
-    const refreshToken = async () => {
+     const refreshToken = async () => {
         try {
-            await refresh({});
-            setIsRefreshing(false);
+            await refresh({}).unwrap();
         } catch (error) {
             console.error("Refresh failed:", error);
+        } finally {
             setIsRefreshing(false);
         }
     };
@@ -42,13 +42,12 @@ export const PagesRouter: React.FC = () => {
         refreshToken();
     }, []);
 
-    if(isRefreshing){
+    if (isRefreshing) {
         return (
-        <div className="h-screen w-full flex justify-center items-center">
-            
-            <LoadingSpinner className="w-[300px] h-[300px]" />
-        
-        </div>);
+            <div className="h-screen w-full flex justify-center items-center">
+                <LoadingSpinner className="w-[300px] h-[300px]" />
+            </div>
+        );
     }
 
     return (

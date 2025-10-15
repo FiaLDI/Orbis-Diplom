@@ -1,53 +1,43 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Props } from "./interface";
-import { useAppSelector } from "@/app/hooks";
+import React, { useState, useEffect, useRef } from "react";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { setOpenIssue, setOpenProject, useDeleteIssueMutation } from "../..";
 import { Component as CreateIssue } from "./create";
+import { Component as OpenIssue } from "./open";
+import { MoveLeft, ListTree, Orbit } from "lucide-react";
 import { Statuses } from "../../types";
-import { useDeleteIssueMutation } from "../..";
 
-interface IssueClusterProps extends Props {
-  scale?: number;
+interface Props {
+  serverid?: number;
+  name?: string;
+  projectId?: number;
 }
 
-export const Component: React.FC<IssueClusterProps> = ({
-  serverid,
-  name,
-  projectId,
-  scale = 1,
-}) => {
+export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
   const issue = useAppSelector((s) => s.issue);
   const [deleteIssueApi] = useDeleteIssueMutation();
+  const [editingIssue, setEditingIssue] = useState<any | null>(null);
+  const dispatch = useAppDispatch();
 
-  const [contextMenu, setContextMenu] = useState<{
-    x: number;
-    y: number;
-    issue: any | null;
-  }>({ x: 0, y: 0, issue: null });
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; issue: any | null; }>({ x: 0, y: 0, issue: null });
+  const [viewMode, setViewMode] = useState<"tree" | "cluster">("tree");
+
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   const handleContextMenu = (e: React.MouseEvent, task: any) => {
     e.preventDefault();
-    setContextMenu({
-      x: e.clientX,
-      y: e.clientY,
-      issue: task,
-    });
+    setContextMenu({ x: e.clientX, y: e.clientY, issue: task });
   };
-
-  const menuRef = useRef<HTMLDivElement | null>(null);
 
   const closeMenu = () => setContextMenu({ x: 0, y: 0, issue: null });
 
   const editIssue = (task: any) => {
-    console.log("✏️ Edit issue", task);
+    setEditingIssue(task);
     closeMenu();
-    // тут открываешь модалку с редактированием
   };
 
   const deleteIssue = (task: any) => {
-    console.log("🗑️ Delete issue", task);
-    deleteIssueApi({issueId: task.id})
+    deleteIssueApi({ projectId, issueId: task.id });
     closeMenu();
-    // тут вызываешь deleteIssueMutation
   };
 
   useEffect(() => {
@@ -56,7 +46,6 @@ export const Component: React.FC<IssueClusterProps> = ({
         closeMenu();
       }
     };
-
     if (contextMenu.issue) {
       document.addEventListener("mousedown", handleClickOutside);
     }
@@ -67,13 +56,6 @@ export const Component: React.FC<IssueClusterProps> = ({
 
   if (!serverid || !name || !projectId) return null;
 
-  const priorityStyle: Record<string, { size: number; color: string }> = {
-    LOW: { size: 60 * scale, color: "#22c55e" },
-    MEDIUM: { size: 80 * scale, color: "#3b82f6" },
-    HIGH: { size: 100 * scale, color: "#f59e0b" },
-    CRITICAL: { size: 120 * scale, color: "#ef4444" },
-  };
-
   const statusIcon: Record<Statuses, string> = {
     Open: "⚪",
     "In Progress": "⏳",
@@ -82,92 +64,171 @@ export const Component: React.FC<IssueClusterProps> = ({
     Closed: "🚫",
   };
 
-  const renderIssue = (val: any) => {
-    const style = priorityStyle[val.priority] || priorityStyle.MEDIUM;
-    const icon = statusIcon[val.status?.name as Statuses] || "❓";
-
-    return (
-      <div
-        onContextMenu={(e) => handleContextMenu(e, val)}
-        className="flex flex-col items-center justify-center rounded-full font-semibold shadow-md transition hover:scale-105 cursor-pointer"
-        style={{
-          width: style.size,
-          height: style.size,
-          backgroundColor: style.color,
-        }}
-      >
-        <span className="text-lg">{icon}</span>
-        <span className="text-xs text-center px-2 truncate">{val.title}</span>
-      </div>
-    );
+  const openIssue = (task: any) => {
+    dispatch(setOpenIssue(task.id));
+    console.log(issue.issues)
+    console.log("👆 Left click issue:", task);
   };
 
-  const renderCluster = (root: any, depth = 0) => {
-    if (depth > 3) return null;
-    const subs = root.subtasks || [];
-    const radius = (60 + depth * 40) * scale;
-    const angleStep = (2 * Math.PI) / (subs.length || 1);
-
-    return (
+  /** ------- VIEW 1: Tree ------- */
+  const renderTree = (task: any, depth = 0) => (
+    <div key={task.id} style={{ marginLeft: depth * 20 }} className="mb-2">
       <div
-        className="relative flex items-center justify-center"
-        style={{ width: 300 * scale, height: 300 * scale }}
+        onContextMenu={(e) => handleContextMenu(e, task)}
+        onClick={() => openIssue(task)}
+        className={`p-2 rounded cursor-pointer flex justify-between items-center ${
+          issue.openIssue === task.id ? "bg-blue-700" : "bg-gray-700 hover:bg-gray-600"
+        }`}
       >
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none"
-          viewBox={[-150 * scale, -150 * scale, 300 * scale, 300 * scale].join(" ")}
-        >
-          {subs.map((_: any, idx: number) => {
-            const angle = idx * angleStep;
-            const x = Math.cos(angle) * radius;
-            const y = Math.sin(angle) * radius;
-            return <line key={idx} x1={0} y1={0} x2={x} y2={y} stroke="#aaa" />;
-          })}
-        </svg>
-
-        <div className="absolute">{renderIssue(root)}</div>
-
-        {subs.map((sub: any, idx: number) => {
-          const angle = idx * angleStep;
-          const x = Math.cos(angle) * radius;
-          const y = Math.sin(angle) * radius;
-          return (
-            <div
-              key={sub.id}
-              className="absolute"
-              style={{ transform: `translate(${x}px, ${y}px)` }}
-            >
-              {renderIssue(sub)}
-              {renderCluster(sub, depth + 1)}
-            </div>
-          );
-        })}
+        <div>
+          <span className="font-semibold">
+            {statusIcon[task.status?.name as Statuses] || "❓"} {task.title}
+          </span>
+          <span className="ml-2 text-sm opacity-70">
+            ({task.status?.name || "?"}, {task.priority})
+          </span>
+        </div>
       </div>
+      {task.subtasks?.length > 0 && (
+        <div className="ml-4 border-l border-gray-600 pl-4">
+          {task.subtasks.map((sub: any) => renderTree(sub, depth + 1))}
+        </div>
+      )}
+    </div>
+  );
+
+  /** ------- VIEW 2: Cluster ------- */
+  /** ------- VIEW 2: Cluster ------- */
+const renderCluster = (task: any, depth = 0) => {
+  if (depth > 3) return null;
+  const subs = task.subtasks || [];
+  const radius = 120 + depth * 40; // чуть увеличил радиус, чтобы элементы не налегали
+  const angleStep = (2 * Math.PI) / (subs.length || 1);
+
+  return (
+    <div className="relative flex items-center justify-center m-5">
+      {/* SVG линии от центра к сабтаскам */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none">
+  {subs.map((sub: any, idx: number) => {
+    const angle = idx * angleStep;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    return (
+      <line
+        key={sub.id}
+        x1="0"
+        y1="0"
+        x2={x}
+        y2={y}
+        stroke="#aaa"
+        strokeWidth={1.5}
+      />
     );
-  };
+  })}
+</svg>
+
+
+      {/* Родитель */}
+      <div
+        onContextMenu={(e) => handleContextMenu(e, task)}
+        onClick={() => openIssue(task)}
+        className={`px-3 py-2 rounded-full cursor-pointer transition relative z-10 ${
+          issue.openIssue === task.id
+            ? "bg-blue-700"
+            : "bg-blue-600 hover:bg-blue-500"
+        }`}
+      >
+        {statusIcon[task.status?.name as Statuses] || "❓"} {task.title}
+      </div>
+
+      {/* Сабтаски */}
+      {subs.map((sub: any, idx: number) => {
+        const angle = idx * angleStep;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        return (
+          <div
+            key={sub.id}
+            className="absolute"
+            style={{ transform: `translate(${x}px, ${y}px)` }}
+          >
+            {renderCluster(sub, depth + 1)}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
   return (
     <div>
+      {/* Шапка */}
       <div className="bg-[#2e3ed34f] p-5 flex w-full justify-between items-center">
-        <h4 className="truncate text-lg text-white">
-          {name} Issues for {projectId}
+        <h4 className="truncate text-lg text-white flex w-full gap-5 items-center">
+          <button onClick={() => dispatch(setOpenProject(null))}>
+            <MoveLeft />
+          </button>
+          <div>{name} Issues for {projectId}</div>
+          <div className="flex gap-2">
+            <button
+              className={`px-2 py-1 rounded ${viewMode === "tree" ? "bg-blue-600" : "bg-gray-700"}`}
+              onClick={() => setViewMode("tree")}
+            >
+              <ListTree className="w-4 h-4" />
+            </button>
+            <button
+              className={`px-2 py-1 rounded ${viewMode === "cluster" ? "bg-blue-600" : "bg-gray-700"}`}
+              onClick={() => setViewMode("cluster")}
+            >
+              <Orbit className="w-4 h-4" />
+            </button>
+            <CreateIssue
+              projectId={projectId}
+              serverId={serverid}
+              statuses={issue.statuses}
+              priorities={issue.priorities}
+              onClose={() => setEditingIssue(null)}
+            />
+          </div>
         </h4>
-        <CreateIssue
-          projectId={projectId}
-          serverId={serverid}
-          statuses={issue.statuses}
-          priorities={issue.priorities}
-        />
+
+        {editingIssue && (
+          <CreateIssue
+            projectId={projectId}
+            serverId={serverid}
+            statuses={issue.statuses}
+            priorities={issue.priorities}
+            initialData={editingIssue}
+            onClose={() => setEditingIssue(null)}
+          />
+        )}
       </div>
 
-      <div className="h-full w-full flex flex-wrap gap-6 text-white p-5">
-        {issue.issues.filter((i: any) => !i.parent_id).map((root: any) => renderCluster(root))}
+      {/* Контент */}
+      <div className="w-full h-full flex">
+        <div className="h-full w-full p-5 text-white">
+          {viewMode === "tree" &&
+            issue.issues.filter((i: any) => !i.parent_id).map((root: any) => renderTree(root))}
+          {viewMode === "cluster" &&
+            issue.issues.filter((i: any) => !i.parent_id).map((root: any) => renderCluster(root))}
+        </div>
+
+        {(issue.openIssue !== null) && (
+          <OpenIssue 
+            projectId={projectId}
+            serverId={serverid}
+            issueId={issue.openIssue}
+            issues={issue.issues}
+            activeIssueChat={issue.issueChat}
+          />
+        )}
+
       </div>
 
       {/* Контекстное меню */}
       {contextMenu.issue && (
         <div
-            ref={menuRef}
+          ref={menuRef}
           className="fixed z-50 bg-[#1e293b] text-white rounded shadow-lg py-2"
           style={{ top: contextMenu.y, left: contextMenu.x }}
           onClick={closeMenu}

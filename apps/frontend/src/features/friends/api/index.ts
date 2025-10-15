@@ -39,7 +39,7 @@ export const friendsApi = createApi({
         }),
         sendRequest: builder.mutation({
             query: (id) => ({
-                url: `/friend/${id}/invite`,
+                url: `/friends/${id}/invite`,
                 method: "POST",
             }),
         }),

@@ -25,10 +25,18 @@ export const chatApi = createApi({
                 method: "GET",
             }),
         }),
+        UpdateChat: builder.mutation({
+            query: ({id, data}) => ({
+                url: `/chats/${id}`,
+                method: "PUT",
+                body: data,
+            }),
+    }),
     }),
 });
 
 export const {
     useLazyGetChatInfoQuery,
     useGetChatInfoQuery,
+    useUpdateChatMutation,
 } = chatApi;

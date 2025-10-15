@@ -1,11 +1,12 @@
 import React from "react";
-import { useAppSelector } from "@/app/hooks";
-import { useLazyGetInfoUserQuery } from "@/features/user";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { Profile, useLazyGetInfoUserQuery } from "@/features/user";
 
 export const Component: React.FC = () => {
     const membersServer = useAppSelector((s) => s.server.activeserver?.users);
     const activeserver = useAppSelector((s) => s.server.activeserver?.id);
     const chatinfo = useAppSelector((s) => s.chat.activeChat);
+    const dispatch = useAppDispatch();
 
     const [trigger] = useLazyGetInfoUserQuery();
 
@@ -30,9 +31,9 @@ export const Component: React.FC = () => {
                             >
                                 <div className=" shrink-0">
                                     <img
-                                    src="/img/icon.png"
+                                    src={val.user_profile.avatar_url ? val.user_profile.avatar_url : "/img/icon.png"}
                                     alt=""
-                                    className="w-6 h-6"
+                                    className="w-6 h-6 rounded-2xl"
                                 />
                                 </div>
                                 
@@ -44,6 +45,7 @@ export const Component: React.FC = () => {
                         </li>
                     ))}
                 </ul>
+                <Profile />
             </div>
         </>
     );
