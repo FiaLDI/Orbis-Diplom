@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
+import 'dotenv/config';
+
 
 async function main() {
   const permissions = [
