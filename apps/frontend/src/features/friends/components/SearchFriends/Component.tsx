@@ -5,7 +5,6 @@ import {
     useLazyGetUserbyNameQuery,
     useStartChattingMutation,
 } from "@/features/user";
-import { addAction } from "@/features/action/index";
 import { ModalButton } from "@/components/ui/Button/ModalButton";
 import { useSendRequestMutation } from "../..";
 import { X } from "lucide-react";
@@ -47,30 +46,6 @@ export const Component: React.FC = () => {
         setFind(value);
         debounce(value);
     };
-
-    useEffect(() => {
-        if (!isSuccessChat) return;
-        dispatch(
-            addAction({
-                id: Date.now(),
-                type: "SUCCESS",
-                text: "Success create chat",
-                duration: 3000,
-            }),
-        );
-    }, [isSuccessChat]);
-
-    useEffect(() => {
-        if (!isErrorChat) return;
-        dispatch(
-            addAction({
-                id: Date.now(),
-                type: "ERROR",
-                text: "Error added",
-                duration: 3000,
-            }),
-        );
-    }, [isErrorChat]);
 
     return (
         <>

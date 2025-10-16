@@ -1,6 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useServerJournalContext } from "@/contexts/ServerJournalSocketContext";
-import { setActivePersonalCommunicate } from "@/features/action";
 import {
     CreateServerForm,
     setActiveServer,
@@ -18,10 +17,6 @@ export const AppMenu: React.FC = () => {
     const navigator = useNavigate();
     const server = useAppSelector((state) => state.server);
     const { socket } = useServerJournalContext();
-    const [getInside] = useLazyGetServersInsideQuery();
-    const isPersonalMessageMenu = useAppSelector(
-        (s) => s.action.isPersonalCommunicateActive,
-    );
 
     // useEffect(()=> {
     //     dispatch(setActiveChat(undefined))
@@ -35,11 +30,6 @@ export const AppMenu: React.FC = () => {
                     <div className="flex lg:hidden">
                         <button
                             onClick={() => {
-                                dispatch(
-                                    setActivePersonalCommunicate(
-                                        !isPersonalMessageMenu,
-                                    ),
-                                );
                             }}
                             className="cursor-pointer"
                         >

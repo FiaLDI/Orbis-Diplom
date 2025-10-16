@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { chat, setActiveChat } from "@/features/chat";
-import { setActivePersonalCommunicate } from "@/features/action";
 import { Component as ChatEditForm} from "./edit";
 import { useDeleteChatMutation, useEmitServerUpdate } from "@/features/server";
 
@@ -43,7 +42,6 @@ export const Component: React.FC<Props> = ({ chat, isServer }) => {
         className="cursor-pointer hover:brightness-90 select-none"
         onClick={() => {
           dispatch(setActiveChat(chat));
-          dispatch(setActivePersonalCommunicate(window.innerWidth > 1024 || false));
         }}
         onContextMenu={handleContextMenu}
       >

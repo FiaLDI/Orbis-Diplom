@@ -5,7 +5,7 @@ import messageReducer from "@/features/messages/slice";
 import serverReducer from "@/features/server/slice";
 import userReducer from "@/features/user/slice";
 import uploadReducer from "@/features/upload/slice";
-import actionReducer from "@/features/action/slice";
+import notificationReducer from "@/features/notification/slice";
 import settingsReducer from "@/features/settings";
 import friendsReducer from "@/features/friends/slice";
 import issueReducer from "@/features/issue/slice";
@@ -17,6 +17,7 @@ import { messageApi } from "@/features/messages";
 import { chatApi } from "@/features/chat";
 import { issueApi } from "@/features/issue";
 import { settingsApi } from "@/features/settings";
+import { notificationApi } from "@/features/notification"
 
 export const store = configureStore({
     reducer: {
@@ -26,7 +27,7 @@ export const store = configureStore({
         server: serverReducer,
         user: userReducer,
         upload: uploadReducer,
-        action: actionReducer,
+        notification: notificationReducer,
         settings: settingsReducer,
         friends: friendsReducer,
         issue: issueReducer,
@@ -37,7 +38,8 @@ export const store = configureStore({
         [userApi.reducerPath]: userApi.reducer,
         [friendsApi.reducerPath]: friendsApi.reducer,
         [issueApi.reducerPath]: issueApi.reducer,
-        [settingsApi.reducerPath]: settingsApi.reducer
+        [settingsApi.reducerPath]: settingsApi.reducer,
+        [notificationApi.reducerPath]: notificationApi.reducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
@@ -48,7 +50,8 @@ export const store = configureStore({
             userApi.middleware,
             friendsApi.middleware,
             issueApi.middleware,
-            settingsApi.middleware
+            settingsApi.middleware,
+            notificationApi.middleware
         ),
 });
 

@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { addAction } from "@/features/action";
 
 export function useServerUpdates(socket: any, serverId: number | undefined, trigger: any, dispatch: any) {
   useEffect(() => {
@@ -7,12 +6,6 @@ export function useServerUpdates(socket: any, serverId: number | undefined, trig
 
     const updateServer = () => {
       trigger(serverId);
-      dispatch(addAction({
-        id: Date.now(),
-        type: "SUCCESS",
-        text: "Success updated",
-        duration: 3000,
-      }));
     };
 
     socket.on("update-into-server", updateServer);
