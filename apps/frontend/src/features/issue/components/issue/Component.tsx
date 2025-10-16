@@ -161,7 +161,7 @@ const renderCluster = (task: any, depth = 0) => {
 };
 
   return (
-    <div>
+    <div className=" h-full">
       {/* Шапка */}
       <div className="bg-[#2e3ed34f] p-5 flex w-full justify-between items-center">
         <h4 className="truncate text-lg text-white flex w-full gap-5 items-center">

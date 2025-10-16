@@ -112,7 +112,7 @@ export const CommunicatePage: React.FC = () => {
 
         {/* --- Issue mode */}
         {hasActiveServer && issueMode && (
-          <div className="w-full">
+          <div className="w-full h-full">
             {issues.openProjectId ? (
               <IssueComponent
                 name={activeserver?.name}

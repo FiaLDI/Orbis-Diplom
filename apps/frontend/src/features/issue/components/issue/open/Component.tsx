@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { ModalLayout } from "@/components/layout/Modal/Modal";
 import { Props } from "./interface";
-import { selectIssueById, useCreateChatIssueMutation, useCreateIssueMutation, useLazyGetChatIssueQuery, useLazyGetIssuesQuery, useUpdateIssueMutation } from "@/features/issue";
-import { Plus } from "lucide-react";
+import { selectIssueById, setOpenIssue, useCreateChatIssueMutation, useCreateIssueMutation, useLazyGetChatIssueQuery, useLazyGetIssuesQuery, useUpdateIssueMutation } from "@/features/issue";
+import { Plus, X } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { ChatItem, setActiveChat } from "@/features/chat";
 
@@ -33,14 +33,22 @@ export const Component: React.FC<Props> = ({
   }
 
   return (
-    <div className="w-full h-full overflow-y-auto bg-[#2e3ed34f] p-5 text-white list-none flex flex-col gap-1">
+    <div className="w-full h-full overflow-x-scroll bg-[#2e3ed34f] text-white list-none flex flex-col">
+      <div className="w-full">
+        <div className="bg-[#2e3ed34f] w-full rounded flex items-center justify-baseline p-5">
+          <div className="w-full">Issue</div>
+        <button className="cursor-pointer p-0 w-fit" onClick={()=> dispatch(setOpenIssue(null))}><X /></button>
+        </div>
+        
+      </div>
+      <div className="p-5">
       <h4 className="">
         <div className="w-full bg-[#2e3ed34f] p-1 rounded">Title:</div>
-        <div className="w-full truncate p-1">{issue.title}</div>
+        <div className="w-full whitespace-normal p-1">{issue.title}</div>
       </h4>
       <p className="">
         <div className="w-full bg-[#2e3ed34f] p-1 rounded">Description:</div>
-        <div className="w-full truncate p-1">{issue.description}</div>
+        <div className="w-full  whitespace-wrap p-1">{issue.description}</div>
       </p>
       <div className="">
         <button
@@ -67,6 +75,7 @@ export const Component: React.FC<Props> = ({
           <ChatItem key={`${idx}-chat-issue-${val.id}`} chat={val} isServer={true}/>
           
         ))}
+      </div>
       </div>
     </div>
   );
