@@ -1,16 +1,14 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useServerJournalContext } from "@/contexts/ServerJournalSocketContext";
 import { setActivePersonalCommunicate } from "@/features/action";
-import { useLogoutUserMutation } from "@/features/auth";
-import { setActiveChat } from "@/features/chat";
 import {
-    initCreateServer,
+    CreateServerForm,
     setActiveServer,
     useGetServersQuery,
     useLazyGetServersInsideQuery,
 } from "@/features/server";
-import { CirclePlus, LogOut, Menu, Bolt } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { Menu, Bolt } from "lucide-react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 export const AppMenu: React.FC = () => {
@@ -92,17 +90,7 @@ export const AppMenu: React.FC = () => {
                                 </div>
                             ))}
 
-                        <button
-                            onClick={() => {
-                                dispatch(initCreateServer());
-                            }}
-                        >
-                            <CirclePlus
-                                color="#fff"
-                                strokeWidth={1.25}
-                                className="w-15 h-15 lg:w-10 lg:h-10"
-                            />
-                        </button>
+                        <CreateServerForm />
                     </div>
                 </div>
                 <div className="flex lg:block">

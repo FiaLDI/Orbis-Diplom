@@ -1,7 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { ModalLayout } from "@/components/layout/Modal/Modal";
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { finallyCreateServer } from "../../slice";
 import {
     useCreateSeverMutation,
     useJoinServerMutation,
@@ -9,35 +7,16 @@ import {
 } from "@/features/server";
 import { ModalButton } from "@/components/ui/Button/ModalButton";
 import { ModalInput } from "@/components/ui/Input/ModalInput";
+import { CirclePlus, X } from "lucide-react";
 
-const AddServerForm: React.FC = () => {
-    const dispatch = useAppDispatch();
-    const check = useAppSelector((s) => s.server.isCreatingServer);
+export const Component: React.FC = () => {
+    const [open, setOpen] = useState<boolean>(false);
     const [createServer, { isSuccess: successCreate }] =
         useCreateSeverMutation();
     const [joinServer, { isSuccess: successJoin }] = useJoinServerMutation();
     const [nameServer, setNameServer] = useState<string>();
     const [idServer, setIdServer] = useState<string>();
     const [trigger] = useLazyGetServersQuery();
-
-    const createServerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                createServerRef.current &&
-                !createServerRef.current.contains(event.target as Node)
-            ) {
-                // Клик вне блока .profile
-                dispatch(finallyCreateServer()); // закрытие профиля или нужное действие
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [dispatch]);
 
     useEffect(() => {
         trigger({});
@@ -53,9 +32,7 @@ const AddServerForm: React.FC = () => {
             await createServer(newServer);
         } catch (err) {
             console.log(err);
-        } finally {
-            dispatch(finallyCreateServer());
-        }
+        } 
     };
 
     const joinServerHandler = async () => {
@@ -64,25 +41,30 @@ const AddServerForm: React.FC = () => {
             await joinServer(idServer);
         } catch (err) {
             console.log(err);
-        } finally {
-            dispatch(finallyCreateServer());
-        }
+        } 
     };
 
-    if (!check) return null;
 
     return (
-        <ModalLayout>
+        <>
+        <button
+            onClick={() => {setOpen(true)}}
+            className="cursor-pointer"
+        >
+            <CirclePlus
+                color="#fff"
+                strokeWidth={1.25}
+                className="w-15 h-15 lg:w-10 lg:h-10"
+            />
+        </button>
+        <ModalLayout open={open} onClose={()=>{setOpen(false)}}>
             <div
-                className="p-10 text-white flex flex-col gap-3 w-full"
-                ref={createServerRef}
+                className="p-0 text-white flex flex-col gap-3 w-[600px]"
             >
-                <h2 className="text-2xl text-center bg-[#1a40eb]">
-                    Creating a server
-                </h2>
-                <p className="bg-[#1a40eb]">
-                    The server is a place where you can spend time with friends
-                </p>
+                <div className="bg-[#2e3ed34f] w-full rounded flex items-center justify-baseline p-5">
+                    <h2 className="w-full text-2xl"> Search users </h2>
+                    <button className="cursor-pointer p-0 w-fit" onClick={()=> {setOpen(false)}}><X /></button>
+                </div>
                 <ModalInput
                     placeHolder="Enter server name"
                     name="servername"
@@ -108,7 +90,6 @@ const AddServerForm: React.FC = () => {
                 </ModalButton>
             </div>
         </ModalLayout>
+        </>
     );
 };
-
-export default AddServerForm;

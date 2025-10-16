@@ -1,18 +1,21 @@
 import React from "react";
-import { useAppSelector } from "@/app/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { Component as PermissionComponent } from "./permission";
 import { Component as AssignRolesButton } from "./assignroles";
 import {
+  setSettingsActive,
   useCreateRoleMutation,
   useDeleteRoleMutation,
   useGetServersRolesQuery,
 } from "../..";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 
 export const Component: React.FC = () => {
   const { activeserver } = useAppSelector((s) => ({
     activeserver: s.server.activeserver,
   }));
+
+  const dispatch = useAppDispatch();
 
   const [createRole] = useCreateRoleMutation();
   const [deleteRole] = useDeleteRoleMutation();
@@ -39,9 +42,11 @@ export const Component: React.FC = () => {
   return (
     <div className="flex flex-col h-full w-full p-5 rounded-[5px] lg:h-screen text-white">
       <div className="w-full h-full bg-[#2e3ed328]">
-        <div className="p-5 bg-[#2e3ed328]">
-          Settings {activeserver?.name}
-        </div>
+         <div className="bg-[#2e3ed34f] w-full rounded flex items-center justify-baseline p-5">
+                  <div className="w-full">Settings {activeserver?.name}</div>
+                  <button className="cursor-pointer p-0 w-fit" onClick={()=> dispatch(setSettingsActive(false))}><X /></button>
+                </div>
+              <div className="p-5"></div>
 
         {/* --- Members --- */}
         <div className="p-5">
@@ -53,7 +58,7 @@ export const Component: React.FC = () => {
             >
                 <div className="flex w-full gap-5 items-center ">
               <img
-                src={user.user_profile.avatar_url}
+                src={user.user_profile.avatar_url ? user.user_profile.avatar_url :"/img/icon.png"}
                 alt=""
                 className="shrink-0 w-[40px] h-[40px]"
               />

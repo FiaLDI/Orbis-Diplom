@@ -34,13 +34,10 @@ export const Component: React.FC<Props> = ({
 
   return (
     <div className="w-full h-full overflow-x-scroll bg-[#2e3ed34f] text-white list-none flex flex-col">
-      <div className="w-full">
-        <div className="bg-[#2e3ed34f] w-full rounded flex items-center justify-baseline p-5">
+      <div className="bg-[#2e3ed34f] w-full rounded flex items-center justify-baseline p-5">
           <div className="w-full">Issue</div>
-        <button className="cursor-pointer p-0 w-fit" onClick={()=> dispatch(setOpenIssue(null))}><X /></button>
+          <button className="cursor-pointer p-0 w-fit" onClick={()=> dispatch(setOpenIssue(null))}><X /></button>
         </div>
-        
-      </div>
       <div className="p-5">
       <h4 className="">
         <div className="w-full bg-[#2e3ed34f] p-1 rounded">Title:</div>
