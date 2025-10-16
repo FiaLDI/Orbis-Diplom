@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { ModalLayout } from "@/components/layout/Modal/Modal";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { closeProfile } from "../../slice";
+import { X } from "lucide-react";
 
 export const Component: React.FC = () => {
     const [infoStage, setInfoStage] = useState<number>(0);
@@ -21,6 +22,11 @@ export const Component: React.FC = () => {
     return (
         <ModalLayout onClose={()=> {dispatch(closeProfile());setOpen(prev => !prev)}} open={open}>
             <div className="p-5 text-white h-[600px] w-[600px] overflow-hidden">
+                <div className="bg-[#2e3ed34f] w-full rounded flex items-center justify-baseline p-5">
+                    <div className="w-full">Profile {userInfo?.username}</div>
+                    <button className="cursor-pointer p-0 w-fit" onClick={()=> {dispatch(closeProfile());setOpen(prev => !prev)}}><X /></button>
+                </div>
+                <div className="p-5"></div>
                 <div className="flex  w-full flex-col gap-10">
                     <div className="flex items-end gap-5 text-base">
                         <div className="">

@@ -25,7 +25,7 @@ export const Component: React.FC = () => {
                     {users?.map((val: any, idx: number) => (
                         <li key={`user-server-${idx}`} className="h-fit bg-[#2e3ed34f] p-2 rounded-[10px]">
                             <button
-                                className="flex items-center gap-3 w-full"
+                                className="flex items-center gap-3 w-full cursor-pointer"
                                 key={`${idx}-member-server`}
                                 onClick={() => handleClick(val.id)}
                             >

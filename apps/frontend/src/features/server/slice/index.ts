@@ -18,12 +18,6 @@ const serverSlice = createSlice({
         setServers(state, action: PayloadAction<server[]>) {
             state.servers = action.payload;
         },
-        initCreateServer(state) {
-            state.isCreatingServer = true;
-        },
-        finallyCreateServer(state) {
-            state.isCreatingServer = false;
-        },
         needChange(state) {
             state.messegerChange = true;
         },
@@ -109,8 +103,6 @@ const serverSlice = createSlice({
 export const {
     setActiveServer,
     setServers,
-    initCreateServer,
-    finallyCreateServer,
     needChange,
     clearChange,
     setSettingsActive,

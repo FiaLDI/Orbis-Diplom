@@ -3,9 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 
 import { ChatComponent, setActiveChat } from "@/features/chat";
 import {
-  CreateServerForm,
   MemberServer,
-  setActiveServer,
   setSettingsActive,
   SettingsServer,
   useLazyGetPermissionsQuery,
@@ -15,7 +13,7 @@ import {
 } from "@/features/server";
 import { AppMenu } from "./components/AppMenu";
 import { Component as MessageMenu } from "./components/MessageMenu";
-import { FriendList, SearchFriends } from "@/features/friends";
+import { FriendList } from "@/features/friends";
 import {
   IssueComponent,
   ProjectComponent,
@@ -101,8 +99,6 @@ export const CommunicatePage: React.FC = () => {
       {/* Sidebar (левое меню) */}
       <aside className="flex flex-col">
         <AppMenu />
-        <CreateServerForm />
-        <SearchFriends />
       </aside>
 
       {/* Main content */}
@@ -112,7 +108,7 @@ export const CommunicatePage: React.FC = () => {
 
         {/* --- Issue mode */}
         {hasActiveServer && issueMode && (
-          <div className="w-full">
+          <div className="w-full h-full">
             {issues.openProjectId ? (
               <IssueComponent
                 name={activeserver?.name}
@@ -143,7 +139,7 @@ export const CommunicatePage: React.FC = () => {
         )}
 
         {/* --- Пустой сервер без чата */}
-        {hasActiveServer && !hasActiveChat && !issueMode && (
+        {hasActiveServer && !hasActiveChat && !issueMode && !isSettingsActive && (
           <div className="w-full"></div>
         )}
 
