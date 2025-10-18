@@ -1,10 +1,24 @@
 import { ioJournal } from "@/server";
-
+import dotenv from "dotenv";
 import { redisClient } from "@/config";
 import { Socket } from "socket.io";
+import jwt from "jsonwebtoken";
+dotenv.config();
 
 export const journalSocket = (socket: Socket) => {
     console.log("New user journal:", socket.id);
+
+    try {
+        const token = socket.handshake.auth?.token;
+        const decoded: any = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!);
+        if (decoded?.id) {
+        socket.join(`user:${decoded.id}`);
+        socket.data.userId = decoded.id;
+        console.log(`Socket joined user room: user:${decoded.id}`);
+        }
+    } catch (err) {
+        console.warn("Invalid or missing token for journal socket");
+    }
 
     socket.on("set-status", (userId, status) => {
         redisClient.set(`user:${userId}:${status}`, "true");

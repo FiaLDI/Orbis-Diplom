@@ -6,19 +6,19 @@ import 'dotenv/config';
 async function main() {
   const permissions = [
     "ADMIN",
-    "MANAGE_SERVER",
+    "MANAGE_SERVER_INFO",
     "MANAGE_ROLES",
-    "MANAGE_CHANNELS",
-    "VIEW_AUDIT_LOGS",
+    "MANAGE_CHATS",
     "KICK_USERS",
     "BAN_USERS",
     "UNBAN_USERS",
     "MUTE_USERS",
     "MANAGE_MESSAGES",
     "SEND_MESSAGES",
-    "ATTACH_FILES",
     "MANAGE_INVITES",
-    "VIEW_CHANNEL",
+    "VIEW_CHATS",
+    "MANAGE_PROJECT",
+    "MANAGE_ISSUE",
   ];
 
   for (const perm of permissions) {

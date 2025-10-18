@@ -1,112 +1,19 @@
 import { Request, Response } from "express";
 import { prisma } from "@/config";
-
-// --- Получить список репортов ---
-export const getReports = async (req: any, res: Response) => {
-  try {
-    const reports = await prisma.reports.findMany({
-      include: {
-        reporter: { select: { id: true, username: true } },
-        resolver: { select: { id: true, username: true } },
-        message: { select: { id: true, content_text: true } },
-        server: { select: { id: true, name: true } },
-      },
-      orderBy: { created_at: "desc" },
-      take: 50,
-    });
-
-    res.json(reports);
-  } catch (err) {
-    console.error("getReports error:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-// --- Изменить статус репорта (resolved/rejected) ---
-export const updateReportStatus = async (req: any, res: Response) => {
-  const reportId = parseInt(req.params.id, 10);
-  const { status } = req.body; // "resolved" | "rejected"
-
-  if (!["resolved", "rejected"].includes(status)) {
-    return res.status(400).json({ message: "Invalid status" });
-  }
-
-  try {
-    const updated = await prisma.$transaction(async (tx) => {
-      const report = await tx.reports.update({
-        where: { id: reportId },
-        data: {
-          status,
-          resolved_by: req.user.id,
-        },
-        include: { server: true },
-      });
-
-      // создаём запись в аудит-логах
-      await tx.audit_logs.create({
-        data: {
-          server_id: report.server_id,
-          actor_id: req.user.id,
-          action: status === "resolved" ? "REPORT_RESOLVED" : "REPORT_REJECTED",
-          target_id: String(report.id),
-          metadata: JSON.stringify({ reason: report.reason }),
-        },
-      });
-
-      return report;
-    });
-
-    res.json(updated);
-  } catch (err) {
-    console.error("updateReportStatus error:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-// --- Отправить жалобу ---
-export const createReport = async (req: any, res: Response) => {
-  const { server_id, message_id, reason } = req.body;
-
-  if (!server_id || !reason) {
-    return res.status(400).json({ message: "server_id and reason are required" });
-  }
-
-  try {
-    const report = await prisma.$transaction(async (tx) => {
-      const newReport = await tx.reports.create({
-        data: {
-          server_id,
-          message_id: message_id || null,
-          reporter_id: req.user.id,
-          reason,
-        },
-      });
-
-      // логируем создание репорта
-      await tx.audit_logs.create({
-        data: {
-          server_id,
-          actor_id: req.user.id,
-          action: "REPORT_CREATED",
-          target_id: String(newReport.id),
-          metadata: JSON.stringify({ reason }),
-        },
-      });
-
-      return newReport;
-    });
-
-    res.status(201).json(report);
-  } catch (err) {
-    console.error("createReport error:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+import { sendNotification } from "@/utils/sendNotification"; // ← путь подгони под свой проект
+import { emitServerBan, emitServerKick } from "@/utils/sendBan";
 
 // --- Получить список действий (audit log) ---
-export const getAuditLogs = async (req: any, res: Response) => {
+export const getAuditLogs = async (req: Request, res: Response) => {
   try {
+    const serverId = req.params.id ? parseInt(req.params.id, 10) : null;
+
+    const whereClause = serverId
+      ? { server_id: serverId }
+      : {}; // если сервер не указан — все логи
+
     const logs = await prisma.audit_logs.findMany({
+      where: whereClause,
       include: {
         actor: { select: { id: true, username: true } },
         server: { select: { id: true, name: true } },
@@ -122,14 +29,39 @@ export const getAuditLogs = async (req: any, res: Response) => {
   }
 };
 
+// --- Бан пользователя (Ban = Kick + запись о бане + уведомление) ---
 export const banUser = async (req: any, res: Response) => {
   const serverId = parseInt(req.params.id, 10);
   const userId = parseInt(req.params.userId, 10);
   const { reason } = req.body;
 
+  if (req.user.id === userId) {
+    return res.status(403).json({ message: "You cannot ban yourself" });
+  }
+
   try {
+    const existingBan = await prisma.server_bans.findUnique({
+      where: {
+        server_id_user_id: { server_id: serverId, user_id: userId },
+      },
+    });
+
+    if (existingBan) {
+      return res.status(409).json({ message: "User is already banned" });
+    }
+    
     const ban = await prisma.$transaction(async (tx) => {
-      // создаём бан
+      // удалить все роли
+      await tx.user_server_roles.deleteMany({
+        where: { user_id: userId, server_id: serverId },
+      });
+
+      // удалить связь с сервером
+      await tx.user_server.deleteMany({
+        where: { user_id: userId, server_id: serverId },
+      });
+
+      // добавить в баны
       const banEntry = await tx.server_bans.create({
         data: {
           server_id: serverId,
@@ -139,7 +71,7 @@ export const banUser = async (req: any, res: Response) => {
         },
       });
 
-      // логируем
+      // лог
       await tx.audit_logs.create({
         data: {
           server_id: serverId,
@@ -153,24 +85,58 @@ export const banUser = async (req: any, res: Response) => {
       return banEntry;
     });
 
-    res.status(201).json({ message: "User banned", ban });
+    // 🔔 Отправляем уведомление пользователю
+    await sendNotification(userId, {
+      type: "server_kick",
+      title: `Вы были забанены на сервере`,
+      body: `Администратор удалил вас с сервера. ${
+        reason ? `Причина: ${reason}` : ""
+      }`,
+      data: { serverId },
+    });
+
+    emitServerBan(userId, serverId, reason);
+
+    res.status(201).json({ message: "User banned and removed", ban });
   } catch (err) {
     console.error("banUser error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-// --- Разбан пользователя ---
+// --- Разбан пользователя (и возврат на сервер с дефолтной ролью + уведомление) ---
 export const unbanUser = async (req: any, res: Response) => {
   const serverId = parseInt(req.params.id, 10);
   const userId = parseInt(req.params.userId, 10);
 
+  if (req.user.id === userId) {
+    return res.status(403).json({ message: "You cannot ban yourself" });
+  }
+
   try {
     await prisma.$transaction(async (tx) => {
+      // удалить запись о бане
       await tx.server_bans.delete({
         where: { server_id_user_id: { server_id: serverId, user_id: userId } },
       });
 
+      // найти дефолтную роль
+      const defaultRole = await tx.role_server.findFirst({
+        where: { server_id: serverId, name: "default" },
+      });
+
+      // вернуть пользователя
+      await tx.user_server.create({
+        data: {
+          user_id: userId,
+          server_id: serverId,
+          roles: defaultRole
+            ? { create: [{ role_id: defaultRole.id }] }
+            : undefined,
+        },
+      });
+
+      // лог
       await tx.audit_logs.create({
         data: {
           server_id: serverId,
@@ -181,24 +147,45 @@ export const unbanUser = async (req: any, res: Response) => {
       });
     });
 
-    res.json({ message: "User unbanned" });
+    // 🔔 уведомление о разбане
+    await sendNotification(userId, {
+      type: "system",
+      title: "Вы были разбанены",
+      body: "Вы снова можете присоединиться к серверу.",
+      data: { serverId },
+    });
+
+    emitServerKick(userId, serverId);
+
+    res.json({ message: "User unbanned and rejoined" });
   } catch (err) {
     console.error("unbanUser error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-// --- Кик пользователя с сервера ---
+// --- Кик пользователя (без бана, с уведомлением) ---
 export const kickUser = async (req: any, res: Response) => {
   const serverId = parseInt(req.params.id, 10);
   const userId = parseInt(req.params.userId, 10);
 
+  if (req.user.id === userId) {
+    return res.status(403).json({ message: "You cannot ban yourself" });
+  }
+
   try {
     await prisma.$transaction(async (tx) => {
+      // удалить роли
+      await tx.user_server_roles.deleteMany({
+        where: { user_id: userId, server_id: serverId },
+      });
+
+      // удалить из user_server
       await tx.user_server.delete({
         where: { user_id_server_id: { user_id: userId, server_id: serverId } },
       });
 
+      // лог
       await tx.audit_logs.create({
         data: {
           server_id: serverId,
@@ -209,9 +196,51 @@ export const kickUser = async (req: any, res: Response) => {
       });
     });
 
+    // 🔔 уведомление
+    await sendNotification(userId, {
+      type: "server_kick",
+      title: "Вы были исключены с сервера",
+      body: "Администратор удалил вас с сервера.",
+      data: { serverId },
+    });
+
+    
     res.json({ message: "User kicked from server" });
-  } catch (err) {
+  } catch (err: any) {
     console.error("kickUser error:", err);
+    res.status(500).json({
+      message: "Internal server error",
+      detail: err?.meta?.constraint || err?.message,
+    });
+  }
+};
+
+export const getBannedUsers = async (req: any, res: Response) => {
+  const serverId = parseInt(req.params.id, 10);
+
+  try {
+    const bans = await prisma.server_bans.findMany({
+      where: { server_id: serverId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            user_profile: {
+              select: {
+                avatar_url: true,
+                is_online: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { created_at: "desc" },
+    });
+
+    res.json(bans);
+  } catch (err) {
+    console.error("getBannedUsers error:", err);
     res.status(500).json({ message: "Internal server error" });
   }
 };

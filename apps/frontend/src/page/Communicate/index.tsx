@@ -26,6 +26,8 @@ import {
 } from "@/features/issue";
 import { Profile } from "@/features/user";
 import { useNotificationSocket } from "@/features/notification/hooks/useNotificationSocket";
+import { AuditDrawer } from "@/features/moderation";
+import { useModerationListener } from "@/features/server/hook/useModerationListener";
 
 export const CommunicatePage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -61,6 +63,7 @@ export const CommunicatePage: React.FC = () => {
   useServerUpdates(socket, activeServerId, getProject, dispatch);
   useServerUpdates(socket, activeServerId, getServerInside, dispatch);
   useServerUpdates(socket, activeServerId, getServerRoles, dispatch);
+  useModerationListener(socket);
 
   const { isConnected } = useNotificationSocket();
 
@@ -159,6 +162,7 @@ export const CommunicatePage: React.FC = () => {
 
         {/* --- Настройки сервера */}
         {isSettingsActive && <SettingsServer />}
+        {isSettingsActive && <AuditDrawer />}
 
         {/* --- Если нет ни сервера, ни персонального чата → показываем друзей */}
         {!hasActiveServer && !isPersonalChat && <FriendList />}

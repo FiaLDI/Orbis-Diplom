@@ -17,7 +17,8 @@ import { messageApi } from "@/features/messages";
 import { chatApi } from "@/features/chat";
 import { issueApi } from "@/features/issue";
 import { settingsApi } from "@/features/settings";
-import { notificationApi } from "@/features/notification"
+import { notificationApi } from "@/features/notification";
+import { moderationApi } from "@/features/moderation";
 
 export const store = configureStore({
     reducer: {
@@ -39,7 +40,8 @@ export const store = configureStore({
         [friendsApi.reducerPath]: friendsApi.reducer,
         [issueApi.reducerPath]: issueApi.reducer,
         [settingsApi.reducerPath]: settingsApi.reducer,
-        [notificationApi.reducerPath]: notificationApi.reducer
+        [notificationApi.reducerPath]: notificationApi.reducer,
+        [moderationApi.reducerPath]: moderationApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
@@ -51,7 +53,8 @@ export const store = configureStore({
             friendsApi.middleware,
             issueApi.middleware,
             settingsApi.middleware,
-            notificationApi.middleware
+            notificationApi.middleware,
+            moderationApi.middleware
         ),
 });
 
