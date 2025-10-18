@@ -3,6 +3,7 @@ import { ModalLayout } from "@/components/layout/Modal/Modal";
 import { Props } from "./interface";
 import { useDeleteProjectMutation, useUpdateProjectMutation } from "@/features/issue";
 import { Ellipsis } from "lucide-react";
+import { useEmitServerUpdate } from "@/features/server";
 
 
 export const Component: React.FC<Props> = ({ projectId, serverId, projectName, projectDescription }) => {
@@ -14,24 +15,29 @@ export const Component: React.FC<Props> = ({ projectId, serverId, projectName, p
   const [updateProject] = useUpdateProjectMutation();
   const [removeProject] = useDeleteProjectMutation();
 
+  const emitServerUpdate = useEmitServerUpdate();
+
   const save = async () => {
-    if (!name.length) {
-      return;
-    }
+    if (!name.trim() || !description.trim()) return;
 
-    if (!description.length) {
-      return;
+    try {
+      await updateProject({ projectId, serverId, data: { name, description } }).unwrap();
+      emitServerUpdate(serverId);
+      setOpen(false);
+    } catch (err) {
+      console.error("Ошибка при обновлении проекта:", err);
     }
-
-    await updateProject({ projectId, serverId, data: { name, description } });
-   
-    setOpen(false);
   };
 
-  const rem = () => {
-    removeProject( { serverId, projectId});
-    setOpen(false);
-  }
+  const rem = async () => {
+    try {
+      await removeProject({ serverId, projectId }).unwrap();
+      emitServerUpdate(serverId); // ✅
+      setOpen(false);
+    } catch (err) {
+      console.error("Ошибка при удалении проекта:", err);
+    }
+  };
 
   return (
     <>

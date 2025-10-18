@@ -24,7 +24,7 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
   const [open, setOpen] = useState(false);
   const [rolePermissions, setRolePermissions] = useState<number[]>([]);
   const [name, setName] = useState(roleName);
-  const [color, setColor] = useState(roleColor || "#5865F2"); // дефолт Discord blue
+  const [color, setColor] = useState(roleColor || "#5865F2")
 
   useEffect(() => {
     if (rolePermissionsData.length > 0) {

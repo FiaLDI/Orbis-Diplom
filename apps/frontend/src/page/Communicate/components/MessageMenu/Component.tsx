@@ -16,23 +16,16 @@ export const Component: React.FC = () => {
   }));
 
   const dispatch = useAppDispatch();
-  const navigator = useNavigate();
-  const { socket } = useServerJournalContext();
   const emitUpdate = useEmitServerUpdate();
 
-  const [trigger] = useLazyGetServersInsideQuery();
   const [getPersonalChats] = useLazyGetChatsUsersQuery();
   const [createText] = useCreateChatMutation();
 
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
 
-  // загрузка личных чатов
   useEffect(() => {
     if (userId) getPersonalChats(userId);
   }, [userId]);
-
-  // слушаем обновления сервера через сокет
-  useServerUpdates(socket, activeServer?.id, trigger, dispatch);
 
   const isChat = !activeServer?.id;
 

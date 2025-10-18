@@ -18,30 +18,24 @@ export const useChatMessages = () => {
   const activeHistory = useAppSelector((s) => s.message.activeHistory);
   const [getMessages] = useLazyGetMessagesQuery();
 
-    /** 🔌 Подключение к комнате **/
   useEffect(() => {
     if (!socket || !activeChat?.id) return;
 
     const chatId = activeChat.id;
 
-    // ✅ проверка, чтобы не заходить второй раз
     if ((socket as any)._joinedChatId === chatId) {
       return;
     }
 
-    console.log("📡 join-chat", chatId);
     socket.emit("join-chat", chatId);
     (socket as any)._joinedChatId = chatId;
 
     return () => {
-      console.log("🚪 leave-chat", chatId);
       socket.emit("leave-chat", chatId);
       (socket as any)._joinedChatId = null;
     };
   }, [socket, activeChat?.id]);
 
-
-  /** 🧾 Первичная загрузка сообщений **/
   useEffect(() => {
     if (!activeChat?.id) return;
 
@@ -54,7 +48,6 @@ export const useChatMessages = () => {
       .catch((err) => console.error("Ошибка загрузки истории:", err));
   }, [activeChat?.id, dispatch, getMessages]);
 
-  /** 🔁 Подписка на события от сокета **/
   useEffect(() => {
     if (!socket) return;
 
@@ -106,8 +99,6 @@ export const useChatMessages = () => {
       setTypingUsers((prev) =>
         prev.includes(data.username as string) ? prev : [...prev, data.username as string]
       );
-
-
     };
 
     const handleTypingStop = (data: { chatId: number; username?: string }) => {
@@ -124,7 +115,6 @@ export const useChatMessages = () => {
     };
   }, [socket, activeChat?.id]);
 
-  /** 🧠 Группировка сообщений для UI **/
   const groupedMessages = useMemo(() => {
     if (!activeHistory?.length) return [];
     return groupMessagesByMinuteAndUserId(activeHistory);

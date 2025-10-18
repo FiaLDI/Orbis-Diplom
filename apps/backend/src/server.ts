@@ -8,7 +8,7 @@ import { connectRedis } from "./config";
 import { authRoutes, chatRouter, moderationRouter, notificationRouter, planningRouter, rolesRouter, searchRouter } from "@/modules";
 import { userRouter } from "@/modules";
 import { Server } from "socket.io";
-import { AuthenticatedSocket, chatSocket, journalSocket, planningSocket } from "./socket";
+import { AuthenticatedSocket, chatSocket, journalSocket, planningSocket, notificationSocket } from "./socket";
 import { messagesRouter } from "@/modules";
 import { friendRouter } from "@/modules";
 import { serverRouter } from "@/modules";
@@ -42,7 +42,7 @@ app.use("/api/chats", chatRouter);
 app.use("/api/friends", friendRouter);
 app.use("/api/messages", messagesRouter);
 app.use("/api/moderation", moderationRouter);
-app.use("/api/notification", notificationRouter);
+app.use("/api/notifications", notificationRouter);
 app.use("/api/servers", rolesRouter);
 app.use("/api/search", searchRouter);
 app.use("/api/servers", serverRouter);
@@ -73,6 +73,14 @@ export const ioPlanning = io.of("/planning");
 
 ioPlanning.on("connection", (socket) => {
   planningSocket(socket as AuthenticatedSocket);
+});
+
+export const ioNotification = io.of("/notification");
+
+ioNotification.on("connection", (socket) => {
+  notificationSocket(socket as AuthenticatedSocket);
+
+  
 });
 
 const PORT = Number(process.env.PORT);

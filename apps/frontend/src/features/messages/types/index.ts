@@ -20,7 +20,7 @@ export interface Message {
 
 export interface Content {
   id: string;
-  type: "text" | "image" | "file" | string;
+  type: "text" | "image" | "file";
   text?: string;
   url?: string;
 }

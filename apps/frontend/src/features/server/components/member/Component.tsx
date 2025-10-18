@@ -45,7 +45,6 @@ export const Component: React.FC = () => {
                         </li>
                     ))}
                 </ul>
-                <Profile />
             </div>
         </>
     );

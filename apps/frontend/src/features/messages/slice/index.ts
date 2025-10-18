@@ -33,19 +33,8 @@ const messagesSlice = createSlice({
         },
 
 
-    setEditMode(
-      state,
-      action: PayloadAction<{
-        enabled: boolean;
-        messagesId: string;
-        chatId: string;
-      }>,
-    ) {
-      state.editmode = {
-        enabled: action.payload.enabled,
-        messagesId: action.payload.messagesId,
-        chatId: action.payload.chatId,
-      };
+    setEditMode(state, action) {
+      state.editmode = action.payload;
     },
 
     leaveEditMode(state) {
@@ -72,6 +61,23 @@ const messagesSlice = createSlice({
         state.activeHistory = [];
       }
     },
+
+    updateMessageInHistory: (state, action: PayloadAction<Message>) => {
+      const updated = action.payload;
+      const chatId = String(updated.chat_id);
+
+      // Обновляем активную историю (если открыта)
+      state.activeHistory = state.activeHistory.map((msg) =>
+        msg.id === updated.id ? updated : msg,
+      );
+
+      // Обновляем кеш истории чата (если сохранён)
+      if (state.histories[chatId]) {
+        state.histories[chatId] = state.histories[chatId].map((msg) =>
+          msg.id === updated.id ? updated : msg,
+        );
+      }
+    }
   },
 
   extraReducers: (builder) => {
@@ -108,6 +114,7 @@ export const {
   setReply,
   clearActiveHistory,
   setActiveChat,
+  updateMessageInHistory
 } = messagesSlice.actions;
 
 export default messagesSlice.reducer;

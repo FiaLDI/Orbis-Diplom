@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "@/config";
+import { sendNotification } from "@/utils/sendNotification";
 
 /**
  * GET /servers/:id/roles
@@ -168,6 +169,9 @@ export const assignRoleToMember = async (req: Request, res: Response) => {
   try {
     const role = await prisma.role_server.findUnique({
       where: { id: roleId },
+      include: { server: { select: { name: true } } },
+    }) as (Awaited<ReturnType<typeof prisma.role_server.findUnique>> & {
+      server: { name: string };
     });
 
     if (!role || role.server_id !== serverId) {
@@ -184,6 +188,14 @@ export const assignRoleToMember = async (req: Request, res: Response) => {
         server_id: serverId,
         role_id: roleId,
       },
+    });
+
+
+   await sendNotification(userId, {
+      type: "assign_role",
+      title: "New Role Assigned",
+      body: `You have been assigned the role **${role.name}** in server "${role.server.name}".`,
+      data: { server_id: serverId, role_id: roleId },
     });
 
     res.json({ message: "Role assigned to user" });
@@ -204,6 +216,13 @@ export const removeRoleFromMember = async (req: Request, res: Response) => {
   const roleId = parseInt(req.params.roleId, 10);
 
   try {
+    const role = await prisma.role_server.findUnique({
+      where: { id: roleId },
+      include: { server: { select: { name: true } } },
+    }) as (Awaited<ReturnType<typeof prisma.role_server.findUnique>> & {
+      server: { name: string };
+    });
+
     await prisma.user_server_roles.delete({
       where: {
         user_id_server_id_role_id: {
@@ -212,6 +231,13 @@ export const removeRoleFromMember = async (req: Request, res: Response) => {
           role_id: roleId,
         },
       },
+    });
+
+    await sendNotification(userId, {
+      type: "remove_role",
+      title: "Role Removed",
+      body: `Your role **${role?.name ?? "unknown"}** was removed in server "${role?.server.name ?? "unknown"}".`,
+      data: { server_id: serverId, role_id: roleId },
     });
 
     res.json({ message: "Role removed from user" });

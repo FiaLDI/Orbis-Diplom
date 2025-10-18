@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ModalLayout } from "@/components/layout/Modal/Modal";
 import {
   useAssignRoleToMemberMutation,
+  useEmitServerUpdate,
   useRemoveRoleFromMemberMutation,
 } from "@/features/server";
 import { ComponentProps } from "./interface";
@@ -16,6 +17,8 @@ export const Component: React.FC<ComponentProps> = ({
   const [open, setOpen] = useState(false);
   const [assignRole] = useAssignRoleToMemberMutation();
   const [removeRole] = useRemoveRoleFromMemberMutation();
+
+  const emitUpdate = useEmitServerUpdate();
 
   const [localRoles, setLocalRoles] = useState<Set<number>>(
     new Set(userRoles.map((r) => r.id))
@@ -34,8 +37,10 @@ export const Component: React.FC<ComponentProps> = ({
     try {
       if (isAssigned) {
         await removeRole({ serverId, userId, roleId }).unwrap();
+        emitUpdate(serverId)
       } else {
         await assignRole({ serverId, userId, roleId }).unwrap();
+        emitUpdate(serverId)
       }
     } catch (err) {
       console.error("toggleRole error:", err);

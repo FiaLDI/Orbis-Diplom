@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "@/config";
 import { ioPlanning } from "@/server";
 import { IssuePriority } from "@prisma/client";
+import { sendNotification } from "@/utils/sendNotification";
 
 /* =======================
    PROJECTS
@@ -261,11 +262,54 @@ export const deleteIssue = async (req: Request, res: Response) => {
 export const assignUserToIssue = async (req: Request, res: Response) => {
   const issueId = Number(req.params.id);
   const userId = Number(req.params.userId);
+
   try {
-    await prisma.issue_assignee.create({
-      data: { issue_id: issueId, user_id: userId }
+    const exists = await prisma.issue_assignee.findUnique({
+      where: { issue_id_user_id: { issue_id: issueId, user_id: userId } },
     });
-    res.json({ message: "User assigned" });
+
+    if (exists) {
+      return res.status(400).json({ message: "User already assigned" });
+    }
+
+    // ✅ получаем проект через project_issues
+    const assignee = await prisma.issue_assignee.create({
+      data: { issue_id: issueId, user_id: userId },
+      include: {
+        issue: {
+          include: {
+            project_issues: {
+              include: {
+                project: {
+                  select: { id: true, name: true, server_id: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const project =
+      assignee.issue.project_issues[0]?.project ?? {
+        id: null,
+        name: "Unknown",
+        server_id: null,
+      };
+
+    // 🔔 Отправляем уведомление
+    await sendNotification(userId, {
+      type: "system",
+      title: "Assigned to issue",
+      body: `You have been assigned to issue "${assignee.issue.title}" in project "${project.name}"`,
+      data: {
+        issueId,
+        projectId: project.id,
+        serverId: project.server_id,
+      },
+    });
+
+    res.json({ message: "User assigned", assignee });
   } catch (err) {
     console.error("assignUserToIssue error:", err);
     res.status(500).json({ message: "Internal server error" });
@@ -276,10 +320,50 @@ export const assignUserToIssue = async (req: Request, res: Response) => {
 export const unassignUserFromIssue = async (req: Request, res: Response) => {
   const issueId = Number(req.params.id);
   const userId = Number(req.params.userId);
+
   try {
-    await prisma.issue_assignee.delete({
-      where: { issue_id_user_id: { issue_id: issueId, user_id: userId } }
+    const exists = await prisma.issue_assignee.findUnique({
+      where: { issue_id_user_id: { issue_id: issueId, user_id: userId } },
+      include: {
+        issue: {
+          include: {
+            project_issues: {
+              include: {
+                project: { select: { id: true, name: true, server_id: true } },
+              },
+            },
+          },
+        },
+      },
     });
+
+    if (!exists) {
+      return res.status(404).json({ message: "User not assigned to this issue" });
+    }
+
+    await prisma.issue_assignee.delete({
+      where: { issue_id_user_id: { issue_id: issueId, user_id: userId } },
+    });
+
+    const project =
+      exists.issue.project_issues[0]?.project ?? {
+        id: null,
+        name: "Unknown",
+        server_id: null,
+      };
+
+    // 🔔 Отправляем уведомление
+    await sendNotification(userId, {
+      type: "system",
+      title: "Unassigned from issue",
+      body: `You have been unassigned from issue "${exists.issue.title}" in project "${project.name}"`,
+      data: {
+        issueId,
+        projectId: project.id,
+        serverId: project.server_id,
+      },
+    });
+
     res.json({ message: "User unassigned" });
   } catch (err) {
     console.error("unassignUserFromIssue error:", err);

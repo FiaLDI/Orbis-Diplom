@@ -54,7 +54,7 @@ export const Component: React.FC = () => {
             <CirclePlus
                 color="#fff"
                 strokeWidth={1.25}
-                className="w-15 h-15 lg:w-10 lg:h-10"
+                className="w-6 h-6 transition-transform hover:scale-110"
             />
         </button>
         <ModalLayout open={open} onClose={()=>{setOpen(false)}}>

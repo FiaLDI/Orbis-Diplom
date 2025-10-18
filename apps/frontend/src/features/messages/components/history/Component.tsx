@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { Component as SingleMessage } from "./messages";
 import {
   setEditMode,
-  setOpenMessage,
   setReply,
   clearActiveHistory,
   setActiveHistory,
@@ -13,80 +12,59 @@ import {
   useRemoveMessageMutation,
 } from "@/features/messages";
 import { useChatMessages } from "@/features/chat";
+import { useContextMenu } from "@/features/shared";
+import { AnimatedContextMenu } from "@/features/shared/components/AnimatedContextMenu";
+import { Reply, Pencil, Copy, Trash2, Pin } from "lucide-react";
 
 export const Component: React.FC<{
   bottomRef: React.RefObject<HTMLDivElement>;
   topRef: React.RefObject<HTMLDivElement>;
 }> = ({ bottomRef, topRef }) => {
-  useChatMessages()
-  const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const offsetRef = useRef(0);
-  const fetchingRef = useRef(false);
+  useChatMessages();
 
   const dispatch = useAppDispatch();
   const activeChat = useAppSelector((s) => s.chat.activeChat);
   const activeHistory = useAppSelector((s) => s.message.activeHistory);
   const allHistories = useAppSelector((s) => s.message.histories);
-  const currentUser = useAppSelector(s => s.auth.user?.info);
-
+  const currentUser = useAppSelector((s) => s.auth.user?.info);
 
   const [getMessages] = useLazyGetMessagesQuery();
   const [removeMessage] = useRemoveMessageMutation();
 
-  const menuRef = useRef<HTMLUListElement>(null);
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
-  const isOpen = useAppSelector((s) => s.message.openMessage);
+
   const containerRef = useRef<HTMLDivElement>(null);
+  const offsetRef = useRef(0);
+  const fetchingRef = useRef(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
 
-  /** закрытие контекстного меню при клике вне */
+  // ✅ Хук контекстного меню
+  const { contextMenu, handleContextMenu, closeMenu, menuRef } =
+    useContextMenu<any, HTMLUListElement>();
+
+  /** Загрузка истории при смене чата */
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuVisible(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    if (!activeChat?.id) return;
 
-  /** контекстное меню сообщения */
-  const handleMessageClick = (e: React.MouseEvent, message: any) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setMenuPosition({ x: e.pageX, y: e.pageY });
-    setMenuVisible(true);
-    dispatch(setOpenMessage(message));
-  };
+    if (allHistories[activeChat.id]?.length) {
+      dispatch(setActiveHistory(allHistories[activeChat.id]));
+      return;
+    }
 
-  /** загрузка истории при смене чата */
-    useEffect(() => {
-  if (!activeChat?.id) return;
+    dispatch(clearActiveHistory());
+    setHasMore(true);
+    offsetRef.current = 0;
+    setOffset(0);
+    getMessages({ id: activeChat.id, offset: 0 }).catch(() => {});
+  }, [activeChat?.id]);
 
-  // если история уже есть в кеше — покажи её сразу
-  if (allHistories[activeChat.id]?.length) {
-    dispatch(setActiveHistory(allHistories[activeChat.id]));
-    return;
-  }
-
-  dispatch(clearActiveHistory());
-  setHasMore(true);
-  offsetRef.current = 0;
-  setOffset(0);
-  getMessages({ id: activeChat.id, offset: 0 }).catch(() => {});
-}, [activeChat?.id]);
-
-
-  /** автопрокрутка вниз после первой загрузки */
+  /** Автопрокрутка вниз после первой загрузки */
   useEffect(() => {
     if (!activeHistory?.length || offset !== 0) return;
-    setTimeout(() => {
-      bottomRef.current?.scrollIntoView({ behavior: "auto" });
-    }, 0);
+    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "auto" }), 0);
   }, [activeHistory, offset, bottomRef]);
 
-  /** догрузка сообщений при скролле вверх */
+  /** Догрузка при скролле вверх */
   useEffect(() => {
     const topEl = topRef?.current;
     const rootEl = containerRef.current;
@@ -106,11 +84,7 @@ export const Component: React.FC<{
 
         fetchingRef.current = true;
         try {
-          const data = await getMessages({
-            id: activeChat.id,
-            offset: newOffset,
-          });
-
+          const data = await getMessages({ id: activeChat.id, offset: newOffset });
           if (!data?.data?.length) setHasMore(false);
 
           setTimeout(() => {
@@ -121,59 +95,63 @@ export const Component: React.FC<{
           }, 50);
         } catch {
           offsetRef.current = Math.max(0, offsetRef.current - 1);
-          setOffset(offsetRef.current);
           fetchingRef.current = false;
         }
       },
-      {
-        root: rootEl,
-        threshold: 0.1,
-        rootMargin: "50px",
-      },
+      { root: rootEl, threshold: 0.1, rootMargin: "50px" },
     );
 
     observer.observe(topEl);
     return () => observer.disconnect();
   }, [activeChat?.id, getMessages, hasMore]);
 
-  /** обработчики контекстного меню */
-  const handleOptionClick = (option: string) => {
-    setMenuVisible(false);
-    dispatch(setOpenMessage(undefined));
-  };
-
+  /** ====== Обработчики меню ====== */
   const handleReplyMessage = () => {
-    dispatch(setReply(String(isOpen?.id)));
-    dispatch(setOpenMessage(undefined));
-    setMenuVisible(false);
+    if (!contextMenu?.data) return;
+    dispatch(setReply(String(contextMenu.data.id)));
+    closeMenu();
   };
 
   const handleEditMessage = () => {
-    if (!isOpen?.id || !isOpen.chat_id) return;
+    const msg = contextMenu?.data;
+    if (!msg?.id || !msg.chat_id) return;
     dispatch(
       setEditMode({
         enabled: true,
-        messagesId: String(isOpen.id),
-        chatId: String(isOpen.chat_id),
+        messagesId: String(msg.id),
+        chatId: String(msg.chat_id),
       }),
     );
-    setMenuVisible(false);
+    closeMenu();
   };
 
   const handleRemoveMessage = () => {
-    if (confirm("Вы уверены? ") && isOpen) {
-      removeMessage({ chat_id: isOpen.chat_id, id: isOpen.id });
+    const msg = contextMenu?.data;
+    if (msg && confirm("Удалить сообщение?")) {
+      removeMessage({ chat_id: msg.chat_id, id: msg.id });
     }
-    setMenuVisible(false);
+    closeMenu();
   };
 
   const handleCopyMessage = () => {
-    if (!isOpen) return;
-    navigator.clipboard.writeText(isOpen.content?.[0]?.text ?? "");
-    setMenuVisible(false);
+    const msg = contextMenu?.data;
+    if (msg) navigator.clipboard.writeText(msg.content?.[0]?.text ?? "");
+    closeMenu();
   };
 
-  /** отображение */
+  const menuItems = [
+    { label: "Reply", action: handleReplyMessage, icon: <Reply size={15} /> },
+    { label: "Edit", action: handleEditMessage, icon: <Pencil size={15} /> },
+    { label: "Copy text", action: handleCopyMessage, icon: <Copy size={15} /> },
+    {
+      label: "Delete",
+      action: handleRemoveMessage,
+      icon: <Trash2 size={15} />,
+      danger: true,
+    },
+  ];
+
+  /** ====== Рендер ====== */
   return (
     <div
       ref={containerRef}
@@ -184,31 +162,20 @@ export const Component: React.FC<{
         <SingleMessage
           key={`single-${message.chat_id}-${idx}`}
           message={message}
-          onClick={(e) => handleMessageClick(e, message)}
+          onClick={(e) => handleContextMenu(e, message)} // контекстное меню
           currentUser={currentUser}
         />
       ))}
       <div ref={bottomRef} />
 
-      {menuVisible && (
-        <ul
-          ref={menuRef}
-          className="p-5 flex gap-3 flex-col bg-[#25309b88]"
-          style={{
-            position: "fixed",
-            top: `${menuPosition.y}px`,
-            left: `${menuPosition.x}px`,
-            zIndex: 9999,
-          }}
-          onContextMenu={(e) => e.preventDefault()}
-        >
-          <li onClick={handleReplyMessage}>Reply</li>
-          <li onClick={handleEditMessage}>Edit</li>
-          <li onClick={() => handleOptionClick("Pin")}>Pin</li>
-          <li onClick={handleCopyMessage}>Copy text</li>
-          <li onClick={handleRemoveMessage}>Delete</li>
-        </ul>
-      )}
+      <AnimatedContextMenu
+        visible={!!contextMenu}
+        x={contextMenu?.x ?? 0}
+        y={contextMenu?.y ?? 0}
+        items={menuItems}
+        onClose={closeMenu}
+        menuRef={menuRef}
+      />
     </div>
   );
 };

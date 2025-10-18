@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useServerJournalContext } from "@/contexts/ServerJournalSocketContext";
+import { MenuNotification } from "@/features/notification";
 import {
     CreateServerForm,
     setActiveServer,
@@ -47,7 +48,7 @@ export const AppMenu: React.FC = () => {
                             }}
                             className="cursor-pointer"
                         >
-                            <img src={avatarUrl ? avatarUrl : "/img/icon.png"} alt="" className="w-15 h-15 lg:w-10 lg:h-10 rounded-2xl"/>
+                            <img src={avatarUrl ? avatarUrl : "/img/icon.png"} alt="" className="w-6 h-6 transition-transform hover:scale-110"/>
                                
                         </button>
                     </div>
@@ -55,7 +56,7 @@ export const AppMenu: React.FC = () => {
                         {server.servers &&
                             server.servers.map((val, index) => (
                                 <div
-                                    className="flex w-10 h-10"
+                                    className="w-6 h-6 transition-transform hover:scale-110"
                                     key={`server-${val.id}`}
                                 >
                                     <button
@@ -83,8 +84,8 @@ export const AppMenu: React.FC = () => {
                         <CreateServerForm />
                     </div>
                 </div>
-                <div className="flex lg:block">
-                    <div className="exit settings">
+                <div className="flex flex-col gap-5">
+                        <MenuNotification />
                         <button
                             className=" cursor-pointer"
                             onClick={() => {
@@ -94,10 +95,9 @@ export const AppMenu: React.FC = () => {
                             <Bolt 
                                 color="#fff"
                                 strokeWidth={1.25}
-                                className="w-15 h-15 lg:w-10 lg:h-10"
+                                className="w-6 h-6 transition-transform hover:scale-110"
                             />
                         </button>
-                    </div>
                 </div>
             </div>
         </>

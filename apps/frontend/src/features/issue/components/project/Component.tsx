@@ -5,6 +5,7 @@ import { MoveLeft, Plus, Target } from "lucide-react";
 import { useCreateProjectMutation, useLazyGetIssuesQuery } from "../../api";
 import { Component as EditProject } from "./edit"
 import { setOpenProject, toggleIssueMode } from "../..";
+import { useEmitServerUpdate } from "@/features/server";
 
 export const Component: React.FC<Props> = ({serverid, name}) => {
     const projects = useAppSelector(s => s.issue.project);
@@ -12,10 +13,21 @@ export const Component: React.FC<Props> = ({serverid, name}) => {
 
     const [createProject] = useCreateProjectMutation();
     const [getIssue] = useLazyGetIssuesQuery();
+    const emitServerUpdate = useEmitServerUpdate();
 
-    const handlerCreateProject = () => {
-        createProject({id: serverid, data: {name: "default", description: "default" }})
-    }
+    const handlerCreateProject = async () => {
+        if (!serverid) return;
+        try {
+        await createProject({
+            id: serverid,
+            data: { name: "default", description: "default" },
+        }).unwrap();
+
+        emitServerUpdate(serverid); // ✅ уведомляем всех клиентов
+        } catch (err) {
+        console.error("Ошибка при создании проекта:", err);
+        }
+    };
 
     const open = (id: number) => {
         dispatch(setOpenProject(id));

@@ -40,13 +40,13 @@ export const messageApi = createApi({
         }),
         RemoveMessage: builder.mutation({
             query: ({ chat_id, id }) => ({
-                url: `/message/?chat_id=${chat_id}&message_id=${id}`,
+                url: `/messages/${id}`,
                 method: "DELETE",
             }),
         }),
         EditMessage: builder.mutation({
             query: ({ chat_id, id, content }) => ({
-                url: `/message/?chat_id=${chat_id}&message_id=${id}`,
+                url: `/messages/${id}`,
                 method: "PUT",
                 body: { content },
             }),

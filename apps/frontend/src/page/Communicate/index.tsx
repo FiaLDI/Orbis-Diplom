@@ -10,6 +10,8 @@ import {
   useLazyGetServersInsideQuery,
   useLazyGetServersMembersQuery,
   useLazyGetServersRolesQuery,
+  useServerJournalSocket,
+  useServerUpdates,
 } from "@/features/server";
 import { AppMenu } from "./components/AppMenu";
 import { Component as MessageMenu } from "./components/MessageMenu";
@@ -22,6 +24,8 @@ import {
   useLazyGetStatusesQuery,
   useLazyGetPriorityQuery,
 } from "@/features/issue";
+import { Profile } from "@/features/user";
+import { useNotificationSocket } from "@/features/notification/hooks/useNotificationSocket";
 
 export const CommunicatePage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -34,7 +38,6 @@ export const CommunicatePage: React.FC = () => {
       issues: s.issue,
     })
   );
-
 
   const issueMode = issues.issueMode;
   const activeServerId = activeserver?.id;
@@ -52,6 +55,14 @@ export const CommunicatePage: React.FC = () => {
   const [getProject] = useLazyGetProjectQuery();
   const [getStatuses] = useLazyGetStatusesQuery();
   const [getPriority] = useLazyGetPriorityQuery();
+  const [getServerInside] = useLazyGetServersInsideQuery();
+
+  const { socket } = useServerJournalSocket();
+  useServerUpdates(socket, activeServerId, getProject, dispatch);
+  useServerUpdates(socket, activeServerId, getServerInside, dispatch);
+  useServerUpdates(socket, activeServerId, getServerRoles, dispatch);
+
+  const { isConnected } = useNotificationSocket();
 
   const [isMessageMenuOpen, setIsMessageMenuOpen] = useState(true);
 
@@ -101,6 +112,9 @@ export const CommunicatePage: React.FC = () => {
         <AppMenu />
       </aside>
 
+      
+      <Profile />
+      
       {/* Main content */}
       <main className="w-full flex h-full relative">
         {/* Меню чатов */}

@@ -42,4 +42,5 @@ export interface UserInfo {
   birth_date?: string | null;
   gender?: string | null;
   location?: string | null;
+  is_blocked?: boolean;
 }

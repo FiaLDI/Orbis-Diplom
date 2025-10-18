@@ -34,7 +34,6 @@ planningRouter.get("/issues/priorities", getIssuePriorities);
 // Issues
 planningRouter.get("/projects/:id/issues", getProjectIssues);
 planningRouter.post("/projects/:id/issues", createIssue);
-
 planningRouter.patch("/issues/:id", updateIssue);
 planningRouter.delete("/issues/:id", deleteIssue);
 planningRouter.get("/issues/:id", getIssue);

@@ -7,7 +7,9 @@ import {
     getFriendRequests,
     getUsersFriends,
     getFriendStatus,
-    deleteFriend
+    deleteFriend,
+  blockUser,
+  unblockUser,
 } from "../controllers/friend.controller";
 
 export const friendRouter = express.Router();
@@ -19,3 +21,5 @@ friendRouter.get("/:id/status", getFriendStatus);
 friendRouter.post("/:id/confirm", confirmFriendInvite);
 friendRouter.post("/:id/reject", rejectFriendInvite);
 friendRouter.delete("/:id", deleteFriend);   
+friendRouter.post("/:id/block", blockUser);
+friendRouter.post("/friends/:id/unblock", unblockUser);

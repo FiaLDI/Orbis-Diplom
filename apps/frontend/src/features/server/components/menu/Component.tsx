@@ -1,49 +1,49 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { createPortal } from "react-dom";
+import { Plus, Link } from "lucide-react";
+import { useContextMenu } from "@/features/shared";
+import { AnimatedContextMenu } from "@/features/shared/components/AnimatedContextMenu";
 import { Props } from "./interface";
 
+/**
+ * Контекстное меню для создания чатов и ссылок приглашений
+ * Использует общую систему AnimatedContextMenu
+ */
 export const Component: React.FC<Props> = ({ x, y, onClose, onCreateChat }) => {
-  const ref = useRef<HTMLUListElement | null>(null);
-  const container = document.body;
+  // Используем наш хук контекстного меню, чтобы получить ref, ESC и обработчики
+  const { menuRef } = useContextMenu<null, HTMLUListElement>();
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+  // Пункты меню
+  const menuItems = [
+    {
+      label: "Create text chat",
+      icon: <Plus size={16} />,
+      action: () => {
+        onCreateChat();
         onClose();
-      }
-    };
+      },
+    },
+    {
+      label: "Create invite link",
+      icon: <Link size={16} />,
+      action: () => {
+        console.log("Create invite link");
+        onClose();
+      },
+    },
+  ];
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
-
+  // AnimatedContextMenu сам обрабатывает анимацию и позиционирование
   const menu = (
-    <ul
-      ref={ref}
-      className="fixed bg-[#2550dd] rounded-[10px] shadow-lg z-[9999] animate-fade-in"
-      style={{ top: y, left: x }}
-      onContextMenu={(e) => e.preventDefault()}
-    >
-      <li
-        className="whitespace-nowrap p-2 text-white hover:bg-blue-600 cursor-pointer"
-        onClick={() => {
-          onCreateChat();
-          onClose();
-        }}
-      >
-        Create text chat
-      </li>
-      <li
-        className="whitespace-nowrap p-2 text-white hover:bg-blue-600 cursor-pointer"
-        onClick={() => {
-          console.log("Create invite link");
-          onClose();
-        }}
-      >
-        Create invite link
-      </li>
-    </ul>
+    <AnimatedContextMenu
+      visible={true}
+      x={x}
+      y={y}
+      items={menuItems}
+      menuRef={menuRef}
+      onClose={onClose}
+    />
   );
 
-  return createPortal(menu, container);
+  return createPortal(menu, document.body);
 };

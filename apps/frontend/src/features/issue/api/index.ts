@@ -101,6 +101,18 @@ export const issueApi = createApi({
         { type: "Issues", id: `PROJECT-${projectId}` },
       ],
     }),
+    assignUserToIssue: builder.mutation<void, { issueId: number; userId: number }>({
+      query: ({ issueId, userId }) => ({
+        url: `/servers/issues/${issueId}/assignees/${userId}`,
+        method: "POST",
+      }),
+    }),
+    unassignUserFromIssue: builder.mutation<void, { issueId: number; userId: number }>({
+      query: ({ issueId, userId }) => ({
+        url: `/servers/issues/${issueId}/assignees/${userId}`,
+        method: "DELETE",
+      }),
+    }),
 
     /* 🔹 Meta */
     getStatuses: builder.query({
@@ -140,6 +152,8 @@ export const {
   useDeleteIssueMutation,
   useLazyGetChatIssueQuery,
   useCreateChatIssueMutation,
+  useAssignUserToIssueMutation,
+  useUnassignUserFromIssueMutation,
 
   useLazyGetStatusesQuery,
   useLazyGetPriorityQuery,

@@ -6,7 +6,7 @@ export const DefaultButton: React.FC<{
 }> = ({ children, handler }) => {
     return (
         <button
-            className="bg-transparent cursor-pointer pl-3 pr-3 hover:border-b mb-[-1px]"
+            className="cursor-pointer px-5 py-1 w-full whitespace-nowrap bg-[#1f77fa]/18 hover:bg-[#1f77fa]/50 rounded"
             onClick={() => handler()}
         >
             {children}

@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useRef, DragEvent } from "react";
+import React, { useState, ChangeEvent, useRef, DragEvent, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import {
   setReply,
@@ -10,6 +10,7 @@ import { useChatSocket } from "@/features/chat/hooks/useChatSocket";
 import { useChatMessages } from "@/features/chat";
 import { uploadFiles, resetUpload } from "@/features/upload";
 import { Upload } from "lucide-react";
+import {Component as TypingIndicator} from "./typingindicator"
 
 export const Component: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -19,6 +20,7 @@ export const Component: React.FC = () => {
   const replyTo = useAppSelector((s) => s.message.reply);
   const auth = useAppSelector((s) => s.auth.user?.info);
   const upload = useAppSelector((s) => s.upload);
+  const allHistories = useAppSelector((s) => s.message.histories);
 
   const { socket } = useChatSocket();
   const { typingUsers } = useChatMessages();
@@ -26,9 +28,14 @@ export const Component: React.FC = () => {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState("");
-  const [isDragging, setIsDragging] = useState(false); // 🟢 глобальный drag overlay
+  const [isDragging, setIsDragging] = useState(false);
 
-  // 🧩 drag events на всём окне
+  const repliedMsg = useMemo(() => {
+    if (!replyTo || !activeChat?.id) return null;
+    const messages = allHistories?.[activeChat?.id] ?? [];
+    return messages.find((m) => String(m.id) === String(replyTo)) ?? null;
+  }, [replyTo, activeChat?.id, allHistories]);
+
   React.useEffect(() => {
     const handleDragOver = (e: DragEvent) => {
       e.preventDefault();
@@ -43,7 +50,6 @@ export const Component: React.FC = () => {
     };
     const handleDragLeave = (e: DragEvent) => {
       e.preventDefault();
-      // чтобы не пропадало мгновенно при входе/выходе из дочерних элементов
       if (e.clientX === 0 && e.clientY === 0) setIsDragging(false);
     };
 
@@ -146,6 +152,20 @@ export const Component: React.FC = () => {
     }, 2000);
   };
 
+  const handleScrollToReplied = () => {
+    if (!replyTo) return;
+    const el = document.querySelector(`[data-id="message-${replyTo}"]`) as HTMLElement | null;
+    if (!el) return;
+
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("bg-[#4f6fff66]", "transition-colors");
+
+    // убираем подсветку через 1.5 секунды
+    setTimeout(() => {
+      el.classList.remove("bg-[#4f6fff66]");
+    }, 1500);
+  };
+
   return (
     <>
       {/* 🔹 глобальный overlay */}
@@ -162,13 +182,7 @@ export const Component: React.FC = () => {
       <div className="flex flex-col gap-2 p-3 bg-[#25309b] relative">
         {/* 💬 typing */}
         {typingUsers.length > 0 && (
-          <p className="text-sm text-gray-300 italic">
-            {typingUsers.length > 4
-              ? "Много пользователей печатают..."
-              : `${typingUsers.join(", ")} ${
-                  typingUsers.length > 1 ? "печатают..." : "печатает..."
-                }`}
-          </p>
+          <TypingIndicator users={typingUsers} />
         )}
 
         {/* 📂 файлы */}
@@ -190,8 +204,47 @@ export const Component: React.FC = () => {
           </div>
         )}
 
+        {(repliedMsg && replyTo) && (
+          <div
+            onClick={handleScrollToReplied}
+            className="flex items-center justify-between bg-[#1d2fa188] px-3 py-2 rounded-lg text-sm text-white cursor-pointer hover:bg-[#3041e088] transition"
+          >
+            <div className="flex flex-col">
+              <span className="opacity-70 text-xs mb-0.5">💬 Ответ на сообщение:</span>
+
+              {repliedMsg ? (
+                repliedMsg.content?.[0]?.type === "text" ? (
+                  <span className="font-semibold truncate max-w-[280px]">
+                    “{repliedMsg.content[0].text}”
+                  </span>
+                ) : repliedMsg.content?.[0]?.type === "image" ? (
+                  <span className="italic text-blue-300">🖼 Изображение</span>
+                ) : (
+                  <span className="italic text-blue-300">📎 Файл</span>
+                )
+              ) : (
+                <span className="italic opacity-60">Не найдено</span>
+              )}
+            </div>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // чтобы клик на ✕ не скроллил
+                dispatch(setReply(undefined));
+              }}
+              className="text-white opacity-70 hover:opacity-100 transition"
+              title="Отменить ответ"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+
+
         {/* 🧩 инпут и кнопки */}
         <div className="flex items-center gap-3">
+          
           {/* кнопка загрузки */}
           <button
             onClick={handleUploadClick}
@@ -228,6 +281,7 @@ export const Component: React.FC = () => {
           >
             Отправить
           </button>
+          
         </div>
       </div>
     </>

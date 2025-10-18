@@ -7,7 +7,7 @@ import {
 } from "@/features/user";
 import { ModalButton } from "@/components/ui/Button/ModalButton";
 import { useSendRequestMutation } from "../..";
-import { X } from "lucide-react";
+import { CirclePlus, X } from "lucide-react";
 import { DefaultButton } from "@/components/ui/Button/DefaultButton";
 
 export const Component: React.FC = () => {
@@ -49,7 +49,9 @@ export const Component: React.FC = () => {
 
     return (
         <>
-        <DefaultButton handler={() => {setOpen(true)}}>Add friend</DefaultButton>
+        <button onClick={() => {setOpen(true)}} className="cursor-pointer">
+            <CirclePlus color="white" className="w-15 h-15 lg:w-8 lg:h-8" strokeWidth={"1.25"}/>
+        </button>
         <ModalLayout open={open} onClose={()=>{ setOpen(false)}}>
             <div
                 className=" text-white flex flex-col gap-5 w-[600px]"
@@ -79,7 +81,7 @@ export const Component: React.FC = () => {
                                 >
                                     <div className="flex items-center gap-2">
                                         <img
-                                            src={val.avatar_url}
+                                            src={val.user_profile.avatar_url || "/img/icon.png"}
                                             alt=""
                                             className="w-15 h-15 lg:w-10 lg:h-10"
                                         />

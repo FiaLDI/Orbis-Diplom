@@ -17,8 +17,6 @@ export const Component: React.FC = () => {
         }
     }, [check])
 
-    if (!check) return null;
-
     return (
         <ModalLayout onClose={()=> {dispatch(closeProfile());setOpen(prev => !prev)}} open={open}>
             <div className="p-5 text-white h-[600px] w-[600px] overflow-hidden">

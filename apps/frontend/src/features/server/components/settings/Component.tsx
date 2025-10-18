@@ -6,6 +6,7 @@ import {
   setSettingsActive,
   useCreateRoleMutation,
   useDeleteRoleMutation,
+  useEmitServerUpdate,
   useGetServersRolesQuery,
 } from "../..";
 import { Plus, X } from "lucide-react";
@@ -19,6 +20,7 @@ export const Component: React.FC = () => {
 
   const [createRole] = useCreateRoleMutation();
   const [deleteRole] = useDeleteRoleMutation();
+    const emitUpdate = useEmitServerUpdate();
 
   const { data: roles = [], refetch } = useGetServersRolesQuery(
     activeserver?.id,
@@ -28,13 +30,13 @@ export const Component: React.FC = () => {
   const handleCreateRole = async () => {
     if (!activeserver?.id) return;
     await createRole({ id: activeserver.id, data: { name: "custom" } });
-    await refetch(); // 👈 обновляем список ролей
+    await emitUpdate(activeserver?.id)
   };
 
   const handleDeleteRole = async (roleId: number) => {
     if (!activeserver?.id) return;
     await deleteRole({ serverId: activeserver.id, roleId });
-    await refetch(); // 👈 обновляем список ролей
+    await emitUpdate(activeserver?.id)
   };
 
   if (!activeserver) return null;

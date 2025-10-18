@@ -256,9 +256,9 @@ export const deleteMessage = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
-
 export const editMessage = async (req: AuthRequest, res: Response) => {
   const messageId = parseInt(req.params.id, 10);
+  const { content } = req.body;
 
   if (isNaN(messageId)) {
     return res.status(400).json({ message: "Invalid message_id" });
@@ -269,11 +269,16 @@ export const editMessage = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
+    if (!Array.isArray(content) || content.length === 0) {
+      return res.status(400).json({
+        message: "Content must be a non-empty array",
+      });
+    }
+
+    // Проверим владельца
     const message = await prisma.messages.findUnique({
       where: { id: messageId },
-      include: {
-        messages_content: { include: { content: true } },
-      },
+      select: { user_id: true, chat_id: true },
     });
 
     if (!message) {
@@ -284,42 +289,94 @@ export const editMessage = async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    const { content } = req.body;
-    if (typeof content !== "string" || !content.trim()) {
-      return res.status(400).json({
-        message: "Content is required and must be a non-empty string",
+    const chatId = message.chat_id;
+
+    // Удаляем старое содержимое и пересоздаём
+    await prisma.$transaction(async (tx) => {
+      const oldLinks = await tx.messages_content.findMany({
+        where: { id_messages: messageId },
+        select: { id_content: true },
       });
-    }
 
-    const contentId = message.messages_content[0]?.id_content;
-    if (!contentId) {
-      return res.status(404).json({ message: "Message content not found" });
-    }
+      await tx.messages_content.deleteMany({
+        where: { id_messages: messageId },
+      });
 
-    const updatedContent = await prisma.content.update({
-      where: { id: contentId },
-      data: { text: content },
+      const oldIds = oldLinks.map((c) => c.id_content);
+      if (oldIds.length) {
+        await tx.content.deleteMany({ where: { id: { in: oldIds } } });
+      }
+
+      // Создаём новое содержимое
+      for (const item of content) {
+        const contentId = uuidv4();
+        await tx.content.create({
+          data: {
+            id: contentId,
+            text: item.text ?? null,
+            url: item.url ?? null,
+          },
+        });
+
+        await tx.messages_content.create({
+          data: {
+            id_messages: messageId,
+            id_content: contentId,
+            type: item.type ?? "text",
+            uploaded_at: new Date(),
+          },
+        });
+      }
+
+      await tx.messages.update({
+        where: { id: messageId },
+        data: {
+          is_edited: true,
+          updated_at: new Date(),
+        },
+      });
     });
 
-    await prisma.messages.update({
+    const updated = await prisma.messages.findUnique({
       where: { id: messageId },
-      data: { is_edited: true, updated_at: new Date() },
+      include: {
+        messages_content: {
+          include: { content: true },
+        },
+      },
     });
 
-    ioChat.to(`chat_${message.chat_id}`).emit("edit-message", {
-      message_id: messageId,
-      newContent: updatedContent.text,
-    });
+    if (!updated) {
+      return res.status(404).json({ message: "Message not found after update" });
+    }
 
-    return res.status(200).json({
-      message: "Message updated",
-      data: updatedContent,
-    });
+    const formatted = {
+      id: updated.id,
+      chat_id: chatId,
+      user_id: req.user.id,
+      username: req.user.username,
+      is_edited: true,
+      content: updated.messages_content.map((mc) => ({
+        type: mc.type,
+        id: mc.content.id,
+        text: mc.content.text ?? "",
+        url: mc.content.url ?? "",
+      })),
+      timestamp: updated.created_at
+        ? updated.created_at.toISOString()
+        : new Date().toISOString(),
+      updated_at: updated.updated_at ? updated.updated_at.toISOString() : null,
+    };
+
+    ioChat.to(`chat_${chatId}`).emit("edit-message", formatted);
+
+    return res.status(200).json(formatted);
   } catch (err) {
     console.error("❌ editMessage error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 export const getMessageById = async (req: AuthRequest, res: Response) => {
   const messageId = parseInt(req.params.id, 10);
