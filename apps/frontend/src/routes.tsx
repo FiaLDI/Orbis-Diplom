@@ -1,26 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-import { HomePage } from "@/page/Home/index";
 import { Layout } from "@/page/Home/components/Layout/Layout";
 import { useAppSelector } from "@/app/hooks";
-import { PoliticalPage } from "@/page/Political";
-import AuthPageController from "@/page/Auth";
-import { CommunicatePage } from "@/page/Communicate";
+import { Component as HomePage } from "@/page/Home/index";
+import { Component as PoliticalPage } from "@/page/Political";
+import { Component as AuthPage} from "@/page/Auth";
+import { Component as CommunicatePage } from "@/page/Communicate";
+import { Component as SettingAppPage } from "./page/Settings";
 import { useRefreshTokenMutation } from "@/features/auth";
-import { SettingAppPage } from "./page/Settings";
-import { LoaderCircle } from "lucide-react";
-import { LoadingSpinner } from "./components/ui/Animate/LoadingSpinner";
-
-const ProtectedRoute: React.FC<{
-    isAuth: boolean;
-    children: React.ReactNode;
-    path?: string;
-}> = ({ isAuth, children, path }) => {
-    if (path) {
-        return isAuth ? <>{children}</> : <Navigate to={path} />;
-    }
-    return isAuth ? <>{children}</> : <Navigate to={"/"} />;
-};
+import { ProtectedRoute } from "./utils/auth";
+import { LoadingSpinner } from "@/shared";
 
 export const PagesRouter: React.FC = () => {
     const isAuth =
@@ -65,16 +54,16 @@ export const PagesRouter: React.FC = () => {
                     path="/login"
                     element={
                         <ProtectedRoute isAuth={!isAuth} path="/app">
-                            <AuthPageController type="login" />
+                            <AuthPage type="login" />
                         </ProtectedRoute>
                     }
                 />
                 <Route
                     path="/register"
                     element={
-                        <>
-                            <AuthPageController type="register" />
-                        </>
+                        <ProtectedRoute isAuth={!isAuth} path="/app">
+                            <AuthPage type="register" />
+                        </ProtectedRoute>
                     }
                 />
 

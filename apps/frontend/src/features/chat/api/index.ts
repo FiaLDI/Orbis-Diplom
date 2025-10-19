@@ -17,7 +17,7 @@ export const chatApi = createApi({
     },
   }),
 
-  tagTypes: ["Chat"], // 👈 добавляем тип кэша
+  tagTypes: ["Chat"],
 
   endpoints: (builder) => ({
     getChatInfo: builder.query({

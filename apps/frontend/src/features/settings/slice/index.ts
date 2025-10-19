@@ -35,9 +35,6 @@ const userSettingsSlice = createSlice({
             };
         },
     },
-    extraReducers: (builder) => {
-        
-    },
 });
 
 export const {

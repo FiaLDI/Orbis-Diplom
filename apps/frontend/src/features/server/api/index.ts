@@ -9,7 +9,7 @@ export const serverApi = createApi({
         prepareHeaders: (headers, { getState }) => {
             const state = getState() as {
                 auth: { user: { access_token?: string } };
-            }; // Type assertion for state
+            };
             const token = state.auth.user?.access_token;
 
             if (token) {

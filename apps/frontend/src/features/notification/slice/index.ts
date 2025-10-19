@@ -1,19 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-export interface Notification {
-  id: number;
-  type: string;
-  title: string;
-  body?: string | null;
-  data?: string | null;
-  is_read: boolean;
-  created_at: string;
-}
-
-interface NotificationState {
-  list: Notification[];
-  onlineUsers: number[]; // 🟢 список ID онлайн-пользователей
-}
+import { NotificationState, Notification } from "../types";
 
 const initialState: NotificationState = {
   list: [],
@@ -24,7 +10,6 @@ const notificationSlice = createSlice({
   name: "notification",
   initialState,
   reducers: {
-    // ===== УВЕДОМЛЕНИЯ =====
     setNotifications(state, action: PayloadAction<Notification[]>) {
       state.list = action.payload;
     },
@@ -41,8 +26,6 @@ const notificationSlice = createSlice({
     clearNotifications(state) {
       state.list = [];
     },
-
-    // ===== ONLINE / OFFLINE =====
     userOnline(state, action: PayloadAction<number>) {
       const id = action.payload;
       if (!state.onlineUsers.includes(id)) {

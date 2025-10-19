@@ -11,10 +11,6 @@ export const Component: React.FC = () => {
     const bottomRef = useRef<HTMLDivElement>(null);
     const dispatch = useAppDispatch();
 
-    const scrollToBottom = () => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
     if (!activeChat) {
         return null;
     }

@@ -1,16 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { config } from "@/config";
 
-export interface AuditLog {
-  id: number;
-  server_id: number;
-  actor_id: number;
-  action: string;          // "BAN" | "UNBAN" | "KICK" | ...
-  target_id?: string;      // userId строкой
-  metadata?: string;       // JSON.stringify({ reason })
-  created_at: string;
-  actor?: { id: number; username?: string };
-}
+
 
 export const moderationApi = createApi({
     reducerPath: "moderationApi",

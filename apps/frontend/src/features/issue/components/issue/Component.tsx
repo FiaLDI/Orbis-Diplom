@@ -27,7 +27,6 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
   });
   const membersServer = useAppSelector((s) => s.server.activeserver?.users ?? []);
 
-
   const dispatch = useAppDispatch();
 
   const { contextMenu, handleContextMenu, closeMenu, menuRef } =
@@ -57,7 +56,6 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
     closeMenu();
   };
 
-  /** ------- VIEW 1: Tree ------- */
   const renderTree = (task: any, depth = 0) => (
   <div key={task.id} style={{ marginLeft: depth * 20 }} className="mb-3">
     <div
@@ -80,11 +78,9 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
         </div>
       </div>
 
-      {/* 👤 блок участников */}
       <div className="flex items-center gap-1 mt-1 ml-1">
         {task.assignees && task.assignees.length > 0 ? (
-    task.assignees.slice(0, 5).map((a: any, idx: number) => {
-      // Находим участника по ID из membersServer
+          task.assignees.slice(0, 5).map((a: any, idx: number) => {
       const member = membersServer.find((m: any) => m.id === a.user_id);
 
       const avatar =

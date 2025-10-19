@@ -1,4 +1,3 @@
-// features/authSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { UserInfo, userState } from "../types";
@@ -8,17 +7,9 @@ const initialState: userState = {
     loadedProfiles: undefined,
     openProfile: {
         id: 0,
-        username: "aaaaaa",
+        username: "",
         avatar_url: "/img/icon.png",
-        about: `
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
-        Tempora ex error maxime quae aliquam temporibus modi repudiandae eligendi rerum voluptatibus et, 
-        voluptates, velit totam dicta animi alias quibusdam dolorem! Dolorum!Lorem, ipsum dolor sit amet 
-        consectetur adipisicing elit. Tempora ex error maxime quae aliquam temporibus modi repudiandae eligendi rerum 
-        voluptatibus et, voluptates, velit totam dicta animi alias quibusdam dolorem! Dolorum!Lorem, ipsum dolor sit amet 
-        consectetur adipisicing elit. Tempora ex error maxime quae aliquam temporibus modi repudiandae eligendi rerum 
-        voluptatibus et, voluptates, velit totam dicta animi alias quibusdam dolorem! Dolorum!
-        `,
+        about: "",
     },
     isOpenProfile: false,
 };
@@ -36,7 +27,6 @@ const userSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        // Обработка состояний для регистрации и авторизации
         builder
             .addMatcher(
                 userApi.endpoints.getInfoUser.matchFulfilled,

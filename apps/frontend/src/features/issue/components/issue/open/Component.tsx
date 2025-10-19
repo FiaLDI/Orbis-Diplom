@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { ModalLayout } from "@/components/layout/Modal/Modal";
 import { Props } from "./interface";
-import { selectIssueById, setOpenIssue, useCreateChatIssueMutation, useCreateIssueMutation, useLazyGetChatIssueQuery, useLazyGetIssuesQuery, useUpdateIssueMutation } from "@/features/issue";
+import { 
+  selectIssueById, 
+  setOpenIssue, 
+  useCreateChatIssueMutation, 
+  useLazyGetChatIssueQuery 
+} from "@/features/issue";
 import { Plus, X } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { ChatItem, setActiveChat } from "@/features/chat";
+import { ChatItem } from "@/features/chat";
 
 export const Component: React.FC<Props> = ({
   projectId,

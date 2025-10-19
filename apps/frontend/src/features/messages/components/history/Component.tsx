@@ -14,12 +14,10 @@ import {
 import { useChatMessages } from "@/features/chat";
 import { useContextMenu } from "@/features/shared";
 import { AnimatedContextMenu } from "@/features/shared/components/AnimatedContextMenu";
-import { Reply, Pencil, Copy, Trash2, Pin } from "lucide-react";
+import { Reply, Pencil, Copy, Trash2 } from "lucide-react";
+import { Props } from "./interface";
 
-export const Component: React.FC<{
-  bottomRef: React.RefObject<HTMLDivElement>;
-  topRef: React.RefObject<HTMLDivElement>;
-}> = ({ bottomRef, topRef }) => {
+export const Component: React.FC<Props> = ({ bottomRef, topRef }) => {
   useChatMessages();
 
   const dispatch = useAppDispatch();
@@ -38,11 +36,9 @@ export const Component: React.FC<{
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
 
-  // ✅ Хук контекстного меню
   const { contextMenu, handleContextMenu, closeMenu, menuRef } =
     useContextMenu<any, HTMLUListElement>();
 
-  /** Загрузка истории при смене чата */
   useEffect(() => {
     if (!activeChat?.id) return;
 
@@ -58,13 +54,11 @@ export const Component: React.FC<{
     getMessages({ id: activeChat.id, offset: 0 }).catch(() => {});
   }, [activeChat?.id]);
 
-  /** Автопрокрутка вниз после первой загрузки */
   useEffect(() => {
     if (!activeHistory?.length || offset !== 0) return;
     setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "auto" }), 0);
   }, [activeHistory, offset, bottomRef]);
 
-  /** Догрузка при скролле вверх */
   useEffect(() => {
     const topEl = topRef?.current;
     const rootEl = containerRef.current;
@@ -105,7 +99,6 @@ export const Component: React.FC<{
     return () => observer.disconnect();
   }, [activeChat?.id, getMessages, hasMore]);
 
-  /** ====== Обработчики меню ====== */
   const handleReplyMessage = () => {
     if (!contextMenu?.data) return;
     dispatch(setReply(String(contextMenu.data.id)));
@@ -151,7 +144,6 @@ export const Component: React.FC<{
     },
   ];
 
-  /** ====== Рендер ====== */
   return (
     <div
       ref={containerRef}

@@ -10,7 +10,7 @@ import {
   CirclePlus,
   CircleMinus,
 } from "lucide-react";
-import { DefaultButton } from "@/components/ui/Button/DefaultButton";
+import { DefaultButton } from "@/shared/ui";
 import { useLazyGetInfoUserQuery, useStartChattingMutation } from "@/features/user";
 import {
   useLazyGetFriendQuery,
@@ -24,7 +24,7 @@ import {
   useUnblockFriendMutation,
 } from "../..";
 import { setFriendMode } from "../../slice";
-import { Component as SearchFriends } from "../SearchFriends";
+import { Component as SearchFriends } from "./SearchFriends";
 import { AnimatedContextMenu, useContextMenu } from "@/features/shared";
 import clsx from "clsx";
 

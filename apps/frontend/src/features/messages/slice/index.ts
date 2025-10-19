@@ -82,25 +82,24 @@ const messagesSlice = createSlice({
 
   extraReducers: (builder) => {
     builder.addMatcher(
-  messageApi.endpoints.getMessages.matchFulfilled,
-  (state, { payload, meta }) => {
-    const { id, offset } = meta.arg.originalArgs;
+      messageApi.endpoints.getMessages.matchFulfilled,
+      (state, { payload, meta }) => {
+        const { id, offset } = meta.arg.originalArgs;
 
-    if (!state.histories) state.histories = {};
+        if (!state.histories) state.histories = {};
 
-    if (offset === 0) {
-      state.histories[id] = payload;
-    } else {
-      state.histories[id] = [
-        ...(payload || []),
-        ...(state.histories[id] || []),
-      ];
-    }
+        if (offset === 0) {
+          state.histories[id] = payload;
+        } else {
+          state.histories[id] = [
+            ...(payload || []),
+            ...(state.histories[id] || []),
+          ];
+        }
 
-    state.activeHistory = state.histories[id];
-  }
-)
-
+        state.activeHistory = state.histories[id];
+      }
+    )
   },
 });
 

@@ -1,7 +1,7 @@
 import { useAppSelector } from "@/app/hooks";
 import React from "react";
-import { ModalLayout } from "@/components/layout/Modal/Modal";
-import { SettingsButton } from "../ui/Button";
+import { ModalLayout } from "@/shared";
+import { SettingsButton } from "../../ui/Button";
 
 export const Component: React.FC<{ open?: boolean; onClose?: () => void }> = ({
   open,

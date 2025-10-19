@@ -1,17 +1,11 @@
-// apps/frontend/src/features/server/components/MembersSidebar.tsx
 import React, { useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { Profile, useLazyGetInfoUserQuery } from "@/features/user";
-import { AnimatedContextMenu } from "@/features/shared"; // твой файл
-import { useContextMenu } from "@/features/shared";          // твой хук
-import { useBanUserMutation, useKickUserMutation, useUnbanUserMutation } from "@/features/moderation/api";
+import { useLazyGetInfoUserQuery } from "@/features/user";
+import { AnimatedContextMenu } from "@/features/shared";
+import { useContextMenu } from "@/features/shared";
+import { useBanUserMutation, useKickUserMutation, useUnbanUserMutation } from "@/features/moderation";
 import { BanReasonModal } from "@/features/moderation";
-
-type Member = {
-  id: number;
-  username: string;
-  user_profile?: { avatar_url?: string };
-};
+import { Member } from "./interface";
 
 export const Component: React.FC = () => {
   const membersServer = useAppSelector((s) => s.server.activeserver?.users) as Member[] | undefined;
@@ -27,26 +21,23 @@ export const Component: React.FC = () => {
   const [triggerProfile] = useLazyGetInfoUserQuery();
 
   const users: Member[] | undefined = activeserverId ? membersServer : chatinfo?.users;
-    const myServerPermissions: string[] = [
-  "BAN_MEMBERS",
-  "KICK_MEMBERS",
-  "VIEW_AUDIT_LOG",
-  "MANAGE_ROLES",
-  "MANAGE_CHANNELS",
-  "MANAGE_MESSAGES",
-  "ADMINISTRATOR",
-];
+  const myServerPermissions: string[] = [
+    "BAN_MEMBERS",
+    "KICK_MEMBERS",
+    "VIEW_AUDIT_LOG",
+    "MANAGE_ROLES",
+    "MANAGE_CHANNELS",
+    "MANAGE_MESSAGES",
+    "ADMINISTRATOR",
+  ];
 
   const canKick = myServerPermissions.includes("KICK_MEMBERS");
   const canBan = myServerPermissions.includes("BAN_MEMBERS");
-
-  const [banReason, setBanReason] = useState<string>("");
 
   const [banUser, { isLoading: banLoading }] = useBanUserMutation();
   const [unbanUser, { isLoading: unbanLoading }] = useUnbanUserMutation();
   const [kickUser, { isLoading: kickLoading }] = useKickUserMutation();
 
-  // контекстное меню
   const { contextMenu, handleContextMenu, closeMenu, menuRef } = useContextMenu<Member>();
 
   const onViewProfile = (id: number) => triggerProfile(id);
@@ -124,11 +115,11 @@ export const Component: React.FC = () => {
             <li
               key={`user-server-${idx}`}
               className="h-fit bg-[#2e3ed34f] p-2 rounded-[10px]"
-              onContextMenu={(e) => handleContextMenu(e, val)} // правый клик
+              onContextMenu={(e) => handleContextMenu(e, val)}
             >
               <button
                 className="flex items-center gap-3 w-full cursor-pointer"
-                onClick={() => handleLeftClick(val.id)} // обычный клик — профиль
+                onClick={() => handleLeftClick(val.id)}
               >
                 <div className="shrink-0">
                   <img
@@ -147,7 +138,6 @@ export const Component: React.FC = () => {
         </ul>
       </div>
 
-      {/* Контекстное меню */}
       <AnimatedContextMenu
         visible={Boolean(contextMenu)}
         x={contextMenu?.x ?? 0}

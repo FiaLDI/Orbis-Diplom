@@ -53,5 +53,10 @@ export default defineConfig({
         alias: {
             '@': path.resolve(__dirname, 'src'),
         }
-    }
+    },
+    optimizeDeps: {
+        esbuildOptions: {
+        sourcemap: false,
+        },
+    },
 });

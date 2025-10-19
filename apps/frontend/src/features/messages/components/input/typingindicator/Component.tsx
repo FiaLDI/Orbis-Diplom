@@ -1,9 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-interface Props {
-  users: string[];
-}
+import { Props } from "./interface";
 
 export const Component: React.FC<Props> = ({ users }) => {
   if (!users.length) return null;

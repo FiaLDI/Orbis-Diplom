@@ -15,7 +15,6 @@ const authSlice = createSlice({
     reducers: {
         loginStart(
             state,
-            action: PayloadAction<{ email: string; password: string }>,
         ) {
             state.loading = true;
             state.error = null;
@@ -30,17 +29,8 @@ const authSlice = createSlice({
             state.loading = false;
         },
 
-        // Регистрация
         registerStart(
             state,
-            action: PayloadAction<{
-                email: string;
-                password: string;
-                displayName: string;
-                username: string;
-                birthDate: string;
-                policyAgreed: boolean;
-            }>,
         ) {
             state.loading = true;
             state.error = null;
@@ -61,7 +51,6 @@ const authSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        // Обработка состояний для регистрации и авторизации
         builder
             .addMatcher(
                 authApi.endpoints.registerUser.matchPending,

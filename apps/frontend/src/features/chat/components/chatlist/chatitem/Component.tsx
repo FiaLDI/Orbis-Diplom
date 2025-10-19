@@ -1,12 +1,8 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { chat, setActiveChat } from "@/features/chat";
+import { setActiveChat } from "@/features/chat";
 import { ChatContextMenu } from "@/features/shared";
-
-interface Props {
-  chat: chat;
-  isServer?: boolean;
-}
+import { Props } from "./inteface";
 
 export const Component: React.FC<Props> = ({ chat, isServer }) => {
   const dispatch = useAppDispatch();

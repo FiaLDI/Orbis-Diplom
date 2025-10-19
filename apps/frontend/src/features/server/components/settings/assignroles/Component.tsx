@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ModalLayout } from "@/components/layout/Modal/Modal";
+import { ModalLayout } from "@/shared";
 import {
   useAssignRoleToMemberMutation,
   useEmitServerUpdate,

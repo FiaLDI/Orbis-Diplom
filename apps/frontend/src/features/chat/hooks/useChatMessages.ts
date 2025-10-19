@@ -89,7 +89,6 @@ export const useChatMessages = () => {
     };
   }, [socket, activeChat?.id, activeHistory, dispatch]);
 
-  /** ⌨️ Индикатор "печатает..." **/
   useEffect(() => {
     if (!socket || !activeChat?.id) return;
 
@@ -123,7 +122,6 @@ export const useChatMessages = () => {
   return { groupedMessages, isSocketConnected, typingUsers };
 };
 
-/** 🔧 Группировка сообщений по пользователю и минуте **/
 const groupMessagesByMinuteAndUserId = (
   messages: Message[]
 ): {

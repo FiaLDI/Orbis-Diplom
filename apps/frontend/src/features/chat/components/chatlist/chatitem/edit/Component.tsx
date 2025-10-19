@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { ModalLayout } from "@/components/layout/Modal/Modal";
+import { ModalLayout } from "@/shared";
 import { useUpdateChatMutation } from "@/features/chat";
-
-interface ChatEditFormProps {
-  initialData: any;
-  onClose: () => void;
-  onSave: () => void;
-}
+import { ChatEditFormProps } from "./interface";
 
 export const Component: React.FC<ChatEditFormProps> = ({
   initialData,
@@ -48,7 +43,6 @@ export const Component: React.FC<ChatEditFormProps> = ({
           Edit Chat
         </h4>
 
-        {/* Название */}
         <div>
           <label className="block text-sm font-medium mb-1">Chat name</label>
           <input
@@ -59,7 +53,6 @@ export const Component: React.FC<ChatEditFormProps> = ({
           />
         </div>
 
-        {/* Кнопки */}
         <div className="flex gap-2">
           <button
             className="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600"

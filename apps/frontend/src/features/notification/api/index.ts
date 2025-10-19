@@ -55,7 +55,6 @@ export const notificationApi = createApi({
 });
 
 export const {
-    
   useGetNotificationsQuery,
   useMarkNotificationReadMutation,
   useDeleteNotificationMutation,

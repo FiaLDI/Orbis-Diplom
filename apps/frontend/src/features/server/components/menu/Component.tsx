@@ -5,15 +5,9 @@ import { useContextMenu } from "@/features/shared";
 import { AnimatedContextMenu } from "@/features/shared/components/AnimatedContextMenu";
 import { Props } from "./interface";
 
-/**
- * Контекстное меню для создания чатов и ссылок приглашений
- * Использует общую систему AnimatedContextMenu
- */
 export const Component: React.FC<Props> = ({ x, y, onClose, onCreateChat }) => {
-  // Используем наш хук контекстного меню, чтобы получить ref, ESC и обработчики
   const { menuRef } = useContextMenu<null, HTMLUListElement>();
 
-  // Пункты меню
   const menuItems = [
     {
       label: "Create text chat",
@@ -33,7 +27,6 @@ export const Component: React.FC<Props> = ({ x, y, onClose, onCreateChat }) => {
     },
   ];
 
-  // AnimatedContextMenu сам обрабатывает анимацию и позиционирование
   const menu = (
     <AnimatedContextMenu
       visible={true}

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { ModalLayout } from "@/components/layout/Modal/Modal";
+import { ModalLayout } from "@/shared";
 import {
     useCreateSeverMutation,
     useJoinServerMutation,
     useLazyGetServersQuery,
 } from "@/features/server";
-import { ModalButton } from "@/components/ui/Button/ModalButton";
-import { ModalInput } from "@/components/ui/Input/ModalInput";
+import { ModalButton } from "@/shared/ui";
+import { ModalInput } from "@/shared/ui";
 import { CirclePlus, X } from "lucide-react";
 
 export const Component: React.FC = () => {
@@ -43,7 +43,6 @@ export const Component: React.FC = () => {
             console.log(err);
         } 
     };
-
 
     return (
         <>

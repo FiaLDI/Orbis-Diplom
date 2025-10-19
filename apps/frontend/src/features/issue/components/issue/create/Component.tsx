@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { ModalLayout } from "@/components/layout/Modal/Modal";
+import { ModalLayout } from "@/shared";
 import { Props } from "./interface";
-import { selectAllIssues, selectIssueById, useCreateIssueMutation, useLazyGetIssuesQuery, useUpdateIssueMutation } from "@/features/issue";
+import { 
+  selectAllIssues, 
+  useCreateIssueMutation, 
+  useLazyGetIssuesQuery, 
+  useUpdateIssueMutation 
+} from "@/features/issue";
 import { Plus } from "lucide-react";
 import { useAppSelector } from "@/app/hooks";
 

@@ -1,7 +1,6 @@
 export * from "./slice";
 export * from "./api";
 export * from "./types";
+export * from "./components";
 
-export { Component as Profile } from "./components/profile";
-
-export type { UserInfo } from "./types"
+export type { UserInfo } from "./types";

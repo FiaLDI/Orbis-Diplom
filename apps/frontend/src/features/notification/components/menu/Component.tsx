@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Bell, Check, Trash2, Loader2 } from "lucide-react";
-import { ModalLayout } from "@/components/layout/Modal/Modal";
+import { ModalLayout } from "@/shared";
 import {
   useGetNotificationsQuery,
   useMarkNotificationReadMutation,
@@ -13,11 +13,10 @@ import {
   removeNotification,
   clearNotifications,
 } from "../../slice";
-import { useNotificationSocket } from "../../hooks/useNotificationSocket";
+import { Props } from "./interface";
 
-export const Component: React.FC = () => {
+export const Component: React.FC<Props> = ({connected}) => {
   const dispatch = useAppDispatch();
-  const { isConnected } = useNotificationSocket();
   const [open, setOpen] = useState(false);
 
   // API-хуки
@@ -92,7 +91,7 @@ export const Component: React.FC = () => {
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-lg font-semibold flex items-center gap-2">
               🔔 Notifications{" "}
-              {isConnected ? (
+              {connected ? (
                 <span className="text-green-400 text-sm">(live)</span>
               ) : (
                 <span className="text-gray-400 text-sm">(offline)</span>

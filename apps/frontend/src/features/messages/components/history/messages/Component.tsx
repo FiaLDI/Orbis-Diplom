@@ -59,7 +59,6 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
         : `${config.cdnServiceUrl}/${message.avatar_url}`
       : "img/icon.png";
 
-  /** 🖼️ Добавление файлов через uploadSlice */
   const handleFilesSelect = async (files: FileList | File[]) => {
     const arr = Array.from(files);
     const uploadedUrls = await dispatch(uploadFiles(arr)).unwrap(); // string[]
@@ -86,7 +85,6 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
     if (e.dataTransfer.files?.length) handleFilesSelect(e.dataTransfer.files);
   };
 
-  /** 💾 Сохранение изменений */
   const handleSave = async () => {
     const textContent: MessageContent[] = editText.trim()
       ? [{ id: crypto.randomUUID(), type: "text", text: editText.trim() }]
@@ -132,7 +130,6 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      {/* 👤 Аватар */}
       <div className="self-start p-1">
         <img
           src={avatarSrc}
@@ -141,7 +138,6 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
         />
       </div>
 
-      {/* 💬 Тело сообщения */}
       <div className="flex-1">
         <h3 className="text-3xl lg:text-base font-semibold">
           {message.username}{" "}
@@ -167,7 +163,6 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
     }}
     className="flex items-start gap-2 bg-[#1d2fa155] rounded-md px-3 py-2 mb-2 cursor-pointer hover:bg-[#2e45e055] transition"
   >
-    {/* 👤 Аватар пользователя */}
     <img
       src={
         repliedMsg.avatar_url
@@ -180,7 +175,6 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
       className="w-6 h-6 rounded-full border border-[#ffffff33] object-cover mt-0.5"
     />
 
-    {/* 💬 Информация о сообщении */}
     <div className="flex flex-col flex-1">
       <div className="flex items-center gap-2 text-xs text-gray-300">
         <span className="font-semibold text-white">{repliedMsg.username}</span>
@@ -192,27 +186,25 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
         </span>
       </div>
 
-      {/* Превью контента */}
       {repliedMsg.content?.[0]?.type === "text" ? (
         <div className="text-sm text-white truncate max-w-[400px]">
-          “{repliedMsg.content[0].text}”
+          {repliedMsg.content[0].text}
         </div>
-      ) : repliedMsg.content?.[0]?.type === "image" ? (
-        <div className="flex items-center gap-1 text-blue-300 text-sm">
-          🖼 <span className="italic">Изображение</span>
-        </div>
-      ) : (
-        <div className="flex items-center gap-1 text-blue-300 text-sm">
-          📎 <span className="italic">Файл</span>
+          ) : repliedMsg.content?.[0]?.type === "image" ? (
+            <div className="flex items-center gap-1 text-blue-300 text-sm">
+              🖼 <span className="italic">Изображение</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 text-blue-300 text-sm">
+              📎 <span className="italic">Файл</span>
+            </div>
+          )}
+          </div>
         </div>
       )}
-    </div>
-  </div>
-)}
 
         {isEditing ? (
           <div className="mt-1 flex flex-col gap-2">
-            {/* ✏️ Текст */}
             <input
               ref={inputRef}
               type="text"
@@ -226,7 +218,6 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
               placeholder="Введите текст..."
             />
 
-            {/* 🖼️ Прикреплённые файлы */}
             {attachedFiles.length > 0 && (
               <div className="flex flex-wrap gap-3 mt-1">
                 {attachedFiles.map((file) => (
@@ -263,7 +254,6 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
               </div>
             )}
 
-            {/* ⚙️ Кнопки */}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => fileInputRef.current?.click()}

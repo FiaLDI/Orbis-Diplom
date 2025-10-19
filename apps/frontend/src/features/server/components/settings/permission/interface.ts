@@ -1,7 +1,6 @@
-import { permission } from "@/features/user";
-
-export interface ComponentProps {
-    permissionsUser: permission[];
-    permissionsAll: permission[];
+export interface Props {
+  roleId: number;
+  roleName: string;
+  roleColor?: string;
+  serverId: number;
 }
-

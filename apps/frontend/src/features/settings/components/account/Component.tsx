@@ -2,13 +2,9 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAppSelector } from "@/app/hooks";
 import { useUpdateAccountMutation } from "@/features/settings";
+import { FormData } from "./interface";
 
-interface AccountFormData {
-  username: string;
-  email: string;
-  password: string;
-  number: string;
-}
+
 
 export const Component: React.FC = () => {
   const user = useAppSelector((s) => s.auth.user?.info);
@@ -16,7 +12,7 @@ export const Component: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<AccountFormData>({
+  } = useForm<FormData>({
     defaultValues: {
       username: user?.username || "",
       email: user?.email || "",
@@ -27,7 +23,7 @@ export const Component: React.FC = () => {
 
   const [updateAccount, { isLoading, error }] = useUpdateAccountMutation();
 
-  const onSubmit: SubmitHandler<AccountFormData> = async (data) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       if (!user?.id) return;
 

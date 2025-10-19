@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { useAppSelector } from "@/app/hooks";
 import { Component as ChatItem } from "./chatitem";
 import { chat } from "@/features/chat";

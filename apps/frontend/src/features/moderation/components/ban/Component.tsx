@@ -1,12 +1,6 @@
 import React, { useState } from "react";
-import { ModalLayout } from "@/components/layout/Modal/Modal"; // путь подгони под свой
-
-interface BanReasonModalProps {
-  open: boolean;
-  onClose: () => void;
-  onConfirm: (reason?: string) => void;
-  username?: string;
-}
+import { ModalLayout } from "@/shared"; // путь подгони под свой
+import { BanReasonModalProps } from "./interface";
 
 export const Component: React.FC<BanReasonModalProps> = ({
   open,

@@ -1,4 +1,3 @@
-// store/uploadSlice.ts
 import { config } from "@/config";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";

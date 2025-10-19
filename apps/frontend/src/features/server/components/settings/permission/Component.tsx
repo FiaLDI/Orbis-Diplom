@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { ModalLayout } from "@/components/layout/Modal/Modal";
+import { ModalLayout } from "@/shared";
 import {
   useGetPermissionsQuery,
   useGetRolePermissionsQuery,
   useUpdateRolePermissionsMutation,
   useUpdateServerRoleMutation,
 } from "@/features/server";
+import { Props } from "./interface";
 
-interface Props {
-  roleId: number;
-  roleName: string;
-  roleColor?: string;
-  serverId: number;
-}
 
 export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleColor }) => {
   const { data: allPermissions = [] } = useGetPermissionsQuery({});

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { ModalLayout } from "@/components/layout/Modal/Modal";
+import React, { useState } from "react";
+import { ModalLayout } from "@/shared";
 import { Props } from "./interface";
 import { useDeleteProjectMutation, useUpdateProjectMutation } from "@/features/issue";
 import { Ellipsis } from "lucide-react";

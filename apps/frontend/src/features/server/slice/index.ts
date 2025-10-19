@@ -29,7 +29,6 @@ const serverSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        // Обработка состояний для регистрации и авторизации
         builder
             .addMatcher(
                 serverApi.endpoints.GetServers.matchFulfilled,
@@ -83,20 +82,19 @@ const serverSlice = createSlice({
                 );
             },
             ).addMatcher(
-      serverApi.endpoints.UpdateRolePermissions.matchFulfilled,
-      (state, action) => {
-        if (!state.activeserver || !state.activeserver.roles) return;
-        const roleId = action.meta.arg.originalArgs.roleId;
-        const permissions = action.meta.arg.originalArgs.permissions;
+                serverApi.endpoints.UpdateRolePermissions.matchFulfilled,
+                (state, action) => {
+                    if (!state.activeserver || !state.activeserver.roles) return;
+                    const roleId = action.meta.arg.originalArgs.roleId;
+                    const permissions = action.meta.arg.originalArgs.permissions;
 
-        state.activeserver.roles = state.activeserver.roles.map((role: any) =>
-          role.id === roleId
-            ? { ...role, permissions }
-            : role
-        );
-      },
-    )
-            ;
+                    state.activeserver.roles = state.activeserver.roles.map((role: any) =>
+                    role.id === roleId
+                        ? { ...role, permissions }
+                        : role
+                    );
+                },
+            );
     },
 });
 

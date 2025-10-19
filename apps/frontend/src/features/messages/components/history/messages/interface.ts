@@ -9,7 +9,7 @@ export interface SingleMessageProps {
 export interface MessageGroupp {
   username: string;
   user_id: number;
-  avatar_url?: string | null;   // 🔹 добавляем сюда тоже, если группировка по юзеру
+  avatar_url?: string | null;
   minute: string;
   messages: Message[];
 }

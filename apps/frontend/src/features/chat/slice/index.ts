@@ -2,7 +2,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { chat, chatState } from "../types";
 import { chatApi } from "..";
 
-
 const initialState: chatState = {};
 
 const chatSlice = createSlice({

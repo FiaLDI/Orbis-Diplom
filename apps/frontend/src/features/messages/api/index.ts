@@ -32,11 +32,11 @@ export const messageApi = createApi({
             }),
         }),
         createMessage: builder.mutation({
-        query: ({ chat_id, content, reply_to_id }) => ({
-            url: `/messages/chats/${chat_id}/messages`,
-            method: "POST",
-            body: { chat_id, content, reply_to_id },
-        }),
+            query: ({ chat_id, content, reply_to_id }) => ({
+                url: `/messages/chats/${chat_id}/messages`,
+                method: "POST",
+                body: { chat_id, content, reply_to_id },
+            }),
         }),
         RemoveMessage: builder.mutation({
             query: ({ chat_id, id }) => ({

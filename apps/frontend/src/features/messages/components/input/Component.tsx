@@ -64,7 +64,6 @@ export const Component: React.FC = () => {
     };
   }, [dispatch]);
 
-  /** 🧩 обычный выбор файлов */
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     dispatch(uploadFiles(Array.from(e.target.files)));
@@ -73,7 +72,6 @@ export const Component: React.FC = () => {
 
   const handleUploadClick = () => fileInputRef.current?.click();
 
-  /** 🧩 создание контента */
   const createContentArray = (): Content[] => {
     const content: Content[] = [];
 
@@ -104,7 +102,6 @@ export const Component: React.FC = () => {
     return content;
   };
 
-  /** 📨 отправка */
   const handleSend = async () => {
     if (!activeChat?.id) return;
     if (!inputValue.trim() && upload.files.length === 0) return;
@@ -139,7 +136,6 @@ export const Component: React.FC = () => {
     setInputValue("");
   };
 
-  /** ✏️ typing */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
     setInputValue(text);
@@ -160,7 +156,6 @@ export const Component: React.FC = () => {
     el.scrollIntoView({ behavior: "smooth", block: "center" });
     el.classList.add("bg-[#4f6fff66]", "transition-colors");
 
-    // убираем подсветку через 1.5 секунды
     setTimeout(() => {
       el.classList.remove("bg-[#4f6fff66]");
     }, 1500);
@@ -168,7 +163,6 @@ export const Component: React.FC = () => {
 
   return (
     <>
-      {/* 🔹 глобальный overlay */}
       {isDragging && (
         <div className="fixed inset-0 z-50 bg-[#00000088] backdrop-blur-sm border-4 border-dashed border-white flex flex-col items-center justify-center text-white text-xl">
           <Upload size={64} strokeWidth={1.5} className="mb-3" />
@@ -178,14 +172,11 @@ export const Component: React.FC = () => {
         </div>
       )}
 
-      {/* основной блок */}
       <div className="flex flex-col gap-2 p-3 bg-[#25309b] relative">
-        {/* 💬 typing */}
         {typingUsers.length > 0 && (
           <TypingIndicator users={typingUsers} />
         )}
 
-        {/* 📂 файлы */}
         {upload.files?.length > 0 && (
           <div className="flex flex-wrap gap-2 text-sm text-white">
             {upload.files.map((f) => (
@@ -229,7 +220,7 @@ export const Component: React.FC = () => {
 
             <button
               onClick={(e) => {
-                e.stopPropagation(); // чтобы клик на ✕ не скроллил
+                e.stopPropagation();
                 dispatch(setReply(undefined));
               }}
               className="text-white opacity-70 hover:opacity-100 transition"

@@ -1,19 +1,9 @@
 import React, { useRef } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { setProfileInfo } from "../../slice";
 import { uploadFiles } from "@/features/upload";
 import { useUpdateProfileMutation } from "../..";
-
-interface ProfileFormData {
-  first_name: string;
-  last_name: string;
-  birth_date: string;
-  gender: string;
-  location: string;
-  about: string;
-  avatar_url?: string;
-}
+import { FormData } from "./interface";
 
 export const Component: React.FC = () => {
   const user = useAppSelector((s) => s.auth.user?.info);
@@ -27,7 +17,7 @@ export const Component: React.FC = () => {
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<ProfileFormData>({
+  } = useForm<FormData>({
     defaultValues: {
       first_name: user?.first_name || "",
       last_name: user?.last_name || "",
@@ -48,7 +38,7 @@ export const Component: React.FC = () => {
     setValue("avatar_url", url, { shouldValidate: true });
   };
 
-  const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     if (!user?.id) return;
     try {
       await updateProfile({ id: Number(user.id), data }).unwrap();

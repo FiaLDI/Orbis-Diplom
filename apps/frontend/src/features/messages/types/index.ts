@@ -10,7 +10,7 @@ export interface Message {
   chat_id: number;
   user_id: number;
   username: string;
-  avatar_url?: string | null;   // 🔹 новое поле
+  avatar_url?: string | null;
   reply_to_id?: number | null;
   is_edited: boolean;
   content: MessageContent[];
