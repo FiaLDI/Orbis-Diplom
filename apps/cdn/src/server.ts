@@ -13,12 +13,22 @@ import https from "https";
 import { connectRedis, redisClient } from "./config";
 
 dotenv.config();
+
+// =================== ENV ===================
+const PORT = Number(process.env.PORT) || 4005;
+const HOST = process.env.HOST || "0.0.0.0";
+const FRONTEND = process.env.FRONTENDADDRES || "https://localhost";
+const SSL_KEY = process.env.SSL_KEY_PATH!;
+const SSL_CERT = process.env.SSL_CERT_PATH!;
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), "public", "uploads");
+const MAX_FILE_SIZE = Number(process.env.MAX_FILE_SIZE) || 10 * 1024 * 1024;
+
 const { diskStorage } = multer;
 type FileFilterCallback = import("multer").FileFilterCallback;
 
 const options = {
-    key: fs.readFileSync("./src/certs/selfsigned_key.pem"),
-    cert: fs.readFileSync("./src/certs/selfsigned.pem"),
+    key: fs.readFileSync(SSL_KEY),
+    cert: fs.readFileSync(SSL_CERT),
 };
 
 const app = express();
@@ -31,7 +41,7 @@ connectRedis();
 // Middleware
 app.use(
     cors({
-        origin: process.env.FRONTENDADDRES,
+        origin: FRONTEND,
         credentials: true,
     }),
 );
@@ -140,11 +150,10 @@ app.get("/media/:filename", (req: Request, res: Response) => {
 });
 
 // Upload handler
-const uploadDir = path.join(__dirnameResolved, "public", "uploads");
-fs.mkdirSync(uploadDir, { recursive: true });
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const storage = diskStorage({
-    destination: uploadDir,
+    destination: UPLOAD_DIR,
     filename: (req, file, cb) => {
         const safeName = file.originalname.replace(/[^a-z0-9.\-_]/gi, "_");
         cb(null, `${Date.now()}-${safeName}`);
@@ -153,7 +162,7 @@ const storage = diskStorage({
 
 const upload = multer({
     storage,
-    limits: { fileSize: 10 * 1024 * 1024 },
+    limits: { fileSize: MAX_FILE_SIZE },
     fileFilter: (req, file, cb: FileFilterCallback) => {
         const allowed = ["image/", "video/", "audio/", "application/"];
         if (allowed.some((type) => file.mimetype.startsWith(type))) {
@@ -204,9 +213,6 @@ app.use(
 app.use((req: Request, res: Response) => {
     res.status(404).send("Файл не найден");
 });
-
-const PORT = Number(process.env.PORT);
-const HOST = "0.0.0.0";
 
 server.listen(PORT, HOST, () => {
     console.log(`🚀 CDN-сервер запущен: https://localhost:${PORT}`);
