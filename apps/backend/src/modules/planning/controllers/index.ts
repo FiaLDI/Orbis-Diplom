@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { prisma } from "@/config";
-import { ioPlanning } from "@/server";
 import { IssuePriority } from "@prisma/client";
 import { sendNotification } from "@/utils/sendNotification";
 
@@ -167,8 +166,6 @@ export const createIssue = async (req: Request, res: Response) => {
       },
       include: { status: true }
     });
-
-    ioPlanning.to(`project:${projectId}`).emit("issue:created", issue);
 
     res.status(201).json(issue);
   } catch (err) {

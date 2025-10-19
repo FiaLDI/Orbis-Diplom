@@ -1,5 +1,5 @@
 import { prisma } from "@/config";
-import { emitNotification } from "@/socket";
+import { emitNotification } from "@/socket/notification";
 
 /**
  * Универсальный хелпер для создания и отправки уведомлений.
@@ -14,7 +14,7 @@ export const sendNotification = async (
     title: string;
     body?: string;
     data?: Record<string, any>;
-    silent?: boolean; // если true — не отправлять через socket (только в БД)
+    silent?: boolean;
   }
 ) => {
   try {
@@ -28,7 +28,6 @@ export const sendNotification = async (
       },
     });
 
-    // 🔔 Рассылаем realtime-уведомление, если не silent
     if (!options.silent) {
       emitNotification(userId, notif);
     }
@@ -40,7 +39,6 @@ export const sendNotification = async (
   }
 };
 
-// 💬 Типы доступных уведомлений (можно дополнять)
 export type NotificationType =
   | "friend_request"
   | "friend_accept"

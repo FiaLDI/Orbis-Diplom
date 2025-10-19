@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import { ioChat } from "@/server";
 import { prisma } from "@/config";
 import { AuthRequest } from "@/modules/auth";
+import { emitTo } from "@/socket/registry";
 
 
 export const getMessages = async (req: AuthRequest, res: Response) => {
@@ -121,7 +121,6 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
 };
 
 
-
 export const sendMessages = async (req: AuthRequest, res: Response) => {
   const { chat_id, content, reply_to_id } = req.body;
   const user = req.user;
@@ -191,7 +190,7 @@ export const sendMessages = async (req: AuthRequest, res: Response) => {
       updated_at: null,
     };
 
-    ioChat.to(`chat_${chat_id}`).emit("new-message", fullMessage);
+    emitTo("chat", `chat_${chat_id}`, "new-message", fullMessage);
 
     return res.status(200).json(fullMessage);
   } catch (err) {
@@ -248,7 +247,7 @@ export const deleteMessage = async (req: AuthRequest, res: Response) => {
       await tx.messages.delete({ where: { id: messageId } });
     });
 
-    ioChat.to(`chat_${chatId}`).emit("delete-message", { message_id: messageId });
+    emitTo("chat", `chat_${chatId}`, "delete-message", { message_id: messageId });
 
     return res.status(200).json({ message: "Confirm Delete" });
   } catch (err) {
@@ -368,7 +367,7 @@ export const editMessage = async (req: AuthRequest, res: Response) => {
       updated_at: updated.updated_at ? updated.updated_at.toISOString() : null,
     };
 
-    ioChat.to(`chat_${chatId}`).emit("edit-message", formatted);
+    emitTo("chat", `chat_${chatId}`, "edit-message", formatted);
 
     return res.status(200).json(formatted);
   } catch (err) {

@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 import { prisma } from "@/config";
 import bcrypt from "bcrypt";
-import { emitNotification } from "@/socket";
 import { sendNotification } from "@/utils/sendNotification";
 
 const getUsersFriends = async (req: Request, res: Response) => {

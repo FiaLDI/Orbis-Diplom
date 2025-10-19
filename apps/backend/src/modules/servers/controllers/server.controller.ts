@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { ioJournal } from "@/server";
+import { emitTo } from "@/socket/registry";
 import { Request, Response } from "express";
 import { prisma } from "@/config";
 
@@ -315,8 +315,7 @@ const createChat = async (req: Request, res: Response) => {
                 
             },
         });
-
-        ioJournal.to(`server:${id}`).emit("chat-created", { chatId: chat.id });
+        emitTo("journal", `server:${id}`, "chat-created", { chatId: chat.id })
 
         res.status(200).json({ message: "Successfully created the chat" });
     } catch (err) {
@@ -330,7 +329,6 @@ const createChat = async (req: Request, res: Response) => {
     }
 };
 
-// PATCH /servers/:id
 const updateServer = async (req: Request, res: Response) => {
     const serverId = parseInt(req.params.id);
     const { name, avatar_url } = req.body;
@@ -359,7 +357,6 @@ const updateServer = async (req: Request, res: Response) => {
     }
 };
 
-// DELETE /servers/:id
 const deleteServer = async (req: Request, res: Response) => {
   const serverId = parseInt(req.params.id);
 
