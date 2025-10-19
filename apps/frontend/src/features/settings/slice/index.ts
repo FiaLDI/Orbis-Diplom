@@ -14,7 +14,8 @@ const userSettingsSlice = createSlice({
     initialState,
     reducers: {
         setTheme: (state, action: PayloadAction<Theme>) => {
-            state.theme = action.payload
+            state.theme = action.payload;
+            if (typeof window !== "undefined") localStorage.setItem("theme", action.payload);
         },
         setLanguage: (state, action: PayloadAction<Language>) => {
             state.language = action.payload

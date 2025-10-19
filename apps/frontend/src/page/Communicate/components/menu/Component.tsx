@@ -19,7 +19,7 @@ export const Component: React.FC<Props> = ({socket, notificationConnect}) => {
 
     return (
         <>
-            <div className="order-10 lg:order-0 w-full flex lg:w-fit lg:flex-col justify-between items-center lg:h-full bg-[rgba(86,82,209,0.5)] p-3 pt-5 pb-5 relative">
+            <div className="order-10 lg:order-0 w-full flex lg:w-fit lg:flex-col justify-between items-center lg:h-full bg-[#032563] p-3 pt-5 pb-5 relative">
                 <div className="flex lg:flex-col gap-2">
                     <div className="">
                         <button

@@ -5,9 +5,10 @@ import { setTheme } from "../../slice";
 export const Component: React.FC = () => {
     const settings = useAppSelector((s) => s.settings);
     const dispatch = useAppDispatch();
+
   
     return (
-        <div className="flex flex-col gap-5 p-5 text-center">
+        <div className="flex flex-col gap-5 p-5 text-center bg-primary text-primary-foreground min-h-[200px]">
             <h3 className="text-left">Выберите тему</h3>
             
             <button 

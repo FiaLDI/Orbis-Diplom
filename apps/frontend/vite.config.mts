@@ -15,7 +15,7 @@ export default defineConfig({
         port: 5173,
         strictPort: true,
         watch: {
-            usePolling: true,  // помогает в Docker для отслеживания файлов
+            usePolling: true,
         },
         https: {
             key: fs.readFileSync(
