@@ -120,7 +120,7 @@ src/
 
 ---
 
-## Запуск проекта
+## Запуск проекта dev
 
 ```bash
 cd apps/backend
@@ -129,7 +129,6 @@ npm run dev
 ```
 
 Создай все `.env` см. на `.env.example`
-
 
 ---
 
@@ -140,3 +139,73 @@ npm run dev
 
 ---
 
+Сборка: backend + frontend + cdn + nginx + postgres + redis.
+
+1. Подготовка окружения
+
+Убедись, что установлены:
+
+docker --version
+docker compose version
+
+
+и ты работаешь в WSL 2 в каталоге проекта:
+
+~/Orbis-Diplom
+
+
+2. Проверь структуру проекта
+
+Обязательно наличие файлов и директорий:
+
+Orbis-Diplom/
+├─ apps/
+│  ├─ backend/
+│  │   ├─ Dockerfile
+│  │   ├─ .env.prod
+│  ├─ frontend/
+│  │   ├─ Dockerfile
+│  │   ├─ .env.prod
+│  ├─ cdn/
+│      ├─ Dockerfile
+│      ├─ .env.prod
+├─ nginx/
+│  └─ nginx.conf
+├─ ssl/
+│  ├─ selfsigned.pem
+│  └─ selfsigned_key.pem
+├─ docker-compose.yml
+└─ .env.prod
+
+3. Собрать и запустить контейнеры
+
+Из корня проекта:
+
+docker compose --env-file .env.prod up --build -d
+
+4. Проверить, что всё поднялось
+
+docker ps
+
+Ожидаемые контейнеры:
+
+orbis_nginx
+orbis_frontend
+orbis_backend
+orbis_cdn
+orbis_db_container
+orbis_redis_container
+
+5. Проверить логи при необходимости
+docker logs orbis_backend --tail 20
+docker logs orbis_nginx --tail 20
+
+6. Открыть проект в браузере
+https://localhost
+
+
+если ты переопределял порты (например, 8443):
+https://localhost:8443
+
+7. Остановка / очистка
+docker compose down
