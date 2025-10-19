@@ -13,4 +13,4 @@ COPY . .
 EXPOSE 4000
 
 # Добавляем миграции при старте
-CMD npx prisma migrate deploy && npm run start
+CMD npx prisma generate && npx prisma migrate deploy && npm run start && npx ts-node ./prisma/seed.ts

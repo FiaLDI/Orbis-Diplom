@@ -157,7 +157,7 @@ docker compose version
 2. Проверь структуру проекта
 
 Обязательно наличие файлов и директорий:
-
+```
 Orbis-Diplom/
 ├─ apps/
 │  ├─ backend/
@@ -176,7 +176,7 @@ Orbis-Diplom/
 │  └─ selfsigned_key.pem
 ├─ docker-compose.yml
 └─ .env.prod
-
+```
 3. Собрать и запустить контейнеры
 
 Из корня проекта:
