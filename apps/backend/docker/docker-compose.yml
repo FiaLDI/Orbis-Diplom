@@ -1,0 +1,25 @@
+services:
+  orbis_db:
+    image: postgres:15
+    container_name: orbis_db_container
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: orbis
+      POSTGRES_USER: orbis
+      POSTGRES_PASSWORD: orbis
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      
+  orbis_redis:
+    image: redis:7-alpine
+    container_name: orbis_redis_container
+    command: ["redis-server", "--requirepass", "admin"]
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

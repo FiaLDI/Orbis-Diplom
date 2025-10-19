@@ -1,0 +1,512 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "windows", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/* =========================
+   СПРАВОЧНИКИ / ТИПЫ
+   ========================= */
+
+model block_reason_type {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(100)
+
+  users_blocks users_blocks[]
+}
+
+model permission_type {
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(100)
+
+  role_permission role_permission[]
+}
+
+model settings_type {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(50)
+
+  chat_settings chat_settings[]
+}
+
+/* =========================
+   ПОЛЬЗОВАТЕЛИ / ПРОФИЛИ
+   ========================= */
+
+model users {
+  id            Int     @id @default(autoincrement())
+  email         String? @unique @db.VarChar(255)
+  username      String? @unique @db.VarChar(255)
+  password_hash String?
+  number        String?
+
+  user_preferences     user_preferences?
+  user_profile         user_profile?
+  user_server          user_server[]
+  chats                chats[]       @relation("UserCreatedChats")
+  chat_users           chat_users[]
+  users_blocks         users_blocks[]
+  messages             messages[]
+  friend_requests_from friend_requests[] @relation("RequestFrom")
+  friend_requests_to   friend_requests[] @relation("RequestTo")
+  created_servers      servers[]         @relation("UserCreatedServers")
+  issue_assignee issue_assignee[] 
+
+  server_bans         server_bans[]        
+  bans_made           server_bans[]        @relation("BanActor") 
+  invites             invites[]            
+  audit_logs          audit_logs[]         
+  reports_made        reports[]            @relation("ReportReporter") 
+  reports_resolved    reports[]            @relation("ReportResolver") 
+  message_reads       message_reads[]
+  push_subscriptions  push_subscriptions[]
+  notifications       notifications[]
+}
+
+model user_preferences {
+  user_id          Int    @id
+  privacy_settings String?
+  timezone         String? @db.VarChar(50)
+  theme            String? @db.VarChar(20)
+  created_at       DateTime?
+  updated_at       DateTime?
+  confirmed_at     DateTime?
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model user_profile {
+  user_id    Int     @id
+  first_name String? @db.VarChar(100)
+  last_name  String? @db.VarChar(100)
+  birth_date DateTime?
+  avatar_url String?
+  gender     String? @db.VarChar(20)
+  location   String? @db.VarChar(100)
+  about      String?
+  is_online  Boolean  @default(false)
+  
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model users_blocks {
+  id_users       Int
+  reason_type_id Int
+  created_at     DateTime?
+  end_at         DateTime?
+
+  users             users             @relation(fields: [id_users], references: [id])
+  block_reason_type block_reason_type @relation(fields: [reason_type_id], references: [id])
+
+  @@id([id_users, reason_type_id])
+}
+
+/* =========================
+   ДРУЖБА / ЗАПРОСЫ
+   ========================= */
+
+model friend_requests {
+  from_user_id Int
+  to_user_id   Int
+  status       String
+  created_at   DateTime? @default(now())
+
+  from_user users @relation("RequestFrom", fields: [from_user_id], references: [id])
+  to_user   users @relation("RequestTo", fields: [to_user_id], references: [id])
+
+  @@id([from_user_id, to_user_id])
+}
+
+/* =========================
+   СЕРВЕРЫ / РОЛИ / ПРАВА
+   ========================= */
+
+model servers {
+  id         Int     @id @default(autoincrement())
+  creator_id Int?
+  name       String  @db.VarChar(100)
+  avatar_url String?
+  created_at DateTime?
+  updated_at DateTime?
+
+  creator users?       @relation("UserCreatedServers", fields: [creator_id], references: [id])
+  user_server  user_server[]
+  server_chats server_chats[]
+
+  roles role_server[]
+
+  project project[]
+  
+  server_bans   server_bans[]    
+  invites       invites[]        
+  audit_logs    audit_logs[]    
+  reports       reports[]
+}
+
+model role_server {
+  id        Int     @id @default(autoincrement())
+  server_id Int
+  name      String  @db.VarChar(50)
+  color     String? @db.VarChar(7) 
+
+  server          servers             @relation(fields: [server_id], references: [id])
+  role_permission role_permission[]
+  members         user_server_roles[]   // 👈 связь многие-ко-многим с user_server
+
+  @@index([server_id])
+}
+
+model role_permission {
+  role_id       Int
+  permission_id Int
+  granted_at    DateTime?
+
+  role       role_server     @relation(fields: [role_id], references: [id])
+  permission permission_type @relation(fields: [permission_id], references: [id])
+
+  @@id([role_id, permission_id])
+  @@index([role_id])
+  @@index([permission_id])
+}
+
+model user_server {
+  user_id    Int
+  server_id  Int
+  created_at DateTime?
+
+  user   users   @relation(fields: [user_id], references: [id])
+  server servers @relation(fields: [server_id], references: [id])
+
+  roles user_server_roles[]
+
+  @@id([user_id, server_id])
+  @@index([server_id])
+}
+
+model user_server_roles {
+  user_id   Int
+  server_id Int
+  role_id   Int
+
+  user_server user_server @relation(fields: [user_id, server_id], references: [user_id, server_id])
+  role        role_server @relation(fields: [role_id], references: [id])
+
+  @@id([user_id, server_id, role_id]) 
+  @@index([role_id])
+}
+
+/* Серверные баны */
+model server_bans {
+  server_id  Int
+  user_id    Int
+  reason     String?
+  created_at DateTime? @default(now())
+  banned_by  Int?
+
+  server servers @relation(fields: [server_id], references: [id])
+  user   users   @relation(fields: [user_id], references: [id])
+  by     users?  @relation("BanActor", fields: [banned_by], references: [id])
+
+  @@id([server_id, user_id])
+  @@index([user_id])
+}
+
+/* Приглашения на сервер */
+model invites {
+  code       String  @id
+  server_id  Int
+  creator_id Int
+  expires_at DateTime?
+  max_uses   Int?
+  uses       Int     @default(0)
+  is_revoked Boolean @default(false)
+
+  server  servers @relation(fields: [server_id], references: [id])
+  creator users   @relation(fields: [creator_id], references: [id])
+
+  @@index([server_id])
+}
+
+/* =========================
+   КАНАЛЫ / ЧАТЫ / УЧАСТНИКИ
+   ========================= */
+
+model chats {
+  id         Int      @id @default(autoincrement())
+  creator_id Int?
+  created_at DateTime?
+  name       String?
+
+  creator users? @relation("UserCreatedChats", fields: [creator_id], references: [id])
+
+  chat_users    chat_users[]
+  chat_settings chat_settings[]
+  messages      messages[]
+  server_chats  server_chats[]
+  message_reads message_reads[]
+  chat_issues   chat_issues []
+}
+
+model server_chats {
+  id_server Int
+  id_chats  Int
+
+  server servers @relation(fields: [id_server], references: [id])
+  chat   chats   @relation(fields: [id_chats], references: [id])
+
+  @@id([id_server, id_chats])
+  @@index([id_server])
+  @@index([id_chats])
+}
+
+model chat_users {
+  user_id    Int
+  chat_id    Int
+  role_id    Int?
+  created_at DateTime?
+  updated_at DateTime?
+
+  users     users      @relation(fields: [user_id], references: [id])
+  chats     chats      @relation(fields: [chat_id], references: [id])
+  role_chat role_chat? @relation(fields: [role_id], references: [id])
+
+  @@id([user_id, chat_id])
+  @@index([chat_id])
+  @@index([role_id])
+}
+
+/* Опционально: пер-канальные роли */
+model role_chat {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(50)
+
+  chat_users chat_users[]
+}
+
+model chat_settings {
+  id_chats         Int
+  id_settings_type Int
+  value            String?
+
+  chats         chats         @relation(fields: [id_chats], references: [id])
+  settings_type settings_type @relation(fields: [id_settings_type], references: [id])
+
+  @@id([id_chats, id_settings_type])
+}
+
+/* =========================
+   СООБЩЕНИЯ / КОНТЕНТ
+   ========================= */
+
+model messages {
+  id           Int       @id @default(autoincrement())
+  chat_id      Int?
+  user_id      Int?
+  reply_to_id  Int?
+  is_edited    Boolean?
+  updated_at   DateTime?
+  created_at   DateTime?
+  content_text String?   
+
+  chat     chats?    @relation(fields: [chat_id], references: [id])
+  user     users?    @relation(fields: [user_id], references: [id])
+
+  reply_to messages?  @relation("MessageReply", fields: [reply_to_id], references: [id])
+  replies  messages[] @relation("MessageReply")
+
+  messages_content messages_content[]
+  reports reports[]
+
+  @@index([chat_id, created_at])
+  @@index([user_id, created_at])
+  @@index([content_text]) 
+}
+
+model content {
+  id   String @id
+  text String?
+  url  String?
+
+  messages_content messages_content[]
+}
+
+model messages_content {
+  id_messages Int
+  type        String?  @db.VarChar(50) 
+  size        Int?
+  uploaded_at DateTime?
+  id_content  String
+
+  message messages @relation(fields: [id_messages], references: [id])
+  content content  @relation(fields: [id_content], references: [id])
+
+  @@id([id_messages, id_content])
+}
+
+/* =========================
+   МОДЕРАЦИЯ / ЛОГИ / РЕПОРТЫ
+   ========================= */
+
+model audit_logs {
+  id         Int       @id @default(autoincrement())
+  server_id  Int
+  actor_id   Int
+  action     String    @db.VarChar(50) 
+  target_id  String?   
+  metadata   String?   
+  created_at DateTime? @default(now())
+
+  server servers @relation(fields: [server_id], references: [id])
+  actor  users   @relation(fields: [actor_id], references: [id])
+
+  @@index([server_id, created_at])
+}
+
+model reports {
+  id          Int       @id @default(autoincrement())
+  server_id   Int
+  message_id  Int?
+  reporter_id Int
+  reason      String?
+  status      String    @default("open") 
+  created_at  DateTime? @default(now())
+  resolved_by Int?
+
+  server   servers  @relation(fields: [server_id], references: [id])
+  message  messages? @relation(fields: [message_id], references: [id])
+  reporter users    @relation("ReportReporter", fields: [reporter_id], references: [id])
+  resolver users?   @relation("ReportResolver", fields: [resolved_by], references: [id])
+
+  @@index([server_id, status])
+}
+
+/* =========================
+   УВЕДОМЛЕНИЯ / ПРОЧТЕНО
+   ========================= */
+
+model message_reads {
+  user_id              Int
+  chat_id              Int
+  last_read_message_id Int?
+  updated_at           DateTime? @default(now())
+
+  user users @relation(fields: [user_id], references: [id])
+  chat chats @relation(fields: [chat_id], references: [id])
+
+  @@id([user_id, chat_id])
+  @@index([chat_id])
+}
+
+model notifications {
+  id         Int      @id @default(autoincrement())
+  user_id    Int      
+  type       String   @db.VarChar(50) 
+  title      String   @db.VarChar(255)
+  body       String?  
+  data       String?  
+  is_read    Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  user users @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+}
+
+/* Web Push подписки */
+model push_subscriptions {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  endpoint   String
+  p256dh     String
+  auth       String
+  created_at DateTime? @default(now())
+
+  user users @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, endpoint])
+  @@index([user_id])
+}
+/* =========================
+   ПЛАНИРОВАНИЕ / ПРОЕКТЫ / ЗАДАЧИ
+   ========================= */
+
+model project {
+  id          Int       @id @default(autoincrement())
+  server_id   Int
+  name        String    @db.VarChar(100)
+  description String?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  server servers @relation(fields: [server_id], references: [id])
+
+  project_issues project_issues[]
+}
+
+model issue {
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(200)
+  description String?
+  priority    IssuePriority @default(MEDIUM)
+  status_id   Int
+  due_date    DateTime?        // дедлайн
+  parent_id   Int?             // ссылка на родительскую задачу
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  status  issue_status @relation(fields: [status_id], references: [id])
+  parent  issue?       @relation("IssueParent", fields: [parent_id], references: [id])
+  subtasks issue[]     @relation("IssueParent")
+
+  assignees      issue_assignee[]
+  project_issues project_issues[]
+  chat_issues    chat_issues[]
+}
+
+enum IssuePriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model project_issues {
+  project_id Int
+  issue_id   Int
+
+  project project @relation(fields: [project_id], references: [id])
+  issue   issue   @relation(fields: [issue_id], references: [id])
+
+  @@id([project_id, issue_id])
+}
+
+model chat_issues {
+  chat_id  Int
+  issue_id Int
+
+  chat  chats @relation(fields: [chat_id], references: [id])
+  issue issue @relation(fields: [issue_id], references: [id])
+
+  @@id([chat_id, issue_id])
+}
+
+model issue_status {
+  id    Int    @id @default(autoincrement())
+  name  String @db.VarChar(50) @unique
+
+  issues issue[]
+}
+
+model issue_assignee {
+  issue_id Int
+  user_id  Int
+
+  issue issue @relation(fields: [issue_id], references: [id])
+  user  users @relation(fields: [user_id], references: [id])
+
+  @@id([issue_id, user_id])
+}
