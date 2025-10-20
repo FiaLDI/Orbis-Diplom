@@ -172,13 +172,13 @@ export const Component: React.FC = () => {
     <>
       <div className="w-full h-full flex text-white p-5 rounded-[5px] z-10">
         {/* ====== Левая панель ====== */}
-        <div className="relative p-5 flex flex-col bg-[#2e3ed34f] items-center rounded-[5px] justify-between lg:justify-normal">
+        <div className="relative p-5 flex flex-col bg-background items-center rounded-[5px] justify-between lg:justify-normal">
           <h1 className="text-5xl lg:text-base p-5 whitespace-nowrap">Friends</h1>
           <button className="lg:hidden">
             <Menu className="w-15 h-15 lg:w-10 lg:h-10" />
           </button>
 
-          <div className="bg-[#2e3ed3] lg:bg-transparent flex items-center justify-between h-full absolute lg:relative top-15 rounded-[5px] lg:top-0 flex-col p-5 text-5xl lg:p-0 lg:text-base gap-5 w-full">
+          <div className="flex items-center justify-between h-full absolute lg:relative top-15 rounded-[5px] lg:top-0 flex-col p-5 text-5xl lg:p-0 lg:text-base gap-5 w-full">
             <div className="w-full flex flex-col gap-5">
               <DefaultButton handler={() => dispatch(setFriendMode("All"))}>
                 All Friends
@@ -196,7 +196,7 @@ export const Component: React.FC = () => {
                 Received Invites
               </DefaultButton>
               <DefaultButton handler={() => dispatch(setFriendMode("Blocked"))}>
-                Blocked Friends <Lock className="inline ml-2" size={16} />
+                Blocked Friends
               </DefaultButton>
             </div>
             <SearchFriends />
@@ -204,7 +204,7 @@ export const Component: React.FC = () => {
         </div>
 
         {/* ====== Список ====== */}
-        <ul className="bg-[#25309b88] h-full w-full flex flex-col gap-5 p-5 rounded-b-[5px] overflow-y-auto">
+        <ul className="bg-foreground/50 h-full w-full flex flex-col gap-5 p-5 rounded-b-[5px] overflow-y-auto">
           {filteredFriends?.length ? (
             filteredFriends.map((val) => {
               const avatar = val.avatar_url || "/img/icon.png";

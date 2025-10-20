@@ -58,35 +58,41 @@ export const Component: React.FC = () => {
         </button>
         <ModalLayout open={open} onClose={()=>{setOpen(false)}}>
             <div
-                className="p-0 text-white flex flex-col gap-3 w-[600px]"
+                className="p-0 text-white flex flex-col w-[300px]"
             >
-                <div className="bg-[#2e3ed34f] w-full rounded flex items-center justify-baseline p-5">
-                    <h2 className="w-full text-2xl"> Search users </h2>
+                <div className="bg-background w-full rounded flex items-center justify-baseline p-5">
+                    <h2 className="w-full text-2xl">Search server </h2>
                     <button className="cursor-pointer p-0 w-fit" onClick={()=> {setOpen(false)}}><X /></button>
                 </div>
-                <ModalInput
-                    placeHolder="Enter server name"
-                    name="servername"
-                    value={nameServer || ""}
-                    change={(e) =>
-                        setNameServer((e.target as HTMLInputElement).value)
-                    }
-                />
-                <ModalButton handler={() => createrServerHandler()}>
-                    Create
-                </ModalButton>
-                <p>You can also join by id</p>
-                <ModalInput
-                    placeHolder="Enter server id"
-                    name="serverid"
-                    value={idServer || ""}
-                    change={(e) => {
-                        setIdServer((e.target as HTMLInputElement).value);
-                    }}
-                />
-                <ModalButton handler={() => joinServerHandler()}>
-                    Connect
-                </ModalButton>
+                <div className="w-full flex flex-col p-5 gap-5 items-center">
+                    <div className="w-full flex flex-col gap-5 items-end">
+                        <ModalInput
+                            placeHolder="Enter server name"
+                            name="servername"
+                            value={nameServer || ""}
+                            change={(e) =>
+                                setNameServer((e.target as HTMLInputElement).value)
+                            }
+                        />
+                        <ModalButton handler={() => createrServerHandler()}>
+                            Create
+                        </ModalButton>
+                    </div>
+                    <div className="w-full flex flex-col gap-5 items-end">
+                        <ModalInput
+                            placeHolder="Enter server id"
+                            name="serverid"
+                            value={idServer || ""}
+                            change={(e) => {
+                                setIdServer((e.target as HTMLInputElement).value);
+                            }}
+                        />
+                        <ModalButton handler={() => joinServerHandler()}>
+                            Connect
+                        </ModalButton>
+                    </div>
+                </div>
+                
             </div>
         </ModalLayout>
         </>

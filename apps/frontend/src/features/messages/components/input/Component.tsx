@@ -164,7 +164,7 @@ export const Component: React.FC = () => {
   return (
     <>
       {isDragging && (
-        <div className="fixed inset-0 z-50 bg-[#00000088] backdrop-blur-sm border-4 border-dashed border-white flex flex-col items-center justify-center text-white text-xl">
+        <div className="fixed inset-0 z-50 bg-background backdrop-blur-sm border-4 border-dashed border-white flex flex-col items-center justify-center text-white text-xl">
           <Upload size={64} strokeWidth={1.5} className="mb-3" />
           <p className="font-semibold text-2xl">
             Отпустите файлы, чтобы загрузить
@@ -172,7 +172,7 @@ export const Component: React.FC = () => {
         </div>
       )}
 
-      <div className="flex flex-col gap-2 p-3 bg-[#25309b] relative">
+      <div className="flex flex-col gap-2 p-3 bg-background relative">
         {typingUsers.length > 0 && (
           <TypingIndicator users={typingUsers} />
         )}
@@ -182,7 +182,7 @@ export const Component: React.FC = () => {
             {upload.files.map((f) => (
               <div
                 key={f.name}
-                className="bg-[#ffffff22] px-2 py-1 rounded-md flex items-center gap-2"
+                className="bg-foreground/20 px-2 py-1 rounded-md flex items-center gap-2"
               >
                 <span>{f.name}</span>
                 {f.progress < 100 ? (
@@ -239,7 +239,7 @@ export const Component: React.FC = () => {
           {/* кнопка загрузки */}
           <button
             onClick={handleUploadClick}
-            className="p-2 rounded-lg bg-[#ffffff22] hover:bg-[#ffffff33] transition"
+            className="p-2 rounded-lg bg-foreground hover:bg-foreground/33 transition"
             title="Загрузить файл"
           >
             <Upload size={24} color="#fff" strokeWidth={1.75} />
@@ -257,7 +257,7 @@ export const Component: React.FC = () => {
           {/* поле ввода */}
           <input
             type="text"
-            className="flex-1 bg-[#25309b88] text-white rounded-lg p-2 outline-none"
+            className="flex-1 bg-foreground text-white rounded-lg p-2 outline-none"
             placeholder="Введите сообщение..."
             value={inputValue}
             onChange={handleInputChange}
@@ -268,7 +268,7 @@ export const Component: React.FC = () => {
           <button
             onClick={handleSend}
             disabled={upload.loading}
-            className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg"
+            className="bg-foreground hover:bg-foreground/110 text-white px-4 py-2 rounded-lg"
           >
             Отправить
           </button>

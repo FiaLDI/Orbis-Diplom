@@ -6,7 +6,7 @@ import {
   useUnassignUserFromIssueMutation,
 } from "../../../api";
 import { useAppSelector } from "@/app/hooks";
-import { Check, UserX } from "lucide-react";
+import { Check, UserX, X } from "lucide-react";
 import { config } from "@/config";
 
 interface Props {
@@ -67,12 +67,21 @@ export const Component: React.FC<Props> = ({ issue, onClose, projectId }) => {
         onClose(); 
       getIssues(projectId);}}
     >
-      <div className="p-4 text-white space-y-4">
-        <h4 className="text-lg font-semibold py-3 bg-[#4354ee8f] rounded text-center">
-          👤 Manage Assignees
-        </h4>
-
-        {/* 🔍 Поиск */}
+      <div className="w-[500px] text-white">
+        <div 
+            className="bg-background w-full rounded flex items-center justify-baseline p-5"
+        >
+            <div className="w-full">Manage Assignees</div>
+            <button 
+                className="cursor-pointer p-0 w-fit" 
+                onClick={()=> {
+                    onClose();
+                }}>
+                    <X />
+            </button>
+        </div>
+                <div className="p-5 flex flex-col gap-5 w-full">
+                  {/* 🔍 Поиск */}
         <input
           type="text"
           placeholder="Search member..."
@@ -81,7 +90,6 @@ export const Component: React.FC<Props> = ({ issue, onClose, projectId }) => {
           className="w-full border rounded px-2 py-1 text-black"
         />
 
-        {/* 👥 Список участников */}
         <div className="max-h-[300px] overflow-y-auto space-y-1">
           {filteredMembers.length === 0 ? (
             <p className="text-gray-400 text-center">No members found</p>
@@ -144,6 +152,8 @@ export const Component: React.FC<Props> = ({ issue, onClose, projectId }) => {
         >
           Close
         </button>
+                </div>
+        
       </div>
     </ModalLayout>
   );

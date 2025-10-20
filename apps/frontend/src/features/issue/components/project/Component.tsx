@@ -42,8 +42,8 @@ export const Component: React.FC<Props> = ({serverid, name}) => {
     if (!serverid) return null;
     if (!name) return null;
     return (
-        <div>
-            <div className="bg-[#2e3ed34f] p-5 flex w-full justify-between items-center">
+        <div className="h-full">
+            <div className="bg-background p-5 flex w-full justify-between items-center">
                 <h4 className="truncate text-lg  text-white w-full flex items-center gap-5">
                     
                 <button className="cursor-pointer" aria-label="Target" onClick={handleProject}>
@@ -57,7 +57,7 @@ export const Component: React.FC<Props> = ({serverid, name}) => {
               <Plus color="white"/>
             </button>
             </div>
-            <div className="h-full w-full flex flex-col text-white">
+            <div className="h-full w-full flex flex-col text-white bg-background/50">
             {projects.map((val: any, index: number)=> {
 
                 return (
@@ -67,7 +67,7 @@ export const Component: React.FC<Props> = ({serverid, name}) => {
                     >
                         <div className="w-full "> 
                             <button 
-                                className="w-full border p-5 hover:text-black text-left cursor-pointer" 
+                                className="w-full p-5 bg-background/50 hover:bg-background text-left cursor-pointer" 
                                 onClick={()=> open(val.id)}
                             >
                                 {val.name}

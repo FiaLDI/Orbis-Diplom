@@ -147,7 +147,7 @@ export const Component: React.FC<Props> = ({ bottomRef, topRef }) => {
   return (
     <div
       ref={containerRef}
-      className="overflow-y-auto bg-[#25309b88] p-4 h-[calc(100vh_-_370px)] lg:h-screen text-white flex flex-col gap-3"
+      className="overflow-y-auto bg-background/50 p-4 h-[calc(100vh_-_370px)] lg:h-screen text-white flex flex-col gap-3"
     >
       <div ref={topRef} />
       {activeHistory?.map((message, idx) => (

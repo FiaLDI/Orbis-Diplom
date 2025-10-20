@@ -63,16 +63,16 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
       onClick={() => openIssue(task)}
       className={`p-2 rounded cursor-pointer flex flex-col ${
         issue.openIssue === task.id
-          ? "bg-blue-700"
-          : "bg-gray-700 hover:bg-gray-600"
+          ? "bg-foreground"
+          : "bg-background/60 hover:background"
       }`}
     >
       <div className="flex justify-between items-center">
-        <div>
+        <div className="flex gap-1 items-center">
           <span className="font-semibold">
             {statusIcon[task.status?.name as Statuses] || "❓"} {task.title}
           </span>
-          <span className="ml-2 text-sm opacity-70">
+          <span className="text-xs opacity-70">
             ({task.status?.name || "?"}, {task.priority})
           </span>
         </div>
@@ -102,7 +102,7 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
             src={avatar || "/img/icon.png"}
             alt={username}
             title={username}
-            className="w-6 h-6 rounded-full border-2 border-[#1e293b] object-cover"
+            className="w-6 h-6 rounded-full border-2 border-foreground/70 object-cover"
           />
         </div>
       );
@@ -207,16 +207,15 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
     );
   };
 
-  // 💬 Контекстное меню
   const menuItems: ContextMenuItem[] = contextMenu
     ? [
         {
-          label: "✏️ Edit issue",
+          label: "Edit issue",
           action: () => editIssue(contextMenu.data),
           icon: <Pencil size={14} />,
         },
         {
-          label: "👤 Assign to member",
+          label: "Assign to member",
           action: () => {
             setAssignModal({ open: true, issue: contextMenu.data });
             closeMenu();
@@ -224,7 +223,7 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
           icon: <Orbit size={14} />,
         },
         {
-          label: "🗑️ Delete issue",
+          label: "Delete issue",
           action: () => deleteIssue(contextMenu.data),
           icon: <Trash2 size={14} />,
           danger: true,
@@ -234,8 +233,7 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
 
   return (
     <div className="h-full">
-      {/* Шапка */}
-      <div className="bg-[#2e3ed34f] p-5 flex w-full justify-between items-center">
+      <div className="bg-background/90 p-5 flex w-full justify-between items-center">
         <h4 className="truncate text-lg text-white flex w-full gap-5 items-center">
           <button onClick={() => dispatch(setOpenProject(null))}>
             <MoveLeft />
@@ -246,7 +244,7 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
           <div className="flex gap-2">
             <button
               className={`px-2 py-1 rounded ${
-                viewMode === "tree" ? "bg-blue-600" : "bg-gray-700"
+                viewMode === "tree" ? "bg-foreground" : "bg-foreground/50"
               }`}
               onClick={() => setViewMode("tree")}
             >
@@ -254,7 +252,7 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
             </button>
             <button
               className={`px-2 py-1 rounded ${
-                viewMode === "cluster" ? "bg-blue-600" : "bg-gray-700"
+                viewMode === "cluster" ? "bg-foreground" : "bg-foreground/50"
               }`}
               onClick={() => setViewMode("cluster")}
             >
@@ -306,7 +304,6 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
         )}
       </div>
 
-      {/* ✅ Анимированное контекстное меню */}
       <AnimatedContextMenu
         visible={!!contextMenu}
         x={contextMenu?.x || 0}
@@ -316,7 +313,6 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
         onClose={closeMenu}
       />
 
-      {/* 👤 Модалка назначения участника */}
       {assignModal.open && (
         <AssignModal
           issue={assignModal.issue}

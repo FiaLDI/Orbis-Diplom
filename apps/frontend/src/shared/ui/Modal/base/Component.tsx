@@ -45,7 +45,7 @@ export const Component: React.FC<ModalLayoutProps> = ({
     <div className="fixed inset-0 z-[1000] flex justify-center items-center bg-black/50 backdrop-blur-sm">
       <div
         ref={modalRef}
-        className="bg-[#3247be] rounded-2xl p-6 shadow-xl"
+        className="bg-foreground rounded-2xl shadow-xl"
       >
         {children}
       </div>

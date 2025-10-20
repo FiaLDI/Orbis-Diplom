@@ -23,7 +23,7 @@ export const Component: React.FC = () => {
                   triggerElement={({ onContextMenu }) => (
                     
                     <div 
-                        className="flex bg-[#2e3ed328] text-white text-1xl justify-between items-center flex-wrap shrink-0"
+                        className="flex bg-background text-white text-1xl justify-between items-center flex-wrap shrink-0"
                         onContextMenu={onContextMenu}
                     >
                         <div className="text-5xl lg:text-base pl-5 p-2">

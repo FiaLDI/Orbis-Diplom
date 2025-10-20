@@ -5,12 +5,10 @@ import { setTheme } from "../../slice";
 export const Component: React.FC = () => {
     const settings = useAppSelector((s) => s.settings);
     const dispatch = useAppDispatch();
-
   
     return (
-        <div className="flex flex-col gap-5 p-5 text-center bg-primary text-primary-foreground min-h-[200px]">
+        <div className="flex flex-col gap-5 p-5 text-center min-h-[200px] test-bg ">
             <h3 className="text-left">Выберите тему</h3>
-            
             <button 
               className={
                 settings.theme === "standart" ? 
@@ -18,7 +16,7 @@ export const Component: React.FC = () => {
                 "bg-blue-950 p-10 w-[250px] cursor-pointer"
               }
               onClick={()=>dispatch(setTheme("standart"))}
-              >
+            >
               <div className="">Стандартная тема</div>
             </button>
             <button 

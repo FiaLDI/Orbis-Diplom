@@ -25,10 +25,10 @@ export const Component: React.FC = () => {
                 open={open}
             >
             <div 
-                className="p-5 text-white h-[600px] w-[600px] overflow-hidden"
+                className="text-white h-[600px] w-[600px] overflow-hidden"
             >
                 <div 
-                    className="bg-[#2e3ed34f] w-full rounded flex items-center justify-baseline p-5"
+                    className="bg-background w-full rounded flex items-center justify-baseline p-5"
                 >
                     <div className="w-full">Profile {userInfo?.username}</div>
                     <button 
@@ -40,8 +40,7 @@ export const Component: React.FC = () => {
                             <X />
                     </button>
                 </div>
-                <div className="p-5"></div>
-                <div className="flex  w-full flex-col gap-10">
+                <div className="flex p-5  w-full flex-col gap-10">
                     <div className="flex items-end gap-5 text-base">
                         <div className="">
                             <img 
@@ -59,7 +58,7 @@ export const Component: React.FC = () => {
                         <button
                             data-active={infoStage === 0}
                             className={
-                                "px-5 py-2 bg-[#4453f476] data-[active]:bg-[#afb3e7be]" 
+                                "px-5 py-2 bg-background/70 data-[active]:bg-background" 
                             }
                             onClick={() => setInfoStage(0)}
                         >

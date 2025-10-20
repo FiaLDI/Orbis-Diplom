@@ -2,8 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AccountInfo, Language, ProfileInfo, settingsState, Theme } from "../types";
 
 const initialState: settingsState = {
-    theme: "standart",
-    language: "ru",
+    theme: localStorage.getItem('theme') as Theme || 'standart',
+    language: (localStorage.getItem("i18nextLng") as "ru" | "en") || "ru",
     notification: false,
     accountInfoUpdated: {},
     profileInfoUpdated: {},

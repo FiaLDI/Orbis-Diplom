@@ -32,7 +32,6 @@
     },
     "devDependencies": {
         "@stylistic/eslint-plugin-js": "^3.0.1",
-        "@tailwindcss/postcss": "^4.1.11",
         "@types/lodash": "^4.17.16",
         "@types/node": "^22.13.11",
         "@types/react": "^18.2.24",
@@ -49,7 +48,7 @@
         "globals": "^16.0.0",
         "postcss": "^8.5.6",
         "sass": "^1.85.0",
-        "tailwindcss": "^4.1.11",
+        "tailwindcss": "^3.4.13",
         "typescript": "^5.2.2",
         "vite": "^5.4.19"
     }

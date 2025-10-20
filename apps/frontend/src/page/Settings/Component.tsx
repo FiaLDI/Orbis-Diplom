@@ -31,7 +31,7 @@ export const Component: React.FC = () => {
             <div className="w-screen h-screen text-white overflow-hidden">
                 <div className="grid grid-cols-[1fr_5fr] h-full w-full">
                     <ul className="w-full ">
-                        <div className="cont flex flex-col bg-[rgba(86,82,209,0.5)] p-10 gap-5 h-full relative justify-between">
+                        <div className="cont flex flex-col bg-background p-10 gap-5 h-full relative justify-between">
                             <div className="flex flex-col">
                                 <div className="">
                                     <button
@@ -40,9 +40,6 @@ export const Component: React.FC = () => {
                                     >
                                         Back
                                     </button>
-                                </div>
-                                <div className="search">
-                                    <ModalInput placeHolder="Search" change={()=>{}}/>
                                 </div>
                                 {settingsOptions.map(option => (
                                     <div className="p-5">

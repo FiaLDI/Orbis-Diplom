@@ -7,12 +7,12 @@ import {
   useLazyGetIssuesQuery, 
   useUpdateIssueMutation 
 } from "@/features/issue";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { useAppSelector } from "@/app/hooks";
 
 interface FormProps extends Props {
-  initialData?: any | null;   // данные для редактирования
-  onClose?: () => void;       // колбэк для закрытия
+  initialData?: any | null;
+  onClose?: () => void;
 }
 
 
@@ -114,14 +114,24 @@ export const Component: React.FC<FormProps> = ({
       )}
 
       <ModalLayout open={open || !!initialData} onClose={() => setOpen(false)}>
-        <div className="p-4 text-white space-y-4">
-          <h4 className="text-lg font-semibold py-3 bg-[#4354ee8f] rounded text-center">
-            {initialData ? "Edit Issue" : "Create Issue"}
-          </h4>
-
-          {/* Title */}
+        <div className="text-white w-[500px]">
+          <div 
+              className="bg-background w-full rounded flex items-center justify-baseline p-5"
+          >
+              <div className="w-full">{initialData ? "Edit Issue" : "Create Issue"}</div>
+              <button 
+                  className="cursor-pointer p-0 w-fit" 
+                  onClick={()=> {
+                      setOpen(false)
+                  }}>
+                      <X />
+              </button>
+          </div>
+          
+          <div className="p-5">
+                  {/* Title */}
           <div>
-            <label className="block text-sm font-medium mb-1">Issue title</label>
+            <label className="p-3 block">Issue title</label>
             <input
               type="text"
               value={title}
@@ -132,7 +142,7 @@ export const Component: React.FC<FormProps> = ({
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium mb-1">Issue description</label>
+            <label className="p-3 block">Issue description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -142,7 +152,7 @@ export const Component: React.FC<FormProps> = ({
 
           {/* Status */}
           <div>
-            <label className="block text-sm font-medium mb-1">Status</label>
+            <label className="p-3 block">Status</label>
             <select
               value={statusId ?? ""}
               onChange={(e) => setStatusId(Number(e.target.value))}
@@ -159,7 +169,7 @@ export const Component: React.FC<FormProps> = ({
 
           {/* Priority */}
           <div>
-            <label className="block text-sm font-medium mb-1">Priority</label>
+            <label className="p-3 block">Priority</label>
             <select
               value={priority ?? ""}
               onChange={(e) => setPriority(e.target.value)}
@@ -176,7 +186,7 @@ export const Component: React.FC<FormProps> = ({
 
           {/* Due date */}
           <div>
-            <label className="block text-sm font-medium mb-1">Due date</label>
+            <label className="p-3 block">Due date</label>
             <input
               type="date"
               value={dueDate}
@@ -187,7 +197,7 @@ export const Component: React.FC<FormProps> = ({
 
           {/* Parent issue */}
           <div>
-            <label className="block text-sm font-medium mb-1">Parent issue</label>
+            <label className="p-3 block">Parent issue</label>
             <select
               value={parentId ?? ""}
               onChange={(e) => setParentId(e.target.value ? Number(e.target.value) : null)}
@@ -205,20 +215,22 @@ export const Component: React.FC<FormProps> = ({
           </div>
 
           {/* Buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 pt-5">
             <button
-              className="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600 disabled:opacity-50"
+              className="flex-1 bg-background/60 text-white py-2 rounded hover:bg-background disabled:opacity-50"
               onClick={rem}
             >
               Cancel
             </button>
             <button
-              className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+              className="flex-1 bg-background/60 text-white py-2 rounded hover:bg-background disabled:opacity-50"
               onClick={save}
             >
               Save
             </button>
           </div>
+          </div>
+          
         </div>
       </ModalLayout>
     </>

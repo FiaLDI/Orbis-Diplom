@@ -44,7 +44,7 @@ export const Component: React.FC = () => {
   };
 
   return (
-    <div className="absolute lg:relative z-20 flex flex-col bg-[rgb(81,110,204)] lg:bg-[rgba(81,110,204,0.12)] gap-5 justify-between h-full w-full lg:min-w-[250px] lg:max-w-[250px]">
+    <div className="absolute lg:relative z-20 flex flex-col bg-background/50 gap-5 justify-between h-full w-full lg:min-w-[250px] lg:max-w-[250px]">
       <div className="flex flex-col gap-0 h-full" onContextMenu={handleContextMenu}>
         {activeServer ? (
           <ServerHeader 

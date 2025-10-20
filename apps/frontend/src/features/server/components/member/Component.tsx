@@ -105,8 +105,8 @@ export const Component: React.FC = () => {
 
   return (
     <>
-      <div className="bg-[rgba(81,110,204,0.12)] text-white text-lg flex flex-col w-[200px] lg:w-[400px] lg:min-w-[250px] lg:max-w-[250px]">
-        <h2 className="whitespace-nowrap bg-[rgb(81,110,204)] p-5">
+      <div className="bg-background/50 text-white text-lg flex flex-col w-[200px] lg:w-[400px] lg:min-w-[250px] lg:max-w-[250px]">
+        <h2 className="whitespace-nowrap bg-background p-5">
           Участники: {users?.length ?? 0}
         </h2>
 
@@ -114,7 +114,7 @@ export const Component: React.FC = () => {
           {users?.map((val, idx) => (
             <li
               key={`user-server-${idx}`}
-              className="h-fit bg-[#2e3ed34f] p-2 rounded-[10px]"
+              className="h-fit bg-foreground p-2 rounded-[10px]"
               onContextMenu={(e) => handleContextMenu(e, val)}
             >
               <button

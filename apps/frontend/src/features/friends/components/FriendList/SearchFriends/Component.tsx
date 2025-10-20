@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { ModalLayout } from "@/shared/ui";
+import { ModalInput, ModalLayout } from "@/shared/ui";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import {
     useLazyGetUserbyNameQuery,
@@ -55,18 +55,19 @@ export const Component: React.FC = () => {
             <div
                 className=" text-white flex flex-col gap-5 w-[600px]"
             >
-                <div className="bg-[#2e3ed34f] w-full rounded flex items-center justify-baseline p-5">
+                <div className="bg-background w-full rounded flex items-center justify-baseline p-5">
                     <h2 className="w-full text-2xl"> Search users </h2>
                     <button className="cursor-pointer p-0 w-fit" onClick={()=> {setOpen(false)}}><X /></button>
                 </div>
-                <input
-                    type="text"
-                    onChange={handleChange}
+                <div className="p-5 w-full flex flex-col gap-5">
+
+                
+                <ModalInput
+                    change={handleChange}
                     value={find}
-                    placeholder="Enter name"
-                    className=" box-border border-b-1 outline-0 w-full text-4xl lg:text-base"
+                    placeHolder="Enter name"
                 />
-                <ul className="result">
+                <ul className="">
                     <h3 className="text-5xl lg:text-2xl border-b border-b-[#ffffff3a]">
                         Results:
                     </h3>
@@ -106,6 +107,7 @@ export const Component: React.FC = () => {
                             );
                         })}
                 </ul>
+            </div>
             </div>
         </ModalLayout>
         </>
