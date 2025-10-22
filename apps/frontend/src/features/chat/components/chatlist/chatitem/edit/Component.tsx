@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ModalLayout } from "@/shared";
 import { useUpdateChatMutation } from "@/features/chat";
 import { ChatEditFormProps } from "./interface";
+import { useTranslation } from "react-i18next";
+import { X } from "lucide-react";
 
 export const Component: React.FC<ChatEditFormProps> = ({
   initialData,
@@ -11,6 +13,8 @@ export const Component: React.FC<ChatEditFormProps> = ({
   const [name, setName] = useState(initialData?.name ?? "");
 
   const [ updateChat ] = useUpdateChatMutation();
+
+  const { t } = useTranslation("chat");
 
   useEffect(() => {
     if (initialData) {
@@ -38,34 +42,45 @@ export const Component: React.FC<ChatEditFormProps> = ({
 
   return (
     <ModalLayout open={!!initialData} onClose={onClose}>
-      <div className="p-4 text-white space-y-4">
-        <h4 className="text-lg font-semibold py-3 bg-[#4354ee8f] rounded text-center">
-          Edit Chat
-        </h4>
+      <div className="p-0 w-[400px] text-white ">
 
-        <div>
-          <label className="block text-sm font-medium mb-1">Chat name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full border rounded px-2 py-1 text-black"
-          />
+        <div 
+            className="bg-background w-full rounded flex items-center justify-baseline p-5"
+        >
+            <div className="w-full">{t("chat.edit.title")}</div>
+            <button 
+                className="cursor-pointer p-0 w-fit" 
+                onClick={()=> {
+                    onClose();
+                }}>
+                    <X />
+            </button>
         </div>
 
-        <div className="flex gap-2">
-          <button
-            className="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-          <button
-            className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-            onClick={save}
-          >
-            Save
-          </button>
+        <div className="w-full p-5 flex flex-col gap-5">
+          <div>
+            <label className="block">{t("chat.edit.form.chatname")}</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full border rounded px-2 py-1 text-white bg-transparent"
+            />
+          </div>
+          <div className="flex gap-2">
+            <button
+              className="flex-1 bg-background/70 text-white py-2 rounded hover:bg-background"
+              onClick={onClose}
+            >
+              {t("chat.edit.form.cancel")}
+            </button>
+            <button
+              className="flex-1 bg-background/70 text-white py-2 rounded hover:bg-background"
+              onClick={save}
+            >
+              {t("chat.edit.form.submit")}
+            </button>
+          </div>
         </div>
       </div>
     </ModalLayout>

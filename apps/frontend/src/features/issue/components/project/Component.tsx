@@ -42,7 +42,7 @@ export const Component: React.FC<Props> = ({serverid, name}) => {
     if (!serverid) return null;
     if (!name) return null;
     return (
-        <div className="h-full">
+        <div className="h-full w-full overflow-y-auto scroll-hidden">
             <div className="bg-background p-5 flex w-full justify-between items-center">
                 <h4 className="truncate text-lg  text-white w-full flex items-center gap-5">
                     
@@ -51,7 +51,7 @@ export const Component: React.FC<Props> = ({serverid, name}) => {
       </button>Projects {name}
                 </h4>
                 <button
-              className="cursor-pointer px-1 py-1 bg-[#2e3ed328] rounded-full"
+              className="cursor-pointer px-1 py-1 bg-foreground rounded-full"
               onClick={handlerCreateProject}
             >
               <Plus color="white"/>

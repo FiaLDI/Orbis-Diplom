@@ -4,12 +4,14 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { uploadFiles } from "@/features/upload";
 import { useUpdateProfileMutation } from "../..";
 import { FormData } from "./interface";
+import { useTranslation } from "react-i18next";
 
 export const Component: React.FC = () => {
   const user = useAppSelector((s) => s.auth.user?.info);
   const dispatch = useAppDispatch();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const { t } = useTranslation("settings");
   const [updateProfile, { isLoading, error }] = useUpdateProfileMutation();
 
   const {
@@ -48,9 +50,8 @@ export const Component: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 border border-[#ffffff22] rounded-xl w-full max-w-[600px] text-white">
+    <div className="flex flex-col gap-4 p-5 bg-foreground/30 w-full text-white">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        {/* Аватар */}
         <div className="flex gap-3 items-center">
           <img
             src={user?.avatar_url || "/default-avatar.png"}
@@ -60,9 +61,9 @@ export const Component: React.FC = () => {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="px-3 py-1 bg-blue-600 text-white rounded"
+            className="px-3 py-1 bg-background/70 hover:bg-background text-white rounded"
           >
-            Изменить фото
+            {t("menu.profile.form.field.avatar.label")}
           </button>
           <input
             type="file"
@@ -72,12 +73,11 @@ export const Component: React.FC = () => {
             className="hidden"
           />
         </div>
-
-        {/* Имя */}
         <div>
+          <label className="block mb-2">{t("menu.profile.form.field.firstname.label")}</label>
           <input
             type="text"
-            placeholder="First name"
+            placeholder={t("menu.profile.form.field.firstname.placeholder")}
             {...register("first_name", {
               maxLength: { value: 100, message: "Не более 100 символов" },
             })}
@@ -89,12 +89,11 @@ export const Component: React.FC = () => {
             </span>
           )}
         </div>
-
-        {/* Фамилия */}
         <div>
+          <label className="block mb-2">{t("menu.profile.form.field.secondname.label")}</label>
           <input
             type="text"
-            placeholder="Last name"
+            placeholder={t("menu.profile.form.field.secondname.placeholder")}
             {...register("last_name", {
               maxLength: { value: 100, message: "Не более 100 символов" },
             })}
@@ -106,34 +105,31 @@ export const Component: React.FC = () => {
             </span>
           )}
         </div>
-
-        {/* Дата рождения */}
         <div>
+          <label className="block mb-2">{t("menu.profile.form.field.date.label")}</label>
           <input
             type="date"
             {...register("birth_date")}
             className="p-2 border rounded bg-transparent w-full"
           />
         </div>
-
-        {/* Пол */}
         <div>
+          <label className="block mb-2">{t("menu.profile.form.field.gender.label")}</label>
           <select
             {...register("gender")}
             className="p-2 border rounded bg-transparent w-full"
           >
-            <option value="">Пол не выбран</option>
-            <option value="male">Мужской</option>
-            <option value="female">Женский</option>
-            <option value="other">Другое</option>
+            <option value="">{t("menu.profile.form.field.gender.select")}</option>
+            <option value="male">{t("menu.profile.form.field.gender.option.1")}</option>
+            <option value="female">{t("menu.profile.form.field.gender.option.2")}</option>
+            <option value="other">{t("menu.profile.form.field.gender.option.3")}</option>
           </select>
         </div>
-
-        {/* Локация */}
         <div>
+          <label className="block mb-2">{t("menu.profile.form.field.location.label")}</label>
           <input
             type="text"
-            placeholder="Location"
+            placeholder={t("menu.profile.form.field.location.placeholder")}
             {...register("location", {
               maxLength: { value: 100, message: "Не более 100 символов" },
             })}
@@ -145,11 +141,10 @@ export const Component: React.FC = () => {
             </span>
           )}
         </div>
-
-        {/* About me */}
         <div>
+          <label className="block mb-2">{t("menu.profile.form.field.aboutme.label")}</label>
           <textarea
-            placeholder="About me"
+            placeholder={t("menu.profile.form.field.aboutme.placeholder")}
             {...register("about", {
               maxLength: { value: 300, message: "Не более 300 символов" },
             })}
@@ -165,9 +160,9 @@ export const Component: React.FC = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="mt-3 py-2 bg-green-600 text-white rounded disabled:opacity-50"
+          className="mt-3 py-2 bg-background/70 hover:bg-background text-white rounded disabled:opacity-50"
         >
-          {isLoading ? "Сохранение..." : "Сохранить"}
+          {isLoading ? t("menu.profile.form.loading") : t("menu.profile.form.submit")}
         </button>
 
         {error && (

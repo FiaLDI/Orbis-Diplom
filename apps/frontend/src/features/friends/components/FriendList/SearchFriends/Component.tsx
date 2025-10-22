@@ -8,11 +8,12 @@ import {
 import { ModalButton } from "@/shared/ui";
 import { useSendRequestMutation } from "../../..";
 import { CirclePlus, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const Component: React.FC = () => {
     const [open, setOpen] = useState<boolean>(false);
 
-    const dispatch = useAppDispatch();
+    const { t } = useTranslation("friends");
     const [find, setFind] = useState<string>("");
     const timerRef = useRef<NodeJS.Timeout>();
     const [trigger, { data, isSuccess: isSuccessSearch }] =
@@ -56,20 +57,18 @@ export const Component: React.FC = () => {
                 className=" text-white flex flex-col gap-5 w-[600px]"
             >
                 <div className="bg-background w-full rounded flex items-center justify-baseline p-5">
-                    <h2 className="w-full text-2xl"> Search users </h2>
+                    <h2 className="w-full text-2xl">{t("search")}</h2>
                     <button className="cursor-pointer p-0 w-fit" onClick={()=> {setOpen(false)}}><X /></button>
                 </div>
-                <div className="p-5 w-full flex flex-col gap-5">
-
-                
+                <div className="p-5 w-full flex flex-col gap-5 bg-foreground">
                 <ModalInput
                     change={handleChange}
                     value={find}
-                    placeHolder="Enter name"
+                    placeHolder={t("placeholder")}
                 />
                 <ul className="">
                     <h3 className="text-5xl lg:text-2xl border-b border-b-[#ffffff3a]">
-                        Results:
+                        {t("result")}
                     </h3>
                     {data &&
                         data.map((val: any, idx: number) => {
@@ -95,12 +94,12 @@ export const Component: React.FC = () => {
                                                 startChatting(val.id)
                                             }
                                         >
-                                            Message
+                                            {t("modal.message")}
                                         </ModalButton>
                                         <ModalButton
                                             handler={() => inviteFriend(val.id)}
                                         >
-                                            Add friend
+                                            {t("modal.addfriend")}
                                         </ModalButton>
                                     </div>
                                 </li>

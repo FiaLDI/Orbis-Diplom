@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ModalLayout } from "@/shared";
+import { ModalInput, ModalLayout } from "@/shared";
 import {
   useGetPermissionsQuery,
   useGetRolePermissionsQuery,
@@ -7,9 +7,12 @@ import {
   useUpdateServerRoleMutation,
 } from "@/features/server";
 import { Props } from "./interface";
+import { useTranslation } from "react-i18next";
+import { X } from "lucide-react";
 
 
 export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleColor }) => {
+  const { t } = useTranslation("server");
   const { data: allPermissions = [] } = useGetPermissionsQuery({});
   const { data: rolePermissionsData = [] } = useGetRolePermissionsQuery(roleId);
 
@@ -51,29 +54,35 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
     <>
       <button
         onClick={() => setOpen(true)}
-        className="cursor-pointer px-3 py-1 bg-[#2e3ed328] rounded text-sm"
-        style={{ color }}
+        className="cursor-pointer px-3 py-1 bg-foreground/70 hover:bg-foreground rounded text-sm text-white"
+
       >
-        Edit
+        {t("settings.edit")} 
       </button>
 
       <ModalLayout open={open} onClose={() => setOpen(false)}>
-        <div className="p-0">
-          <h4 className="text-lg font-semibold px-30 py-3 bg-[#4354ee8f] rounded text-center">Role editor</h4>
-          <div>
-            <label className="block text-sm font-medium mb-1">Role name</label>
-            <input
-              type="text"
+        <div className="p-0 w-[300px]">
+          <div 
+              className="bg-background w-full rounded flex items-center justify-baseline p-5"
+          >
+              <div className="w-full">{t("settings.editmodal")}</div>
+              <button 
+                  className="cursor-pointer p-0 w-fit" 
+                  onClick={() => setOpen(false)}>
+                      <X />
+              </button>
+          </div>
+          <div className="p-5">
+            <div>
+            <label className="block text-sm font-medium mb-1">{t("settings.rolename")}</label>
+            <ModalInput 
+              change={(e)=> setName(e.target.value)} 
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full border rounded px-2 py-1"
               disabled={["creator", "default"].includes(roleName.toLowerCase())}
             />
           </div>
-
-          {/* Цвет роли */}
           <div>
-            <label className="block text-sm font-medium mb-1">Role color</label>
+            <label className="block text-sm font-medium mb-1">{t("settings.rolecolor")}</label>
             <input
               type="color"
               value={color}
@@ -81,15 +90,13 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
               className="w-16 h-10 cursor-pointer border rounded"
             />
           </div>
-
-          {/* Permissions */}
           <div className="">
             {roleName.toLowerCase() === "creator" ? (
-              <div className="text-sm text-gray-400">Permissions cannot be changed for creator</div>
+              <div className="text-sm text-gray-400">{t("settings.error")}</div>
             ) : (
               allPermissions.map((perm: any) => (
                 <div key={perm.id} className="flex justify-between items-center">
-                  <span>{perm.name}</span>
+                  <span>{t(`settings.role.${perm.name}`)} </span>
                   <input
                     type="checkbox"
                     checked={rolePermissions.includes(perm.id)}
@@ -99,15 +106,14 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
               ))
             )}
           </div>
-
-          {/* Save button */}
           <button
             onClick={save}
             disabled={isLoading || isUpdatingRole}
-            className="mt-4 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+            className="mt-4 w-full bg-background/70 hover:bg-background text-white py-2 rounded  disabled:opacity-50"
           >
-            {isLoading || isUpdatingRole ? "Saving..." : "Save"}
+            {isLoading || isUpdatingRole ? `${t("settings.confirm")}....` : t("settings.confirm")}
           </button>
+          </div>
         </div>
       </ModalLayout>
     </>

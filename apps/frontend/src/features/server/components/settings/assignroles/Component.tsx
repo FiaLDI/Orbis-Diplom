@@ -6,6 +6,8 @@ import {
   useRemoveRoleFromMemberMutation,
 } from "@/features/server";
 import { ComponentProps } from "./interface";
+import { useTranslation } from "react-i18next";
+import { X } from "lucide-react";
 
 
 export const Component: React.FC<ComponentProps> = ({
@@ -14,6 +16,7 @@ export const Component: React.FC<ComponentProps> = ({
   availableRoles,
   userRoles,
 }) => {
+  const { t } = useTranslation("server");
   const [open, setOpen] = useState(false);
   const [assignRole] = useAssignRoleToMemberMutation();
   const [removeRole] = useRemoveRoleFromMemberMutation();
@@ -51,16 +54,25 @@ export const Component: React.FC<ComponentProps> = ({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="px-3 py-1 text-sm rounded bg-[#4354ee8f] hover:bg-[#2e3ed3] cursor-pointer whitespace-nowrap"
+        className="px-3 py-1 text-sm rounded bg-foreground/70 hover:bg-foreground cursor-pointer whitespace-nowrap"
       >
-        Manage roles
+        {t("settings.assign")}
       </button>
 
       <ModalLayout open={open} onClose={() => setOpen(false)}>
-        <div className="p-0">
-          <h3 className="text-lg font-semibold px-10 py-3 bg-[#4354ee8f] rounded">Assign roles</h3>
-
-          {availableRoles
+        <div className="p-0 w-[300px]">
+          <div 
+                  className="bg-background w-full rounded flex items-center justify-baseline p-5"
+              >
+                  <div className="w-full">{t("settings.assignmodal")}</div>
+                  <button 
+                      className="cursor-pointer p-0 w-fit" 
+                      onClick={() => setOpen(false)}>
+                          <X />
+                  </button>
+              </div>
+          <div className="p-5">
+            {availableRoles
             .filter((role) => role.name.toLowerCase() !== "creator")
             .map((role) => (
               <div key={role.id} className="flex justify-between items-center p-3 border-b border-white/30">
@@ -75,10 +87,12 @@ export const Component: React.FC<ComponentProps> = ({
 
           <button
             onClick={() => setOpen(false)}
-            className="mt-4 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+            className="mt-4 w-full bg-background/70 hover:bg-background text-white py-2 rounded"
           >
-            Done
+            {t("settings.confirm")}
           </button>
+          </div>
+          
         </div>
       </ModalLayout>
     </>

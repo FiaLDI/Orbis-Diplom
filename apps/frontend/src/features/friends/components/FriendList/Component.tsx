@@ -27,8 +27,10 @@ import { setFriendMode } from "../../slice";
 import { Component as SearchFriends } from "./SearchFriends";
 import { AnimatedContextMenu, useContextMenu } from "@/features/shared";
 import clsx from "clsx";
+import { useTranslation } from "react-i18next";
 
 export const Component: React.FC = () => {
+  const { t } = useTranslation("friends");
   const dispatch = useAppDispatch();
   const mode = useAppSelector((s) => s.friends.friendsMode);
   const friends = useAppSelector((s) => s.friends.friends);
@@ -69,7 +71,6 @@ export const Component: React.FC = () => {
     if (confirmSuccess || confirmReject) dispatch(setFriendMode(mode));
   }, [confirmSuccess, confirmReject]);
 
-  // 🔍 фильтрация
   const filteredFriends = useMemo(() => {
     if (!friends) return [];
     return friends.filter((f) => {
@@ -91,7 +92,6 @@ export const Component: React.FC = () => {
     });
   }, [friends, onlineUsers, mode]);
 
-  // ⚙️ контекстное меню
   const handleStartChat = async (userId: number) => {
     try {
       const chat = await startChat(userId).unwrap();
@@ -143,24 +143,24 @@ export const Component: React.FC = () => {
     contextMenu?.data && contextMenu?.data.id
       ? [
           {
-            label: "💬 Начать чат",
+            label: t("action.startchat"),
             action: () => handleStartChat(contextMenu.data.id),
             icon: <MessageSquare size={15} />,
           },
           {
-            label: "🗑 Удалить из друзей",
+            label: t("action.deletefriend"),
             action: () => handleRemoveFriend(contextMenu.data.id),
             icon: <UserMinus size={15} />,
             danger: true,
           },
           contextMenu.data.is_blocked
             ? {
-                label: "🔓 Разблокировать",
+                label: t("action.unblock"),
                 action: () => handleUnblockFriend(contextMenu.data.id),
                 icon: <Unlock size={15} />,
               }
             : {
-                label: "🚫 Заблокировать",
+                label: t("action.block"),
                 action: () => handleBlockFriend(contextMenu.data.id),
                 icon: <Ban size={15} />,
                 danger: true,
@@ -171,9 +171,7 @@ export const Component: React.FC = () => {
   return (
     <>
       <div className="w-full h-full flex text-white p-5 rounded-[5px] z-10">
-        {/* ====== Левая панель ====== */}
         <div className="relative p-5 flex flex-col bg-background items-center rounded-[5px] justify-between lg:justify-normal">
-          <h1 className="text-5xl lg:text-base p-5 whitespace-nowrap">Friends</h1>
           <button className="lg:hidden">
             <Menu className="w-15 h-15 lg:w-10 lg:h-10" />
           </button>
@@ -181,29 +179,28 @@ export const Component: React.FC = () => {
           <div className="flex items-center justify-between h-full absolute lg:relative top-15 rounded-[5px] lg:top-0 flex-col p-5 text-5xl lg:p-0 lg:text-base gap-5 w-full">
             <div className="w-full flex flex-col gap-5">
               <DefaultButton handler={() => dispatch(setFriendMode("All"))}>
-                All Friends
+                {t("option.all")}
               </DefaultButton>
               <DefaultButton handler={() => dispatch(setFriendMode("Online"))}>
-                Online Friends
+                {t("option.online")}
               </DefaultButton>
               <DefaultButton handler={() => dispatch(setFriendMode("Offline"))}>
-                Offline Friends
+                {t("option.offline")}
               </DefaultButton>
               <DefaultButton handler={() => dispatch(setFriendMode("Invite"))}>
-                Sent Invites
+                {t("option.sent")}
               </DefaultButton>
               <DefaultButton handler={() => dispatch(setFriendMode("My Invite"))}>
-                Received Invites
+                {t("option.recive")}
               </DefaultButton>
               <DefaultButton handler={() => dispatch(setFriendMode("Blocked"))}>
-                Blocked Friends
+                {t("option.block")}
               </DefaultButton>
             </div>
             <SearchFriends />
           </div>
         </div>
 
-        {/* ====== Список ====== */}
         <ul className="bg-foreground/50 h-full w-full flex flex-col gap-5 p-5 rounded-b-[5px] overflow-y-auto">
           {filteredFriends?.length ? (
             filteredFriends.map((val) => {
@@ -215,7 +212,7 @@ export const Component: React.FC = () => {
                 <li
                   key={`friend-${val.id}-${val.username}`}
                   className={clsx(
-                    "flex items-center justify-between p-2 rounded-md transition bg-[#4b58cc66] hover:bg-[#5e6aff99]",
+                    "flex items-center justify-between p-2 rounded-md transition bg-foreground/70 hover:bg-foreground",
                     isBlocked && "opacity-60 pointer-events-none"
                   )}
                   onContextMenu={(e) => handleContextMenu(e, val)}
@@ -254,7 +251,6 @@ export const Component: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* ✅ кнопки для подтверждения / отклонения приглашения */}
                   {mode === "My Invite" && (
                     <div className="flex gap-2">
                       <button

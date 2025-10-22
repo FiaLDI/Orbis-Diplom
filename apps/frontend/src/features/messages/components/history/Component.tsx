@@ -16,6 +16,7 @@ import { useContextMenu } from "@/features/shared";
 import { AnimatedContextMenu } from "@/features/shared/components/AnimatedContextMenu";
 import { Reply, Pencil, Copy, Trash2 } from "lucide-react";
 import { Props } from "./interface";
+import { useTranslation } from "react-i18next";
 
 export const Component: React.FC<Props> = ({ bottomRef, topRef }) => {
   useChatMessages();
@@ -29,6 +30,7 @@ export const Component: React.FC<Props> = ({ bottomRef, topRef }) => {
   const [getMessages] = useLazyGetMessagesQuery();
   const [removeMessage] = useRemoveMessageMutation();
 
+  const { t } = useTranslation("messages");
 
   const containerRef = useRef<HTMLDivElement>(null);
   const offsetRef = useRef(0);
@@ -133,11 +135,11 @@ export const Component: React.FC<Props> = ({ bottomRef, topRef }) => {
   };
 
   const menuItems = [
-    { label: "Reply", action: handleReplyMessage, icon: <Reply size={15} /> },
-    { label: "Edit", action: handleEditMessage, icon: <Pencil size={15} /> },
-    { label: "Copy text", action: handleCopyMessage, icon: <Copy size={15} /> },
+    { label: t("action.reply"), action: handleReplyMessage, icon: <Reply size={15} /> },
+    { label: t("action.edit"), action: handleEditMessage, icon: <Pencil size={15} /> },
+    { label: t("action.copy"), action: handleCopyMessage, icon: <Copy size={15} /> },
     {
-      label: "Delete",
+      label: t("action.delete"),
       action: handleRemoveMessage,
       icon: <Trash2 size={15} />,
       danger: true,
@@ -154,7 +156,7 @@ export const Component: React.FC<Props> = ({ bottomRef, topRef }) => {
         <SingleMessage
           key={`single-${message.chat_id}-${idx}`}
           message={message}
-          onClick={(e) => handleContextMenu(e, message)} // контекстное меню
+          onClick={(e) => handleContextMenu(e, message)}
           currentUser={currentUser}
         />
       ))}

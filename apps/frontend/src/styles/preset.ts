@@ -5,48 +5,11 @@
 
 import plugin from "tailwindcss/plugin";
 import defaultTheme from "tailwindcss/defaultTheme";
-import colors from "tailwindcss/colors";
 import typography from "@tailwindcss/typography";
 import aspectRatio from "@tailwindcss/aspect-ratio";
 import animate from "tailwindcss-animate";
 import type { Config } from "tailwindcss";
 import type { PluginAPI } from "tailwindcss/types/config";
-
-const shadcnPlugin = plugin(({ addBase }: PluginAPI) => {
-  addBase({
-    ":root": {
-      "--background": "255 255 255",
-      "--foreground": "34 34 34",
-      "--radius": "0.5rem",
-      "--color-primary": "49 130 206",
-      "--color-primary-foreground": "255 255 255",
-    },
-
-    ".theme-standart": {
-      "--background": "255 255 255",
-      "--foreground": "34 34 34",
-      "--color-primary": "49 130 206",
-      "--color-primary-foreground": "255 255 255",
-    },
-
-    ".theme-light": {
-      "--background": "245 245 245",
-      "--foreground": "20 20 44",
-      "--color-primary": "56 189 248",
-      "--color-primary-foreground": "0 0 10",
-    },
-
-    ".theme-dark": {
-      "--background": "28 28 40",
-      "--foreground": "220 220 230",
-      "--color-primary": "49 130 206",
-      "--color-primary-foreground": "255 255 255",
-    },
-
-    "*": { "@apply border-border": {} },
-    body: { "@apply bg-background text-foreground": "" },
-  });
-});
 
 export const preset: Config = {
   darkMode: ["class"],
@@ -85,6 +48,7 @@ export const preset: Config = {
 
       backgroundImage: {
         "body-texture-black": "url('/img/backgroundbigblack.jpg')",
+        "body-texture-standart": "url('/img/backgroundbigstandart.jpg')",
         "body-texture-light": "url('/img/backgroundbig.jpg')",
       },
     },

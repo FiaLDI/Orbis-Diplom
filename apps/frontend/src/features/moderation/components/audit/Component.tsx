@@ -7,12 +7,13 @@ import {
   useKickUserMutation,
   useGetBannedUsersQuery 
 } from "../../api";
-import { X } from "lucide-react";
-import { setSettingsActive } from "@/features/server/slice";
 import { useLazyGetServersMembersQuery } from "@/features/server";
+import { ChevronDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const Component: React.FC = () => {
-  const dispatch = useAppDispatch();
+  const { t } = useTranslation("moderation");
+  const [open, setOpen] = useState<boolean>(false);
   const activeserver = useAppSelector((s) => s.server.activeserver);
   const meId = useAppSelector((s) => s.auth.user?.info.id);
 
@@ -88,24 +89,22 @@ export const Component: React.FC = () => {
   if (!activeserver) return null;
 
   return (
-    <div className="flex flex-col h-full w-full p-5 rounded-[5px] text-white">
-      <div className="w-full h-full bg-[#2e3ed328]">
+    <div className="flex flex-col h-full w-full p-0 rounded-[5px] text-white">
+      <div className="w-full h-full bg-background/50">
         {/* header */}
-        <div className="bg-[#2e3ed34f] w-full rounded flex items-center justify-between p-5">
+        <div className="bg-foreground w-full rounded flex items-center justify-between p-5">
           <div className="text-lg font-semibold">
-            Moderation — {activeserver?.name}
+            {t("audit.title")} — {activeserver?.name}
           </div>
-          <button
-            className="cursor-pointer p-1 rounded hover:bg-white/10"
-            onClick={() => dispatch(setSettingsActive(false))}
-          >
-            <X />
+          <button onClick={()=>setOpen(prev => !prev)}>
+            <ChevronDown />
           </button>
         </div>
-
-        {/* Users list */}
+        {open ? 
+          <div className="">
+            {/* Users list */}
         <div className="p-5 flex flex-col gap-3">
-          <h4 className="text-2xl">Members</h4>
+          <h4 className="text-2xl">{t("audit.members")}</h4>
           {activeserver?.users?.map((user, idx) => {
             const isSelf = user.id === Number(meId);
             return (
@@ -124,7 +123,7 @@ export const Component: React.FC = () => {
                       <div className="font-medium">
                         {user.username}{" "}
                         {isSelf && (
-                          <span className="text-xs opacity-70">(это вы)</span>
+                          <span className="text-xs opacity-70">({t("audit.itsyou")})</span>
                         )}
                       </div>
                       <div className="text-xs opacity-70">ID: {user.id}</div>
@@ -140,11 +139,11 @@ export const Component: React.FC = () => {
                           : "bg-yellow-500/30 hover:bg-yellow-500/50"
                       }`}
                       title={
-                        isSelf ? "Нельзя кикнуть самого себя" : "Кикнуть участника"
+                        isSelf ? t("audit.action.kick.titleyourself") : t("audit.action.kick.title")
                       }
                       onClick={() => handleKick(user.id)}
                     >
-                      Kick
+                      {t("audit.action.kick.submit")}
                     </button>
                     <button
                       disabled={isSelf}
@@ -154,11 +153,11 @@ export const Component: React.FC = () => {
                           : "bg-red-500/40 hover:bg-red-500/60"
                       }`}
                       title={
-                        isSelf ? "Нельзя забанить самого себя" : "Забанить участника"
+                        isSelf ? t("audit.action.ban.titleyourself") : t("audit.action.ban.title")
                       }
                       onClick={() => handleBan(user.id)}
                     >
-                      Ban
+                      {t("audit.action.ban.submit")}
                     </button>
                     <button
                       disabled={isSelf}
@@ -168,13 +167,11 @@ export const Component: React.FC = () => {
                           : "bg-green-600/40 hover:bg-green-600/60"
                       }`}
                       title={
-                        isSelf
-                          ? "Нельзя разбанить самого себя"
-                          : "Разбанить участника"
+                        isSelf ? t("audit.action.unban.titleyourself") : t("audit.action.unban.title")
                       }
                       onClick={() => handleUnban(user.id)}
                     >
-                      Unban
+                      {t("audit.action.unban.submit")}
                     </button>
                   </div>
                 </div>
@@ -184,8 +181,8 @@ export const Component: React.FC = () => {
                   <input
                     disabled={isSelf}
                     type="text"
-                    placeholder="Причина (необязательно)"
-                    className="flex-1 px-2 py-1 rounded bg-[#1e2a8a]/40 outline-none text-sm placeholder:text-white/40"
+                    placeholder={t("audit.reason")}
+                    className="flex-1 px-2 py-1 rounded bg-foreground/50 outline-none text-sm placeholder:text-white/40"
                     value={reasonMap[user.id] ?? ""}
                     onChange={(e) =>
                       setReasonMap((prev) => ({
@@ -200,24 +197,23 @@ export const Component: React.FC = () => {
           })}
         </div>
 
-        {/* Banned users list */}
-<div className="p-5 flex flex-col gap-3 border-t border-white/10">
-  <h4 className="text-2xl flex items-center justify-between">
-    Banned Users
-    <button
-      onClick={() => bannedRefetch()}
-      className="text-sm px-2 py-1 rounded bg-white/10 hover:bg-white/20"
-    >
-      Обновить
-    </button>
-  </h4>
+        <div className="p-5 flex flex-col gap-3 border-t border-white/10">
+          <h4 className="text-2xl flex items-center justify-between">
+            {t("audit.banned.title")}
+            <button
+              onClick={() => bannedRefetch()}
+              className="text-sm px-2 py-1 rounded bg-white/10 hover:bg-white/20"
+            >
+              {t("audit.banned.refresh")}
+            </button>
+          </h4>
 
-  {isBannedFetching && <div className="opacity-60">Загрузка...</div>}
+  {isBannedFetching && <div className="opacity-60">{t("audit.banned.loading")}</div>}
   {!bannedUsers?.length && !isBannedFetching && (
-    <div className="opacity-60">Нет забаненных пользователей</div>
+    <div className="opacity-60">{t("audit.banned.nobaning")}</div>
   )}
 
-  <div className="max-h-[300px] overflow-y-auto space-y-2">
+  <div className="max-h-[300px] overflow-y-auto scroll-hidden">
     {bannedUsers?.map((ban) => (
       <div
         key={`banned-${ban.user_id}`}
@@ -232,11 +228,11 @@ export const Component: React.FC = () => {
           <div>
             <div className="font-medium">{ban.user.username}</div>
             <div className="text-xs opacity-70">
-              Забанен {new Date(ban.created_at).toLocaleString("ru-RU")}
+              {t("audit.banned.time")} {new Date(ban.created_at).toLocaleString("ru-RU")}
             </div>
             {ban.reason && (
               <div className="text-xs opacity-70 mt-0.5">
-                Причина: {ban.reason}
+                {t("audit.banned.reason")}{ban.reason}
               </div>
             )}
           </div>
@@ -246,32 +242,31 @@ export const Component: React.FC = () => {
           className="px-3 py-1 bg-green-600/40 hover:bg-green-600/60 rounded text-sm"
           onClick={() => handleUnban(ban.user.id)}
         >
-          Unban
+          {t("audit.action.unban.submit")}
         </button>
       </div>
     ))}
   </div>
-</div>
+        </div>
 
 
-        {/* Audit logs */}
         <div className="p-5 flex flex-col gap-3">
           <h4 className="text-2xl flex items-center justify-between">
-            Audit Log
+            {t("audit.logs.title")}
             <button
               onClick={() => refetch()}
               className="text-sm px-2 py-1 rounded bg-white/10 hover:bg-white/20"
             >
-              Обновить
+              {t("audit.logs.refresh")}
             </button>
           </h4>
 
-          {isFetching && <div className="opacity-60">Загрузка...</div>}
+          {isFetching && <div className="opacity-60">{t("audit.logs.loading")}</div>}
           {!sortedLogs.length && !isFetching && (
-            <div className="opacity-60">Нет записей аудита</div>
+            <div className="opacity-60">{t("audit.logs.nologs")}</div>
           )}
 
-          <div className="max-h-[300px] overflow-y-auto space-y-2">
+          <div className="max-h-[300px] overflow-y-auto  scroll-hidden">
             {sortedLogs.map((log) => (
               <div
                 key={log.id}
@@ -282,10 +277,10 @@ export const Component: React.FC = () => {
                 </div>
                 <div className="text-sm mt-1">
                   <b>{log.actor?.username ?? `User#${log.actor_id}`}</b>{" "}
-                  {log.action === "BAN_ADD" && "забанил"}
-                  {log.action === "BAN_REMOVE" && "разбанил"}
-                  {log.action === "KICK" && "выгнал"}
-                  {" пользователя "}
+                  {log.action === "BAN_ADD" && t("audit.logs.action.BAN_ADD")}
+                  {log.action === "BAN_REMOVE" && t("audit.logs.action.BAN_REMOVE")}
+                  {log.action === "KICK" && t("audit.logs.action.KICK")}
+                  {` ${t("audit.logs.user")} `}
                   <b>{log.target_id ? `User#${log.target_id}` : "-"}</b>
                 </div>
                 {log.metadata &&
@@ -294,7 +289,7 @@ export const Component: React.FC = () => {
                       const meta = JSON.parse(log.metadata);
                       return meta?.reason ? (
                         <div className="text-xs opacity-70 mt-1">
-                          Причина: {meta.reason}
+                          {t("audit.banned.reason")}{meta.reason}
                         </div>
                       ) : null;
                     } catch {
@@ -305,6 +300,9 @@ export const Component: React.FC = () => {
             ))}
           </div>
         </div>
+          </div>
+        : null}
+        
       </div>
     </div>
   );

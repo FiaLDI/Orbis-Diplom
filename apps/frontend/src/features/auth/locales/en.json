@@ -1,0 +1,29 @@
+
+{
+  "login": {
+    "title": "Sign in to your account",
+    "email": "Email",
+    "password": "Password",
+    "register": "Don't have an account?",
+    "submit": "Sign In"
+  },
+  "register": {
+    "email": {
+      "title": "Start registration",
+      "placeholder": "Email",
+      "submit": "Send verification code"
+    },
+    "code": {
+      "placeholder": "Enter the code",
+      "submit": "Continue registration"
+    },
+    "register": {
+      "title": "Create an account",
+      "username": "Username",
+      "password": "Password",
+      "birth_date": "Date of birth",
+      "submit": "Register"
+    }
+  },
+  "back": "Back"
+}

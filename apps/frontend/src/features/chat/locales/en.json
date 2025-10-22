@@ -1,0 +1,26 @@
+{
+    "menu": {
+
+    },
+    "list": {
+
+    },
+    "chat": {
+        "personal": {
+            "title": "Personal chats"
+        },
+        "search": {
+            "placeholder": "Search chats..."
+        },
+        "edit": {
+            "title": "Edit chat",
+            "delete": "Delete chat",
+            "form": {
+                "chatname": "Chat name",
+                "submit": "Save",
+                "cancel": "Cancel"
+            }
+        }
+    }
+  
+}

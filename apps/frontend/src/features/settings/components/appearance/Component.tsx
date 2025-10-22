@@ -1,14 +1,16 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import React from "react";
 import { setTheme } from "../../slice";
+import { useTranslation } from "react-i18next";
 
 export const Component: React.FC = () => {
     const settings = useAppSelector((s) => s.settings);
     const dispatch = useAppDispatch();
+    const { t } = useTranslation("settings");
   
     return (
         <div className="flex flex-col gap-5 p-5 text-center min-h-[200px] test-bg ">
-            <h3 className="text-left">Выберите тему</h3>
+            <h3 className="text-left">{t("menu.appearance.theme.title")}</h3>
             <button 
               className={
                 settings.theme === "standart" ? 
@@ -17,7 +19,7 @@ export const Component: React.FC = () => {
               }
               onClick={()=>dispatch(setTheme("standart"))}
             >
-              <div className="">Стандартная тема</div>
+              <div className="">{t("menu.appearance.theme.standart")}</div>
             </button>
             <button 
               className=
@@ -28,7 +30,7 @@ export const Component: React.FC = () => {
                 }
               onClick={()=>dispatch(setTheme("light"))}
               >
-              <div className="">Светлая тема</div>
+              <div className="">{t("menu.appearance.theme.light")}</div>
             </button>
             <button 
               className={
@@ -38,7 +40,7 @@ export const Component: React.FC = () => {
               }
               onClick={()=>dispatch(setTheme("dark"))}
               >
-              <div className="">Темная тема</div>
+              <div className="">{t("menu.appearance.theme.dark")}</div>
             </button>
         </div>
     );

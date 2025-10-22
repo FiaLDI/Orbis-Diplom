@@ -1,4 +1,4 @@
-import { Bolt, Target } from "lucide-react";
+import { Bolt, SlidersHorizontal, Target } from "lucide-react";
 import React from "react";
 import { Props } from "./interface";
 
@@ -11,7 +11,7 @@ export const Component: React.FC<Props> = ({ name, onSettingsToggle, onProjectTo
             <Target />
           </button>
           <button className="cursor-pointer" aria-label="Server settings" onClick={onSettingsToggle}>
-            <Bolt />
+            <SlidersHorizontal />
           </button>
         </div>
       </div>

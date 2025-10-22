@@ -232,7 +232,7 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
     : [];
 
   return (
-    <div className="h-full">
+    <div className="h-full w-full overflow-y-auto scroll-hidden">
       <div className="bg-background/90 p-5 flex w-full justify-between items-center">
         <h4 className="truncate text-lg text-white flex w-full gap-5 items-center">
           <button onClick={() => dispatch(setOpenProject(null))}>

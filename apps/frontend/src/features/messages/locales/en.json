@@ -1,0 +1,16 @@
+{
+    "action": {
+        "reply": "Reply",
+        "edit": "Edit",
+        "copy": "Copy text",
+        "delete": "Delete",
+        "save": "Save",
+        "cancel": "Cancel",
+        "addfile": "Add file"
+    },
+    "edited": "edited",
+    "image": "Image",
+    "download": "Download",
+    "entertext": "Enter text...",
+    "file": "File"
+}

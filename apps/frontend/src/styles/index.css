@@ -15,20 +15,20 @@
   html[data-theme="standart"] {
     --background: 3 37 99;
     --foreground: 0 66 189;
-    --color-primary: 49 130 206;
+    --color-primary: 255 255 255;
     --color-primary-foreground: 255 255 255;
   }
 
   html[data-theme="light"] {
     --background: 100 173 236;
     --foreground: 50 149 236;
-    --color-primary: 56 189 248;
+    --color-primary: 255 255 255;
     --color-primary-foreground: 0 0 10;
   }
   html[data-theme="dark"] {
     --background: 28 28 40;
     --foreground: 53 53 59;
-    --color-primary: 49 130 206;
+    --color-primary: 255 255 255;
     --color-primary-foreground: 255 255 255;
   }
 }
@@ -48,8 +48,38 @@
 body {
   font-family: 'poppins';
 }
+.scroll-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
 
-/* input:-webkit-autofill {
-  box-shadow: 0 0 0px 1000px white inset;
-  -webkit-text-fill-color: #000000;
-} */
+.scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+@layer utilities {
+  /* Chrome / Edge / Safari */
+  .autofill-transparent:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+    box-shadow: 0 0 0px 1000px transparent inset !important;
+    background-color: transparent !important;
+    -webkit-text-fill-color: rgb(var(--color-primary)) !important;
+    transition: background-color 9999s ease-out 0s !important;
+  }
+
+  /* Firefox */
+  input.autofill-transparent:-moz-autofill,
+  textarea.autofill-transparent:-moz-autofill,
+  select.autofill-transparent:-moz-autofill {
+    -moz-appearance: none !important;
+    box-shadow: 0 0 0 1000px transparent inset !important;
+    background-color: transparent !important;
+    color: rgba(0, 0, 0, 0.01) !important; /* вместо transparent */
+    text-shadow: 0 0 0 rgb(var(--color-primary)) !important;
+    background-clip: padding-box !important;
+  }
+}
+
+
+
+

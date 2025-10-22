@@ -1,0 +1,15 @@
+{
+    "title": "Notifications",
+    "loading": "Loading...",
+    "empty": "No notifications yet.",
+    "status": {
+        "0": "offline",
+        "1": "live"
+    },
+    "action": {
+        "readall": "Mark all read",
+        "clearall": "Clear all",
+        "titleread": "Mark as read",
+        "titledel": "Delete"
+    }
+}

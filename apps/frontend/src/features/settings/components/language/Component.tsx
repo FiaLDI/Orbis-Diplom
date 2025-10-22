@@ -6,18 +6,18 @@ import { useTranslation } from "react-i18next";
 export const Component: React.FC = () => {
   const settings = useAppSelector((s) => s.settings);
   const dispatch = useAppDispatch();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation("settings");
 
   const handleChangeLanguage = (lang: "ru" | "en") => {
     dispatch(setLanguage(lang));
     i18n.changeLanguage(lang);
-    localStorage.setItem("i18nextLng", lang); // 👈 сохраняем язык
+    localStorage.setItem("i18nextLng", lang);
   };
 
   return (
     <div className="flex flex-col gap-5 p-5 text-center">
       <h3 className="bg-[#ffffff11] p-2 flex justify-between">
-        {i18n.t("settings.selectLanguage") || "Выберите язык"}
+        {t("menu.language.label")}
       </h3>
 
       <div className="p-2 flex flex-col gap-2">
@@ -28,7 +28,7 @@ export const Component: React.FC = () => {
               className="py-2 w-full bg-[#1f4bda5b] cursor-pointer disabled:bg-[#7085cb5b]"
               onClick={() => handleChangeLanguage(lng)}
             >
-              {lng === "ru" ? "Русский" : "English"}
+              {t(`menu.language.${lng}`)}
             </button>
           </div>
         ))}

@@ -6,6 +6,7 @@ import { useContextMenu } from "@/features/shared";
 import { useBanUserMutation, useKickUserMutation, useUnbanUserMutation } from "@/features/moderation";
 import { BanReasonModal } from "@/features/moderation";
 import { Member } from "./interface";
+import { useTranslation } from "react-i18next";
 
 export const Component: React.FC = () => {
   const membersServer = useAppSelector((s) => s.server.activeserver?.users) as Member[] | undefined;
@@ -16,6 +17,7 @@ export const Component: React.FC = () => {
     open: false,
     });
 
+  const { t } = useTranslation("server");
 
   const dispatch = useAppDispatch();
   const [triggerProfile] = useLazyGetInfoUserQuery();
@@ -66,23 +68,23 @@ export const Component: React.FC = () => {
 
     return [
       {
-        label: "Открыть профиль",
+        label:  t("moderate.open"),
         action: () => onViewProfile(target.id),
         disabled: false,
       },
       {
-        label: "Скопировать ID",
+        label: t("moderate.copy"),
         action: () => navigator.clipboard?.writeText(String(target.id)),
       },
       { label: "—", action: () => {} }, // разделитель (отрисуем как disabled)
       {
-        label: "Кикнуть",
+        label:  t("moderate.kick"),
         action: () => doKick(target.id),
         danger: true,
         disabled: !canKick || isSelf || !activeserverId || kickLoading,
       },
       {
-        label: "Забанить",
+        label:  t("moderate.ban"),
         action: async () => {
           setBanModal({ open: true, userId: target.id, username: target.username });
         },
@@ -90,7 +92,7 @@ export const Component: React.FC = () => {
         disabled: !canBan || isSelf || !activeserverId || banLoading,
       },
       {
-        label: "Разбанить",
+        label:  t("moderate.unban"),
         action: () => doUnban(target.id),
         disabled: !canBan || isSelf || !activeserverId || unbanLoading,
       },
@@ -114,7 +116,7 @@ export const Component: React.FC = () => {
           {users?.map((val, idx) => (
             <li
               key={`user-server-${idx}`}
-              className="h-fit bg-foreground p-2 rounded-[10px]"
+              className="h-fit bg-foreground/50 p-2 rounded-[10px]"
               onContextMenu={(e) => handleContextMenu(e, val)}
             >
               <button

@@ -14,22 +14,21 @@ import {
   clearNotifications,
 } from "../../slice";
 import { Props } from "./interface";
+import { useTranslation } from "react-i18next";
 
 export const Component: React.FC<Props> = ({connected}) => {
+  const { t } = useTranslation("notification");
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
 
-  // API-хуки
   const { data: apiNotifications = [], isFetching } = useGetNotificationsQuery(undefined, {
-    skip: !open, // грузим только при открытии
+    skip: !open,
   });
   const [markRead] = useMarkNotificationReadMutation();
   const [deleteNotif] = useDeleteNotificationMutation();
 
-  // Redux state
   const notifications = useAppSelector((s) => s.notification.list);
 
-  // при первом открытии — синхронизация API → store
   useEffect(() => {
     if (open && apiNotifications.length) {
       dispatch(setNotifications(apiNotifications));
@@ -55,12 +54,10 @@ export const Component: React.FC<Props> = ({connected}) => {
   };
 
   const handleMarkAll = async () => {
-    // локально все в read
     notifications.forEach((n) => {
       if (!n.is_read) dispatch(markAsRead(n.id));
     });
 
-    // можно добавить PATCH-запрос "mark all read"
     console.log("✅ Marked all notifications as read (local)");
   };
 
@@ -73,7 +70,6 @@ export const Component: React.FC<Props> = ({connected}) => {
 
   return (
     <>
-      {/* 🔔 Иконка */}
       <button className="cursor-pointer relative" onClick={() => setOpen(true)}>
         <Bell
           color="#fff"
@@ -85,16 +81,15 @@ export const Component: React.FC<Props> = ({connected}) => {
         )}
       </button>
 
-      {/* 💬 Модалка уведомлений */}
       <ModalLayout open={open} onClose={() => setOpen(false)}>
-        <div className="p-5 text-white bg-[#1a1f3c] rounded-lg max-h-[600px] overflow-y-auto min-w-[420px]">
+        <div className="p-5 text-white bg-foreground rounded-lg max-h-[600px] overflow-y-auto min-w-[420px]">
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-lg font-semibold flex items-center gap-2">
-              🔔 Notifications{" "}
+              {t("title")}{" "}
               {connected ? (
-                <span className="text-green-400 text-sm">(live)</span>
+                <span className="text-green-400 text-sm">({t("status.1")})</span>
               ) : (
-                <span className="text-gray-400 text-sm">(offline)</span>
+                <span className="text-gray-400 text-sm">({t("status.0")})</span>
               )}
             </h3>
 
@@ -103,25 +98,26 @@ export const Component: React.FC<Props> = ({connected}) => {
                 onClick={handleMarkAll}
                 className="text-xs px-2 py-1 bg-[#ffffff22] hover:bg-[#ffffff33] rounded"
               >
-                Mark all read
+                {t("action.readall")}
               </button>
               <button
                 onClick={handleClearAll}
                 className="text-xs px-2 py-1 bg-[#ffffff22] hover:bg-[#ffffff33] rounded"
               >
-                Clear all
+                {t("action.clearall")}
               </button>
             </div>
           </div>
 
-          {/* ⏳ Загрузка */}
           {isFetching ? (
             <div className="flex justify-center items-center py-5 text-gray-400">
               <Loader2 className="animate-spin mr-2" size={18} />
-              Loading...
+                {t("loading")}
             </div>
           ) : notifications.length === 0 ? (
-            <p className="text-gray-400 italic">No notifications yet.</p>
+            <p className="text-gray-400 italic">
+                {t("empty")}
+            </p>
           ) : (
             <div className="flex flex-col divide-y divide-[#ffffff22]">
               {notifications.map((n) => (
@@ -145,7 +141,7 @@ export const Component: React.FC<Props> = ({connected}) => {
                     {!n.is_read && (
                       <button
                         onClick={() => handleMarkRead(n.id)}
-                        title="Mark as read"
+                        title={t("action.titleread")}
                         className="p-1 rounded hover:bg-[#ffffff22]"
                       >
                         <Check size={14} />
@@ -153,7 +149,7 @@ export const Component: React.FC<Props> = ({connected}) => {
                     )}
                     <button
                       onClick={() => handleDelete(n.id)}
-                      title="Delete"
+                      title={t("action.titledel")}
                       className="p-1 rounded hover:bg-[#ffffff22]"
                     >
                       <Trash2 size={14} />

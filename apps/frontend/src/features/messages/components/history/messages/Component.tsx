@@ -11,18 +11,15 @@ import { resetUpload, uploadFiles } from "@/features/upload";
 import { config } from "@/config";
 import { Check, X, Upload, Trash2 } from "lucide-react";
 import type { MessageContent } from "@/features/messages/types";
+import { useTranslation } from "react-i18next";
 
 const CoreComponent: React.FC<SingleMessageProps> = ({
   message,
   onClick,
   currentUser,
 }) => {
+  const { t } = useTranslation("messages");
   const dispatch = useAppDispatch();
-  const selectIsOpen = useMemo(
-    () => makeSelectIsMessageOpen(String(message.id)),
-    [message.id],
-  );
-  const isOpen = useAppSelector(selectIsOpen);
   const editmode = useAppSelector((s) => s.message.editmode);
   const [updateMessage] = useEditMessageMutation();
 
@@ -124,17 +121,15 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
     <div
       data-id={`message-${message.id}`}
       onContextMenu={(e) => onClick?.(e, message)}
-      className={`flex gap-5 lg:gap-3 rounded-lg p-2 ${
-        isOpen ? "bg-[#7895f3]" : "hover:bg-[#ffffff11] transition"
-      }`}
+      className={"flex gap-5 lg:gap-3 rounded-lg p-2 hover:bg-foreground/50 transition"}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      <div className="self-start p-1">
+      <div className="self-start w-20 h-20 lg:w-10 lg:h-10">
         <img
           src={avatarSrc}
           alt={`Аватар ${message.username}`}
-          className="w-20 h-20 lg:w-10 lg:h-10 rounded-full object-cover border border-[#ffffff33]"
+          className="w-20 h-20 lg:w-10 lg:h-10 rounded-full object-cover shrink-0 border border-[#ffffff33]"
         />
       </div>
 
@@ -150,58 +145,58 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
         </h3>
 
         {repliedMsg && (
-  <div
-    onClick={() => {
-      const el = document.querySelector(
-        `[data-id="message-${repliedMsg.id}"]`,
-      ) as HTMLElement | null;
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-        el.classList.add("bg-[#4f6fff66]", "transition-colors");
-        setTimeout(() => el.classList.remove("bg-[#4f6fff66]"), 1500);
-      }
-    }}
-    className="flex items-start gap-2 bg-[#1d2fa155] rounded-md px-3 py-2 mb-2 cursor-pointer hover:bg-[#2e45e055] transition"
-  >
-    <img
-      src={
-        repliedMsg.avatar_url
-          ? repliedMsg.avatar_url.startsWith("http")
-            ? repliedMsg.avatar_url
-            : `${config.cdnServiceUrl}/${repliedMsg.avatar_url}`
-          : "img/icon.png"
-      }
-      alt={`Аватар ${repliedMsg.username}`}
-      className="w-6 h-6 rounded-full border border-[#ffffff33] object-cover mt-0.5"
-    />
+        <div
+          onClick={() => {
+            const el = document.querySelector(
+              `[data-id="message-${repliedMsg.id}"]`,
+            ) as HTMLElement | null;
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth", block: "center" });
+              el.classList.add("bg-foreground", "transition-colors");
+              setTimeout(() => el.classList.remove("bg-foreground"), 1500);
+            }
+          }}
+          className="flex items-start gap-2 bg-foreground/70 rounded-md px-3 py-2 mb-2 cursor-pointer hover:bg-foreground transition"
+        >
+          <img
+            src={
+              repliedMsg.avatar_url
+                ? repliedMsg.avatar_url.startsWith("http")
+                  ? repliedMsg.avatar_url
+                  : `${config.cdnServiceUrl}/${repliedMsg.avatar_url}`
+                : "img/icon.png"
+            }
+            alt={`Аватар ${repliedMsg.username}`}
+            className="w-6 h-6 rounded-full border border-[#ffffff33] object-cover mt-0.5"
+          />
 
-    <div className="flex flex-col flex-1">
-      <div className="flex items-center gap-2 text-xs text-gray-300">
-        <span className="font-semibold text-white">{repliedMsg.username}</span>
-        <span className="opacity-70">
-          {new Date(repliedMsg.timestamp).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </span>
-      </div>
+          <div className="flex flex-col flex-1">
+            <div className="flex items-center gap-2 text-xs text-gray-300">
+              <span className="font-semibold text-white">{repliedMsg.username}</span>
+              <span className="opacity-70">
+                {new Date(repliedMsg.timestamp).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+            </div>
 
-      {repliedMsg.content?.[0]?.type === "text" ? (
-        <div className="text-sm text-white truncate max-w-[400px]">
-          {repliedMsg.content[0].text}
-        </div>
-          ) : repliedMsg.content?.[0]?.type === "image" ? (
-            <div className="flex items-center gap-1 text-blue-300 text-sm">
-              🖼 <span className="italic">Изображение</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 text-blue-300 text-sm">
-              📎 <span className="italic">Файл</span>
-            </div>
-          )}
-          </div>
-        </div>
-      )}
+            {repliedMsg.content?.[0]?.type === "text" ? (
+              <div className="text-sm text-white truncate max-w-[400px]">
+                {repliedMsg.content[0].text}
+              </div>
+                ) : repliedMsg.content?.[0]?.type === "image" ? (
+                  <div className="flex items-center gap-1 text-blue-300 text-sm">
+                    <span className="italic">{t("image")}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-blue-300 text-sm">
+                    <span className="italic">{t("file")}</span>
+                  </div>
+                )}
+                </div>
+              </div>
+            )}
 
         {isEditing ? (
           <div className="mt-1 flex flex-col gap-2">
@@ -215,7 +210,7 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
                 if (e.key === "Escape") handleCancel();
               }}
               className="flex-1 bg-[#ffffff22] rounded-md px-2 py-1 outline-none text-white"
-              placeholder="Введите текст..."
+              placeholder={t("entertext")}
             />
 
             {attachedFiles.length > 0 && (
@@ -258,7 +253,7 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className="p-2 rounded-md bg-[#ffffff22] hover:bg-[#ffffff33]"
-                title="Добавить файл"
+                title={t("action.addfile")}
               >
                 <Upload size={16} />
               </button>
@@ -274,14 +269,14 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
               <button
                 onClick={handleSave}
                 className="p-2 bg-green-500/20 hover:bg-green-500/40 rounded-md"
-                title="Сохранить"
+                title={t("action.save")}
               >
                 <Check size={16} />
               </button>
               <button
                 onClick={handleCancel}
                 className="p-2 bg-red-500/20 hover:bg-red-500/40 rounded-md"
-                title="Отменить"
+                title={t("action.cancel")}
               >
                 <X size={16} />
               </button>
@@ -301,7 +296,7 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
                     {val.text}
                     {message.is_edited && (
                       <span className="text-xs text-gray-400 ml-2">
-                        (edited)
+                        {t("edited")}
                       </span>
                     )}
                   </div>
@@ -316,7 +311,7 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
                           ? val.url
                           : `${config.cdnServiceUrl}/${val.url}`
                       }
-                      alt={val.text || "Изображение"}
+                      alt={val.text || t("image")}
                       className="max-w-[700px] rounded-lg border border-[#ffffff22]"
                     />
                   </div>
@@ -341,7 +336,7 @@ const CoreComponent: React.FC<SingleMessageProps> = ({
                       rel="noreferrer"
                       className="text-blue-400 underline hover:text-blue-300"
                     >
-                      Скачать
+                      {t("download")}
                     </a>
                   </div>
                 );

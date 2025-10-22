@@ -5,4 +5,5 @@ export interface Props {
     value?: string;
     name?: string;
     placeHolder?: string;
+    disabled?: boolean;
 }

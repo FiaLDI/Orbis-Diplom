@@ -5,10 +5,11 @@ import {
     setActiveServer,
     useGetServersQuery,
 } from "@/features/server";
-import { Bolt } from "lucide-react";
+import { Bolt, UserRound } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Props } from "./interface";
+import { setActiveChat } from "@/features/chat";
 
 export const Component: React.FC<Props> = ({socket, notificationConnect}) => {
     const avatarUrl = useAppSelector(s => s.auth.user?.info.avatar_url);
@@ -65,6 +66,17 @@ export const Component: React.FC<Props> = ({socket, notificationConnect}) => {
                     </div>
                 </div>
                 <div className="flex flex-col gap-5">
+                        <button 
+                            className=" cursor-pointer"
+                            onClick={() => {
+                                dispatch(setActiveChat(undefined));
+                                dispatch(setActiveServer(undefined));
+                            }}>
+                            <UserRound
+                                color="#fff"
+                                strokeWidth={1.25}
+                                className="w-6 h-6 transition-transform hover:scale-110" />
+                            </button>
                         <MenuNotification connected={notificationConnect} />
                         <button
                             className=" cursor-pointer"

@@ -8,6 +8,7 @@ import {
 import { ModalButton } from "@/shared/ui";
 import { ModalInput } from "@/shared/ui";
 import { CirclePlus, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const Component: React.FC = () => {
     const [open, setOpen] = useState<boolean>(false);
@@ -17,6 +18,8 @@ export const Component: React.FC = () => {
     const [nameServer, setNameServer] = useState<string>();
     const [idServer, setIdServer] = useState<string>();
     const [trigger] = useLazyGetServersQuery();
+
+    const { t } = useTranslation("server");
 
     useEffect(() => {
         trigger({});
@@ -61,13 +64,13 @@ export const Component: React.FC = () => {
                 className="p-0 text-white flex flex-col w-[300px]"
             >
                 <div className="bg-background w-full rounded flex items-center justify-baseline p-5">
-                    <h2 className="w-full text-2xl">Search server </h2>
+                    <h2 className="w-full text-2xl">{t("form.title")}</h2>
                     <button className="cursor-pointer p-0 w-fit" onClick={()=> {setOpen(false)}}><X /></button>
                 </div>
                 <div className="w-full flex flex-col p-5 gap-5 items-center">
                     <div className="w-full flex flex-col gap-5 items-end">
                         <ModalInput
-                            placeHolder="Enter server name"
+                            placeHolder={t("form.createplaceholder")}
                             name="servername"
                             value={nameServer || ""}
                             change={(e) =>
@@ -75,12 +78,12 @@ export const Component: React.FC = () => {
                             }
                         />
                         <ModalButton handler={() => createrServerHandler()}>
-                            Create
+                            {t("form.create")}
                         </ModalButton>
                     </div>
                     <div className="w-full flex flex-col gap-5 items-end">
                         <ModalInput
-                            placeHolder="Enter server id"
+                            placeHolder={t("form.connectplaceholder")}
                             name="serverid"
                             value={idServer || ""}
                             change={(e) => {
@@ -88,7 +91,7 @@ export const Component: React.FC = () => {
                             }}
                         />
                         <ModalButton handler={() => joinServerHandler()}>
-                            Connect
+                            {t("form.connect")}
                         </ModalButton>
                     </div>
                 </div>

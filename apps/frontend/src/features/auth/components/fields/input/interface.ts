@@ -9,9 +9,10 @@ import {
 export interface InputFieldProps<T extends FieldValues> {
     type: string;
     placeholder: string;
-    name: Path<T>; // Убедитесь, что name соответствует Path<T>
+    name: Path<T>;
     readOnly?: boolean;
     register: UseFormRegister<T>;
     error?: FieldError;
-    validation?: RegisterOptions<T>; // Уберите второй параметр
+    validation?: RegisterOptions<T>;
+    disabled?: boolean;
 }

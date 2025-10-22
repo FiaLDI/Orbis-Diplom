@@ -155,7 +155,6 @@ export const Component: React.FC = () => {
         )}
 
         {isSettingsActive && <SettingsServer />}
-        {isSettingsActive && <AuditDrawer />}
 
         {!hasActiveServer && !isPersonalChat && <FriendList />}
 

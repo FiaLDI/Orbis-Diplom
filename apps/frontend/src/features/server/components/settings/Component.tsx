@@ -10,11 +10,14 @@ import {
   useGetServersRolesQuery,
 } from "../..";
 import { Plus, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { AuditDrawer } from "@/features/moderation";
 
 export const Component: React.FC = () => {
   const { activeserver } = useAppSelector((s) => ({
     activeserver: s.server.activeserver,
   }));
+  const { t } = useTranslation("server");
 
   const dispatch = useAppDispatch();
 
@@ -42,17 +45,15 @@ export const Component: React.FC = () => {
   if (!activeserver) return null;
 
   return (
-    <div className="flex flex-col h-full w-full p-5 rounded-[5px] lg:h-screen text-white">
-      <div className="w-full h-full bg-[#2e3ed328]">
-         <div className="bg-[#2e3ed34f] w-full rounded flex items-center justify-baseline p-5">
-                  <div className="w-full">Settings {activeserver?.name}</div>
-                  <button className="cursor-pointer p-0 w-fit" onClick={()=> dispatch(setSettingsActive(false))}><X /></button>
-                </div>
-              <div className="p-5"></div>
+    <div className="flex flex-col h-full w-full p-5 rounded-[5px] lg:h-screen text-white overflow-auto scroll-hidden">
+      <div className="w-full h-full bg-background/50">
+         <div className="bg-foreground w-full rounded flex items-center justify-baseline p-5">
+            <div className="w-full">{t("settings.title")} {activeserver?.name}</div>
+            <button className="cursor-pointer p-0 w-fit" onClick={()=> dispatch(setSettingsActive(false))}><X /></button>
+          </div>
 
-        {/* --- Members --- */}
         <div className="p-5">
-          <h4 className="text-2xl">Members</h4>
+          <h4 className="text-2xl">{t("settings.members")}</h4>
           {activeserver?.users?.map((user, idx) => (
             <div
               key={`member-server-${idx}`}
@@ -67,7 +68,6 @@ export const Component: React.FC = () => {
               <div className=" ">
               {user.username}
                 </div>
-              {/* текущие роли */}
               <div className="flex gap-2">
                 {user?.user_server?.flatMap((us) =>
                   us?.roles?.map((role, index) => (
@@ -83,7 +83,6 @@ export const Component: React.FC = () => {
               </div>
               </div>
 
-              {/* кнопка изменения ролей */}
               <AssignRolesButton
                 userId={user.id}
                 serverId={activeserver.id}
@@ -103,12 +102,11 @@ export const Component: React.FC = () => {
           ))}
         </div>
 
-        {/* --- Roles --- */}
         <div className="p-5 flex flex-col w-full gap-5">
           <div className="w-full flex gap-5 items-center">
-            <h4 className="text-2xl">Roles</h4>
+            <h4 className="text-2xl">{t("settings.roles")}</h4>
             <button
-              className="cursor-pointer px-1 py-1 bg-[#2e3ed328] rounded-full"
+              className="cursor-pointer px-1 py-1 bg-foreground rounded-full"
               onClick={handleCreateRole}
             >
               <Plus />
@@ -133,21 +131,25 @@ export const Component: React.FC = () => {
                   roleId={Number(role.id)}
                   roleName={role.name}
                   serverId={Number(activeserver.id)}
-                  
                 />
                 <button
                   onClick={() => handleDeleteRole(Number(role.id))}
-                  className="px-3 py-1 bg-red-500 rounded hover:bg-red-600 text-sm"
+                  className="px-3 py-1 bg-foreground/70 cursor-pointer rounded hover:bg-foreground text-sm"
                   disabled={role.name === "creator" || role.name === "default"}
                 >
-                  Delete
+                  {t("settings.delete")} 
                 </button>
               </div>
             </div>
           ))}
           </div>
         </div>
+
+        
       </div>
+      <div className="">
+          <AuditDrawer />
+        </div>
     </div>
   );
 };

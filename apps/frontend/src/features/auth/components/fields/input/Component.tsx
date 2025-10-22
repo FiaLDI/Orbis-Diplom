@@ -9,17 +9,19 @@ export const InputField = <T extends FieldValues>({
     type,
     placeholder,
     name,
+    disabled,
     register,
     error,
     validation,
 }: InputFieldProps<T>) => (
-    <div className="w-2xl lg:w-[400px]">
+    <div className="w-full flex relative mb-2">
         <input
             type={type}
             placeholder={placeholder}
-            className="text-3xl w-full lg:text-base box-border p-4 outline-none border-b-2"
+            disabled={disabled}
+            className="flex w-full text-base box-border p-3 outline-none border-b bg-transparent autofill-transparent"
             {...register(name, validation)}
         />
-        {error && <div>{error.message}</div>}
+        {error && <div className=" absolute -bottom-7">{error.message}</div>}
     </div>
 );

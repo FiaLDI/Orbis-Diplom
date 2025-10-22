@@ -29,7 +29,7 @@ export const Component: React.FC<Props> = ({ chat, isServer }) => {
                 <img
                   src={chat.avatar_url || "/img/icon.png"}
                   alt=""
-                  className="w-20 h-20 lg:w-7 lg:h-7"
+                  className="w-20 h-20 lg:w-7 lg:h-7 object-contain"
                 />
               </div>
             )}
