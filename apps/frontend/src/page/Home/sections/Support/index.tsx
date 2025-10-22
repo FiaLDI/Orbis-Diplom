@@ -29,10 +29,17 @@ export const Support = () => {
         <div className="bg-[rgba(27,30,75,0.3)] " id="support">
             <SectionLayout classListContainer="gap-10 lg:max-w-7xl lg:flex-row">
                 <div className="flex flex-col gap-5 w-full lg:p-5">
-                    <TitleSection><p className="lg:text-left ">Остались вопросы? <br />
-Мы на связи!</p></TitleSection>
+                    <TitleSection>
+                        <p className="lg:text-left ">
+                            Остались вопросы? <br />
+                            Мы на связи!
+                        </p>
+                    </TitleSection>
                     <p className="text-lg ">
-                        Здесь вы можете обратиться за помощью по любому интересующему вас вопросу — будь то настройка сервера, проблемы с аккаунтом или просто совет по использованию платформы. Наша команда и сообщество всегда готовы поддержать вас!
+                        Здесь вы можете обратиться за помощью по любому интересующему вас вопросу —
+                        будь то настройка сервера, проблемы с аккаунтом или просто совет по
+                        использованию платформы. Наша команда и сообщество всегда готовы поддержать
+                        вас!
                     </p>
                 </div>
 
@@ -67,7 +74,6 @@ export const Support = () => {
                             {...register("description", { required: "Required" })}
                         ></textarea>
                         {errors.description && <div>{errors.description.message}</div>}
-                        
                     </div>
 
                     <SubmitButton label="Отправить" />

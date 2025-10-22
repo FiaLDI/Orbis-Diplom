@@ -28,26 +28,17 @@ const userSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addMatcher(
-                userApi.endpoints.getInfoUser.matchFulfilled,
-                (state, action) => {
-                    state.isOpenProfile = true;
-                    state.openProfile = action.payload;
-                    state.loadedProfiles?.push(action.payload);
-                },
-            )
-            .addMatcher(
-                userApi.endpoints.GetChatsUsers.matchFulfilled,
-                (state, action) => {
-                    state.chats = action.payload;
-                },
-            )
+            .addMatcher(userApi.endpoints.getInfoUser.matchFulfilled, (state, action) => {
+                state.isOpenProfile = true;
+                state.openProfile = action.payload;
+                state.loadedProfiles?.push(action.payload);
+            })
+            .addMatcher(userApi.endpoints.GetChatsUsers.matchFulfilled, (state, action) => {
+                state.chats = action.payload;
+            });
     },
 });
 
-export const {
-    setProfile,
-    closeProfile,
-} = userSlice.actions;
+export const { setProfile, closeProfile } = userSlice.actions;
 
 export default userSlice.reducer;

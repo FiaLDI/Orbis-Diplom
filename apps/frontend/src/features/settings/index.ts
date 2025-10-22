@@ -2,4 +2,4 @@ export { default } from "./slice";
 export * from "./api";
 export * from "./types";
 export * from "./components";
-export * from "./hooks"
+export * from "./hooks";

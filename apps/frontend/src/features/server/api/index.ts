@@ -17,7 +17,6 @@ export const serverApi = createApi({
             }
             return headers;
         },
-        
     }),
     tagTypes: ["Servers", "ServerMembers", "Roles"],
     endpoints: (builder) => ({
@@ -48,7 +47,7 @@ export const serverApi = createApi({
             }),
         }),
         DeleteChat: builder.mutation({
-            query: ({id, chatId}) => ({
+            query: ({ id, chatId }) => ({
                 url: `/servers/${id}/chats/${chatId}`,
                 method: "DELETE",
             }),
@@ -68,16 +67,16 @@ export const serverApi = createApi({
         }),
         GetServersRoles: builder.query({
             query: (id) => ({
-            url: `/servers/${id}/roles`,
-            method: "GET",
+                url: `/servers/${id}/roles`,
+                method: "GET",
             }),
             providesTags: (result, error, id) =>
-            result
-                ? [
-                    ...result.map((role: any) => ({ type: "Roles" as const, id: role.id })),
-                    { type: "Roles", id: "LIST" },
-                ]
-                : [{ type: "Roles", id: "LIST" }],
+                result
+                    ? [
+                          ...result.map((role: any) => ({ type: "Roles" as const, id: role.id })),
+                          { type: "Roles", id: "LIST" },
+                      ]
+                    : [{ type: "Roles", id: "LIST" }],
         }),
         GetPermissions: builder.query({
             query: () => ({
@@ -100,17 +99,17 @@ export const serverApi = createApi({
         }),
         CreateRole: builder.mutation({
             query: ({ id, data }) => ({
-            url: `/servers/${id}/roles`,
-            method: "POST",
-            body: data,
+                url: `/servers/${id}/roles`,
+                method: "POST",
+                body: data,
             }),
             invalidatesTags: [{ type: "Roles", id: "LIST" }],
         }),
-         UpdateServerRole: builder.mutation({
+        UpdateServerRole: builder.mutation({
             query: ({ serverId, roleId, data }) => ({
-            url: `/servers/${serverId}/roles/${roleId}`,
-            method: "PATCH",
-            body: data,
+                url: `/servers/${serverId}/roles/${roleId}`,
+                method: "PATCH",
+                body: data,
             }),
             invalidatesTags: (result, error, { serverId }) => [
                 { type: "Roles", id: "LIST" },
@@ -126,7 +125,7 @@ export const serverApi = createApi({
                 { type: "Roles", id: "LIST" },
                 { type: "ServerMembers", id: serverId },
             ],
-            }),
+        }),
 
         AssignRoleToMember: builder.mutation({
             query: ({ serverId, userId, roleId }) => ({

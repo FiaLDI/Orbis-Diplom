@@ -6,7 +6,7 @@ export interface server {
     name: string;
     chats: chat[];
     users: fastUserInfo[];
-    roles: any
+    roles: any;
 }
 
 export interface serverState {
@@ -17,5 +17,5 @@ export interface serverState {
     messegerChange?: boolean;
     userChange?: boolean;
     isSettingsActive?: boolean;
-    allPermission?: permission[]
+    allPermission?: permission[];
 }

@@ -1,4 +1,4 @@
 export interface ChatListProps {
-  isServer?: boolean;
-  search?: string;
+    isServer?: boolean;
+    search?: string;
 }

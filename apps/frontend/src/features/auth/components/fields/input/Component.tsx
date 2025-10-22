@@ -1,9 +1,6 @@
 import React from "react";
-import {
-    FieldValues,
-} from "react-hook-form";
+import { FieldValues } from "react-hook-form";
 import { InputFieldProps } from "./interface";
-
 
 export const InputField = <T extends FieldValues>({
     type,

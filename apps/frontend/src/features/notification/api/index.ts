@@ -20,44 +20,44 @@ export const notificationApi = createApi({
     }),
     tagTypes: ["Notification"],
     endpoints: (builder) => ({
-    getNotifications: builder.query<any[], void>({
-      query: () => "/notifications",
-      providesTags: ["Notification"],
+        getNotifications: builder.query<any[], void>({
+            query: () => "/notifications",
+            providesTags: ["Notification"],
+        }),
+        markNotificationRead: builder.mutation<void, number>({
+            query: (id) => ({
+                url: `/notifications/${id}/read`,
+                method: "PUT",
+            }),
+            invalidatesTags: ["Notification"],
+        }),
+        deleteNotification: builder.mutation<void, number>({
+            query: (id) => ({
+                url: `/notifications/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["Notification"],
+        }),
+        subscribePush: builder.mutation<void, any>({
+            query: (data) => ({
+                url: `/notifications/subscribe`,
+                method: "POST",
+                body: data,
+            }),
+        }),
+        unsubscribePush: builder.mutation<void, number>({
+            query: (id) => ({
+                url: `/notifications/unsubscribe/${id}`,
+                method: "DELETE",
+            }),
+        }),
     }),
-    markNotificationRead: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/notifications/${id}/read`,
-        method: "PUT",
-      }),
-      invalidatesTags: ["Notification"],
-    }),
-    deleteNotification: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/notifications/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Notification"],
-    }),
-    subscribePush: builder.mutation<void, any>({
-      query: (data) => ({
-        url: `/notifications/subscribe`,
-        method: "POST",
-        body: data,
-      }),
-    }),
-    unsubscribePush: builder.mutation<void, number>({
-      query: (id) => ({
-        url: `/notifications/unsubscribe/${id}`,
-        method: "DELETE",
-      }),
-    }),
-  }),
 });
 
 export const {
-  useGetNotificationsQuery,
-  useMarkNotificationReadMutation,
-  useDeleteNotificationMutation,
-  useSubscribePushMutation,
-  useUnsubscribePushMutation,
+    useGetNotificationsQuery,
+    useMarkNotificationReadMutation,
+    useDeleteNotificationMutation,
+    useSubscribePushMutation,
+    useUnsubscribePushMutation,
 } = notificationApi;

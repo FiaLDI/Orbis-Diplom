@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { ModalInput, ModalLayout } from "@/shared/ui";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import {
-    useLazyGetUserbyNameQuery,
-    useStartChattingMutation,
-} from "@/features/user";
+import { useLazyGetUserbyNameQuery, useStartChattingMutation } from "@/features/user";
 import { ModalButton } from "@/shared/ui";
 import { useSendRequestMutation } from "../../..";
 import { CirclePlus, X } from "lucide-react";
@@ -16,8 +13,7 @@ export const Component: React.FC = () => {
     const { t } = useTranslation("friends");
     const [find, setFind] = useState<string>("");
     const timerRef = useRef<NodeJS.Timeout>();
-    const [trigger, { data, isSuccess: isSuccessSearch }] =
-        useLazyGetUserbyNameQuery();
+    const [trigger, { data, isSuccess: isSuccessSearch }] = useLazyGetUserbyNameQuery();
     const myid = useAppSelector((s) => s.auth.user?.info.id);
     const [startChatting, { isSuccess: isSuccessChat, isError: isErrorChat }] =
         useStartChattingMutation();
@@ -49,67 +45,82 @@ export const Component: React.FC = () => {
 
     return (
         <>
-        <button onClick={() => {setOpen(true)}} className="cursor-pointer">
-            <CirclePlus color="white" className="w-15 h-15 lg:w-8 lg:h-8" strokeWidth={"1.25"}/>
-        </button>
-        <ModalLayout open={open} onClose={()=>{ setOpen(false)}}>
-            <div
-                className=" text-white flex flex-col gap-5 w-[600px]"
+            <button
+                onClick={() => {
+                    setOpen(true);
+                }}
+                className="cursor-pointer"
             >
-                <div className="bg-background w-full rounded flex items-center justify-baseline p-5">
-                    <h2 className="w-full text-2xl">{t("search")}</h2>
-                    <button className="cursor-pointer p-0 w-fit" onClick={()=> {setOpen(false)}}><X /></button>
-                </div>
-                <div className="p-5 w-full flex flex-col gap-5 bg-foreground">
-                <ModalInput
-                    change={handleChange}
-                    value={find}
-                    placeHolder={t("placeholder")}
+                <CirclePlus
+                    color="white"
+                    className="w-15 h-15 lg:w-8 lg:h-8"
+                    strokeWidth={"1.25"}
                 />
-                <ul className="">
-                    <h3 className="text-5xl lg:text-2xl border-b border-b-[#ffffff3a]">
-                        {t("result")}
-                    </h3>
-                    {data &&
-                        data.map((val: any, idx: number) => {
-                            if (val.id == myid) return null;
-                            return (
-                                <li
-                                    key={`seatch-user-${idx}`}
-                                    className="flex gap-10 bg-[#4a55e9] p-3 justify-between"
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <img
-                                            src={val.user_profile.avatar_url || "/img/icon.png"}
-                                            alt=""
-                                            className="w-15 h-15 lg:w-10 lg:h-10"
-                                        />
-                                        <span className="text-3xl lg:text-base">
-                                            {val.username}
-                                        </span>
-                                    </div>
-                                    <div className="flex gap-5 ">
-                                        <ModalButton
-                                            handler={() =>
-                                                startChatting(val.id)
-                                            }
+            </button>
+            <ModalLayout
+                open={open}
+                onClose={() => {
+                    setOpen(false);
+                }}
+            >
+                <div className=" text-white flex flex-col gap-5 w-[600px]">
+                    <div className="bg-background w-full rounded flex items-center justify-baseline p-5">
+                        <h2 className="w-full text-2xl">{t("search")}</h2>
+                        <button
+                            className="cursor-pointer p-0 w-fit"
+                            onClick={() => {
+                                setOpen(false);
+                            }}
+                        >
+                            <X />
+                        </button>
+                    </div>
+                    <div className="p-5 w-full flex flex-col gap-5 bg-foreground">
+                        <ModalInput
+                            change={handleChange}
+                            value={find}
+                            placeHolder={t("placeholder")}
+                        />
+                        <ul className="">
+                            <h3 className="text-5xl lg:text-2xl border-b border-b-[#ffffff3a]">
+                                {t("result")}
+                            </h3>
+                            {data &&
+                                data.map((val: any, idx: number) => {
+                                    if (val.id == myid) return null;
+                                    return (
+                                        <li
+                                            key={`seatch-user-${idx}`}
+                                            className="flex gap-10 bg-[#4a55e9] p-3 justify-between"
                                         >
-                                            {t("modal.message")}
-                                        </ModalButton>
-                                        <ModalButton
-                                            handler={() => inviteFriend(val.id)}
-                                        >
-                                            {t("modal.addfriend")}
-                                        </ModalButton>
-                                    </div>
-                                </li>
-                            );
-                        })}
-                </ul>
-            </div>
-            </div>
-        </ModalLayout>
+                                            <div className="flex items-center gap-2">
+                                                <img
+                                                    src={
+                                                        val.user_profile.avatar_url ||
+                                                        "/img/icon.png"
+                                                    }
+                                                    alt=""
+                                                    className="w-15 h-15 lg:w-10 lg:h-10"
+                                                />
+                                                <span className="text-3xl lg:text-base">
+                                                    {val.username}
+                                                </span>
+                                            </div>
+                                            <div className="flex gap-5 ">
+                                                <ModalButton handler={() => startChatting(val.id)}>
+                                                    {t("modal.message")}
+                                                </ModalButton>
+                                                <ModalButton handler={() => inviteFriend(val.id)}>
+                                                    {t("modal.addfriend")}
+                                                </ModalButton>
+                                            </div>
+                                        </li>
+                                    );
+                                })}
+                        </ul>
+                    </div>
+                </div>
+            </ModalLayout>
         </>
     );
 };
-

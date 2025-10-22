@@ -1,10 +1,4 @@
-import {
-    UseFormRegister,
-    FieldError,
-    FieldValues,
-    RegisterOptions,
-    Path,
-} from "react-hook-form";
+import { UseFormRegister, FieldError, FieldValues, RegisterOptions, Path } from "react-hook-form";
 
 export interface InputFieldProps<T extends FieldValues> {
     type: string;

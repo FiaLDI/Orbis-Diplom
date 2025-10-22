@@ -1,11 +1,10 @@
-
 export interface issueState {
     openProjectId: number | null;
     project: any;
     issues: any;
     statuses: {
         name: Statuses;
-        id: number
+        id: number;
     }[];
     priorities: Priorities[];
     issueMode: boolean;

@@ -1,6 +1,5 @@
-
 export interface ChatEditFormProps {
-  initialData: any;
-  onClose: () => void;
-  onSave: () => void;
+    initialData: any;
+    onClose: () => void;
+    onSave: () => void;
 }

@@ -11,45 +11,44 @@ export const Component: React.FC = () => {
     const check = useAppSelector((s) => s.user.isOpenProfile);
     const [open, setOpen] = useState<boolean>(false);
 
-    useEffect(()=> {
+    useEffect(() => {
         if (check) {
-            setOpen(true)
+            setOpen(true);
         }
-    }, [check])
+    }, [check]);
 
     return (
-        <ModalLayout 
-            onClose={()=> {
+        <ModalLayout
+            onClose={() => {
                 dispatch(closeProfile());
-                setOpen(prev => !prev)}} 
-                open={open}
-            >
-            <div 
-                className="text-white h-[600px] w-[600px] overflow-hidden"
-            >
-                <div 
-                    className="bg-background w-full rounded flex items-center justify-baseline p-5"
-                >
+                setOpen((prev) => !prev);
+            }}
+            open={open}
+        >
+            <div className="text-white h-[600px] w-[600px] overflow-hidden">
+                <div className="bg-background w-full rounded flex items-center justify-baseline p-5">
                     <div className="w-full">Profile {userInfo?.username}</div>
-                    <button 
-                        className="cursor-pointer p-0 w-fit" 
-                        onClick={()=> {
+                    <button
+                        className="cursor-pointer p-0 w-fit"
+                        onClick={() => {
                             dispatch(closeProfile());
-                            setOpen(prev => !prev)
-                        }}>
-                            <X />
+                            setOpen((prev) => !prev);
+                        }}
+                    >
+                        <X />
                     </button>
                 </div>
                 <div className="flex p-5  w-full flex-col gap-10">
                     <div className="flex items-end gap-5 text-base">
                         <div className="">
-                            <img 
-                                className="h-15 w-15 shrink-0 rounded-2xl" 
+                            <img
+                                className="h-15 w-15 shrink-0 rounded-2xl"
                                 src={
-                                    (userInfo && userInfo.avatar_url) ? 
-                                    userInfo?.avatar_url : 
-                                    "/img/icon.png"} 
-                                />
+                                    userInfo && userInfo.avatar_url
+                                        ? userInfo?.avatar_url
+                                        : "/img/icon.png"
+                                }
+                            />
                             <span></span>
                         </div>
                         <div className="truncate ">{userInfo?.username}</div>
@@ -57,9 +56,7 @@ export const Component: React.FC = () => {
                     <div className="flex justify-between gap-10">
                         <button
                             data-active={infoStage === 0}
-                            className={
-                                "px-5 py-2 bg-background/70 data-[active]:bg-background" 
-                            }
+                            className={"px-5 py-2 bg-background/70 data-[active]:bg-background"}
                             onClick={() => setInfoStage(0)}
                         >
                             About
@@ -73,4 +70,3 @@ export const Component: React.FC = () => {
         </ModalLayout>
     );
 };
-

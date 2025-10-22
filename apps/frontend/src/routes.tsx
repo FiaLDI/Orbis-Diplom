@@ -4,7 +4,7 @@ import { Layout } from "@/page/Home/components/Layout/Layout";
 import { useAppSelector } from "@/app/hooks";
 import { Component as HomePage } from "@/page/Home/index";
 import { Component as PoliticalPage } from "@/page/Political";
-import { Component as AuthPage} from "@/page/Auth";
+import { Component as AuthPage } from "@/page/Auth";
 import { Component as CommunicatePage } from "@/page/Communicate";
 import { Component as SettingAppPage } from "./page/Settings";
 import { useRefreshTokenMutation } from "@/features/auth";
@@ -12,12 +12,11 @@ import { ProtectedRoute } from "./utils/auth";
 import { LoadingSpinner } from "@/shared";
 
 export const PagesRouter: React.FC = () => {
-    const isAuth =
-        useAppSelector((state) => state.auth.isAuthenticated) || false;
+    const isAuth = useAppSelector((state) => state.auth.isAuthenticated) || false;
     const [refresh] = useRefreshTokenMutation({});
     const [isRefreshing, setIsRefreshing] = useState<boolean>(true);
 
-     const refreshToken = async () => {
+    const refreshToken = async () => {
         try {
             await refresh({}).unwrap();
         } catch (error) {

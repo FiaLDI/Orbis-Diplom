@@ -4,7 +4,7 @@ import { Component as ChatItem } from "./chatitem";
 import { chat } from "@/features/chat";
 import { ChatListProps } from "./inteface";
 
-export const Component: React.FC<ChatListProps> = ({isServer, search}) => {
+export const Component: React.FC<ChatListProps> = ({ isServer, search }) => {
     const personalChats = useAppSelector((state) => state.user.chats);
     const serverChats = useAppSelector((state) => state.server.activeserver?.chats);
 
@@ -12,17 +12,18 @@ export const Component: React.FC<ChatListProps> = ({isServer, search}) => {
 
     const filteredPersonal = useMemo(() => {
         if (!personalChats) return [];
-        
-        return personalChats.filter((c) =>
-        c.name?.toLowerCase().includes(normalizedSearch.toLowerCase()) ||
-        c.username?.toLowerCase().includes(normalizedSearch.toLowerCase())
+
+        return personalChats.filter(
+            (c) =>
+                c.name?.toLowerCase().includes(normalizedSearch.toLowerCase()) ||
+                c.username?.toLowerCase().includes(normalizedSearch.toLowerCase())
         );
     }, [personalChats, normalizedSearch]);
 
     const filteredServer = useMemo(() => {
         if (!serverChats) return [];
         return serverChats.filter((c) =>
-        c.name?.toLowerCase().includes(normalizedSearch.toLowerCase())
+            c.name?.toLowerCase().includes(normalizedSearch.toLowerCase())
         );
     }, [serverChats, normalizedSearch]);
 

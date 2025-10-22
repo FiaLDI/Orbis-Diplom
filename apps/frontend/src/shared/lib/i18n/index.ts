@@ -5,17 +5,16 @@ import { loadLocales } from "./utils";
 
 const resources = loadLocales();
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources,
-    fallbackLng: "en",
-    interpolation: { escapeValue: false },
-    detection: {
-      order: ["localStorage", "navigator"],
-      caches: ["localStorage"],
-    },
-  });
+i18n.use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+        resources,
+        fallbackLng: "en",
+        interpolation: { escapeValue: false },
+        detection: {
+            order: ["localStorage", "navigator"],
+            caches: ["localStorage"],
+        },
+    });
 
 export default i18n;

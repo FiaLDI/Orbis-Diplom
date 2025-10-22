@@ -1,18 +1,14 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { MenuNotification } from "@/features/notification";
-import {
-    CreateServerForm,
-    setActiveServer,
-    useGetServersQuery,
-} from "@/features/server";
+import { CreateServerForm, setActiveServer, useGetServersQuery } from "@/features/server";
 import { Bolt, UserRound } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Props } from "./interface";
 import { setActiveChat } from "@/features/chat";
 
-export const Component: React.FC<Props> = ({socket, notificationConnect}) => {
-    const avatarUrl = useAppSelector(s => s.auth.user?.info.avatar_url);
+export const Component: React.FC<Props> = ({ socket, notificationConnect }) => {
+    const avatarUrl = useAppSelector((s) => s.auth.user?.info.avatar_url);
     const {} = useGetServersQuery({});
     const dispatch = useAppDispatch();
     const navigator = useNavigate();
@@ -29,8 +25,11 @@ export const Component: React.FC<Props> = ({socket, notificationConnect}) => {
                             }}
                             className="cursor-pointer"
                         >
-                            <img src={avatarUrl ? avatarUrl : "/img/icon.png"} alt="" className="w-6 h-6 transition-transform hover:scale-110"/>
-                               
+                            <img
+                                src={avatarUrl ? avatarUrl : "/img/icon.png"}
+                                alt=""
+                                className="w-6 h-6 transition-transform hover:scale-110"
+                            />
                         </button>
                     </div>
                     <div className="flex gap-2 flex-col justify-center">
@@ -42,15 +41,8 @@ export const Component: React.FC<Props> = ({socket, notificationConnect}) => {
                                 >
                                     <button
                                         onClick={async () => {
-                                            if (
-                                                server.activeserver?.id ==
-                                                val.id
-                                            )
-                                                return;
-                                            socket?.emit(
-                                                "leave-server",
-                                                server.activeserver?.id,
-                                            );
+                                            if (server.activeserver?.id == val.id) return;
+                                            socket?.emit("leave-server", server.activeserver?.id);
                                             dispatch(setActiveServer(val));
 
                                             socket?.emit("join-server", val.id);
@@ -66,30 +58,32 @@ export const Component: React.FC<Props> = ({socket, notificationConnect}) => {
                     </div>
                 </div>
                 <div className="flex flex-col gap-5">
-                        <button 
-                            className=" cursor-pointer"
-                            onClick={() => {
-                                dispatch(setActiveChat(undefined));
-                                dispatch(setActiveServer(undefined));
-                            }}>
-                            <UserRound
-                                color="#fff"
-                                strokeWidth={1.25}
-                                className="w-6 h-6 transition-transform hover:scale-110" />
-                            </button>
-                        <MenuNotification connected={notificationConnect} />
-                        <button
-                            className=" cursor-pointer"
-                            onClick={() => {
-                                navigator("/app/settings");
-                            }}
-                        >
-                            <Bolt 
-                                color="#fff"
-                                strokeWidth={1.25}
-                                className="w-6 h-6 transition-transform hover:scale-110"
-                            />
-                        </button>
+                    <button
+                        className=" cursor-pointer"
+                        onClick={() => {
+                            dispatch(setActiveChat(undefined));
+                            dispatch(setActiveServer(undefined));
+                        }}
+                    >
+                        <UserRound
+                            color="#fff"
+                            strokeWidth={1.25}
+                            className="w-6 h-6 transition-transform hover:scale-110"
+                        />
+                    </button>
+                    <MenuNotification connected={notificationConnect} />
+                    <button
+                        className=" cursor-pointer"
+                        onClick={() => {
+                            navigator("/app/settings");
+                        }}
+                    >
+                        <Bolt
+                            color="#fff"
+                            strokeWidth={1.25}
+                            className="w-6 h-6 transition-transform hover:scale-110"
+                        />
+                    </button>
                 </div>
             </div>
         </>
