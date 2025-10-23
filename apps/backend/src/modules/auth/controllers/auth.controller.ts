@@ -70,11 +70,11 @@ export const verifyCode = async (req: Request, res: Response) => {
 
 export const register = async (req: Request, res: Response) => {
     try {
-        const { email, password, display_name, username, birth_date } =
+        const { email, password, username, birth_date } =
             req.body;
 
         // Валидация обязательных полей
-        if (!email || !password || !display_name || !username || !birth_date) {
+        if (!email || !password || !username || !birth_date) {
             return res.status(400).json({ error: "All fields are required" });
         }
 

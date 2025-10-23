@@ -1,0 +1,28 @@
+{
+    "login": {
+        "title": "Войти в аккаунт",
+        "email": "Почта",
+        "password": "Пароль",
+        "register": "Нет аккаунта",
+        "submit": "Войти"
+    },
+    "register": {
+        "email": {
+            "title": "Начать регистрацию",
+            "placeholder": "Почта",
+            "submit": "Отправить код"
+        },
+        "code": {
+            "placeholder": "Введите код",
+            "submit": "Начать регистрацию"
+        },
+        "register": {
+            "title": "Регистрация",
+            "username": "Имя пользователя",
+            "password": "Пароль",
+            "birth_date": "Birth Date",
+            "submit": "Зарегистрироваться"
+        }
+    },
+    "back": "Назад"
+}

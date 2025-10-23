@@ -1,1 +1,1 @@
-export { Component as MenuNotification } from "./menu"
+export { Component as MenuNotification } from "./menu";

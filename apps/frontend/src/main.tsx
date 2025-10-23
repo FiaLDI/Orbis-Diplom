@@ -5,7 +5,7 @@ import { App } from "@/App";
 
 import { store } from "@/app/store";
 import { Provider } from "react-redux";
-// Найдите корневой элемент
+import "@/shared/lib/i18n";
 const rootElement: HTMLElement | null = document.getElementById("root");
 
 // Создайте корень и отрендерьте приложение
@@ -17,6 +17,6 @@ if (rootElement) {
             <Provider store={store}>
                 <App />
             </Provider>
-        </StrictMode>,
+        </StrictMode>
     );
 }

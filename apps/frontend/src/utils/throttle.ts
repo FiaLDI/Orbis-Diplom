@@ -13,7 +13,7 @@ type SocketEventHandler<T> = (data: T) => Promise<void> | void;
 
 export function createSocketThrottler<T>(
     handler: SocketEventHandler<T>,
-    delay: number,
+    delay: number
 ): SocketEventHandler<T> {
     let pendingData: T | null = null;
     let isProcessing = false;
@@ -45,7 +45,7 @@ interface ThrottleOptions {
 export const throttle = <T extends (...args: any[]) => any>(
     func: T,
     wait: number,
-    options: { leading?: boolean; trailing?: boolean } = {},
+    options: { leading?: boolean; trailing?: boolean } = {}
 ): T & { cancel: () => void } => {
     let timeout: ReturnType<typeof setTimeout> | null = null;
     let lastArgs: Parameters<T> | null = null;
@@ -59,10 +59,7 @@ export const throttle = <T extends (...args: any[]) => any>(
             call();
         } else if (options.trailing !== false) {
             if (timeout) clearTimeout(timeout);
-            timeout = setTimeout(
-                call,
-                Math.max(0, wait - (now - lastCallTime)),
-            );
+            timeout = setTimeout(call, Math.max(0, wait - (now - lastCallTime)));
         }
     };
 

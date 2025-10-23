@@ -28,7 +28,7 @@ export const Start = () => {
                             <li>Ищи друзей</li>
                         </ul>
                     </div>
-                </div >
+                </div>
                 <div
                     className=" flex justify-center items-center gap-10 flex-col
                     "
@@ -63,11 +63,7 @@ export const Start = () => {
                                 </g>
                                 <defs>
                                     <clipPath id="clip0_2657_2">
-                                        <rect
-                                            width="60"
-                                            height="60"
-                                            fill="white"
-                                        />
+                                        <rect width="60" height="60" fill="white" />
                                     </clipPath>
                                 </defs>
                             </svg>

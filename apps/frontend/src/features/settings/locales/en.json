@@ -1,0 +1,102 @@
+{
+    "menu": {
+        "account": {
+            "title": "Account",
+            "form": {
+                "field": {
+                    "username": {
+                        "label":"Username",
+                        "placeholder": "Enter username"
+                    },
+                    "email": {
+                        "label":"Email",
+                        "placeholder": "Enter new email"
+                    },
+                    "password":  {
+                        "label":"Password",
+                        "placeholder": "Enter new password"
+                    },
+                    "number": {
+                        "label":"Number",
+                        "placeholder": "Enter phone number"
+                    }
+                },
+                "submit": "Save changed",
+                "loading": "Saving..."
+            }
+        },
+        "profile": {
+            "title": "Profile",
+            "form": {
+                "field": {
+                    "avatar": {
+                        "label":"Change photo"
+                    },
+                    "firstname": {
+                        "label":"First name",
+                        "placeholder": "Enter new first name"
+                    },
+                    "secondname":  {
+                        "label":"Second name",
+                        "placeholder": "Enter new second name"
+                    },
+                    "date": {
+                        "label": "Your birth date"
+                    },
+                    "gender": {
+                        "label":"Your gender",
+                        "select": "Gender not selected",
+                        "option": {
+                            "1": "Male",
+                            "2": "Female",
+                            "3": "any"
+                        }
+                    },
+                    "location":  {
+                        "label":"Your from",
+                        "placeholder": "Enter your from"
+                    },
+                    "aboutme":  {
+                        "label":"About me",
+                        "placeholder": "Enter about you"
+                    }
+
+                },
+                "submit": "Save changed",
+                "loading": "Saving..."
+            }
+        },
+        "appearance": {
+            "title": "Appearance",
+            "theme": {
+                "title": "Select theme",
+                "dark": "Dark",
+                "light": "Light",
+                "standart": "Standart"
+            }
+        },
+        "notification": {
+            "title": "Notifications"
+        },
+        "language": {
+            "title": "Language",
+            "label": "Select Language",
+            "ru": "Russian",
+            "en": "English"
+        },
+        "back": {
+            "title": "Back"
+        },
+        "exit": {
+            "title": "Exit"
+        }
+    },
+    "title": {
+        "account": "Account Settings",
+        "profile": "Profile Settings",
+        "appearance": "Appearance Settings",
+        "notification": "Notification Settings",
+        "language": "Language Settings"
+    }
+  
+}

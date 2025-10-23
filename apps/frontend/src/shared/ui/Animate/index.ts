@@ -1,1 +1,1 @@
-export {Component as LoadingSpinner} from "./spinner"
+export { Component as LoadingSpinner } from "./spinner";

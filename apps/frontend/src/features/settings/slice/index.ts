@@ -2,8 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AccountInfo, Language, ProfileInfo, settingsState, Theme } from "../types";
 
 const initialState: settingsState = {
-    theme: "standart",
-    language: "ru",
+    theme: (localStorage.getItem("theme") as Theme) || "standart",
+    language: (localStorage.getItem("i18nextLng") as "ru" | "en") || "ru",
     notification: false,
     accountInfoUpdated: {},
     profileInfoUpdated: {},
@@ -18,10 +18,10 @@ const userSettingsSlice = createSlice({
             if (typeof window !== "undefined") localStorage.setItem("theme", action.payload);
         },
         setLanguage: (state, action: PayloadAction<Language>) => {
-            state.language = action.payload
+            state.language = action.payload;
         },
         setNotification: (state, action: PayloadAction<boolean>) => {
-            state.notification = action.payload
+            state.notification = action.payload;
         },
         setAccountInfo: (state, action: PayloadAction<Partial<AccountInfo>>) => {
             state.accountInfoUpdated = {
@@ -38,12 +38,7 @@ const userSettingsSlice = createSlice({
     },
 });
 
-export const {
-    setAccountInfo,
-    setProfileInfo,
-    setTheme,
-    setLanguage,
-    setNotification
-} = userSettingsSlice.actions;
+export const { setAccountInfo, setProfileInfo, setTheme, setLanguage, setNotification } =
+    userSettingsSlice.actions;
 
 export default userSettingsSlice.reducer;

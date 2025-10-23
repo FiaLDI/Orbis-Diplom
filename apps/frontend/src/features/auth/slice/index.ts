@@ -13,9 +13,7 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        loginStart(
-            state,
-        ) {
+        loginStart(state) {
             state.loading = true;
             state.error = null;
         },
@@ -29,9 +27,7 @@ const authSlice = createSlice({
             state.loading = false;
         },
 
-        registerStart(
-            state,
-        ) {
+        registerStart(state) {
             state.loading = true;
             state.error = null;
         },
@@ -52,64 +48,46 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addMatcher(
-                authApi.endpoints.registerUser.matchPending,
-                (state) => {
-                    state.loading = true;
-                    state.error = null;
-                },
-            )
-            .addMatcher(
-                authApi.endpoints.registerUser.matchRejected,
-                (state, action) => {
-                    state.error = action.error.message || "Ошибка регистрации";
-                    state.loading = false;
-                },
-            )
+            .addMatcher(authApi.endpoints.registerUser.matchPending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addMatcher(authApi.endpoints.registerUser.matchRejected, (state, action) => {
+                state.error = action.error.message || "Ошибка регистрации";
+                state.loading = false;
+            })
             .addMatcher(authApi.endpoints.loginUser.matchPending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addMatcher(
-                authApi.endpoints.loginUser.matchFulfilled,
-                (state, action) => {
-                    state.user = action.payload;
-                    state.isAuthenticated = true;
-                    state.loading = false;
-                },
-            )
-            .addMatcher(
-                authApi.endpoints.loginUser.matchFulfilled,
-                (state, action) => {
-                    state.user = {
+            .addMatcher(authApi.endpoints.loginUser.matchFulfilled, (state, action) => {
+                state.user = action.payload;
+                state.isAuthenticated = true;
+                state.loading = false;
+            })
+            .addMatcher(authApi.endpoints.loginUser.matchFulfilled, (state, action) => {
+                state.user = {
                     access_token: action.payload.access_token,
                     info: action.payload.info,
                     username: action.payload.username,
-                    };
-                    state.isAuthenticated = true;
-                    state.loading = false;
-                },
-                )
-            .addMatcher(
-                authApi.endpoints.logoutUser.matchFulfilled,
-                (state) => {
-                    state.user = null;
-                    state.isAuthenticated = false;
-                    state.loading = false;
-                },
-            )
-            .addMatcher(
-                authApi.endpoints.refreshToken.matchFulfilled,
-                (state, action) => {
-                    state.user = {
+                };
+                state.isAuthenticated = true;
+                state.loading = false;
+            })
+            .addMatcher(authApi.endpoints.logoutUser.matchFulfilled, (state) => {
+                state.user = null;
+                state.isAuthenticated = false;
+                state.loading = false;
+            })
+            .addMatcher(authApi.endpoints.refreshToken.matchFulfilled, (state, action) => {
+                state.user = {
                     access_token: action.payload.access_token,
                     info: action.payload.info,
                     username: action.payload.username,
-                    };
-                    state.isAuthenticated = true;
-                    state.loading = false;
-                }
-            )
+                };
+                state.isAuthenticated = true;
+                state.loading = false;
+            });
     },
 });
 

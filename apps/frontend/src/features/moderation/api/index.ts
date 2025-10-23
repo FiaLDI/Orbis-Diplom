@@ -1,8 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { config } from "@/config";
 
-
-
 export const moderationApi = createApi({
     reducerPath: "moderationApi",
     baseQuery: fetchBaseQuery({
@@ -19,51 +17,50 @@ export const moderationApi = createApi({
             }
             return headers;
         },
-        
     }),
     tagTypes: ["AuditLogs"],
     endpoints: (builder) => ({
-      getAuditLogs: builder.query<any[], { serverId?: number }>({
-  query: ({ serverId }) =>
-    serverId ? `/moderation/${serverId}/logs` : `/moderation/logs`,
-  providesTags: (r) => (r ? [{ type: "AuditLogs", id: "LIST" }] : []),
-}),
-        
-    // Модерация
-    banUser: builder.mutation<void, { serverId: number; userId: number; reason?: string }>({
-      query: ({ serverId, userId, reason }) => ({
-        url: `/moderation/servers/${serverId}/ban/${userId}`,
-        method: "POST",
-        body: { reason },
-      }),
-      invalidatesTags: [{ type: "AuditLogs", id: "LIST" }],
-    }),
+        getAuditLogs: builder.query<any[], { serverId?: number }>({
+            query: ({ serverId }) =>
+                serverId ? `/moderation/${serverId}/logs` : `/moderation/logs`,
+            providesTags: (r) => (r ? [{ type: "AuditLogs", id: "LIST" }] : []),
+        }),
 
-    unbanUser: builder.mutation<void, { serverId: number; userId: number }>({
-      query: ({ serverId, userId }) => ({
-        url: `/moderation/servers/${serverId}/ban/${userId}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: [{ type: "AuditLogs", id: "LIST" }],
-    }),
+        // Модерация
+        banUser: builder.mutation<void, { serverId: number; userId: number; reason?: string }>({
+            query: ({ serverId, userId, reason }) => ({
+                url: `/moderation/servers/${serverId}/ban/${userId}`,
+                method: "POST",
+                body: { reason },
+            }),
+            invalidatesTags: [{ type: "AuditLogs", id: "LIST" }],
+        }),
 
-    kickUser: builder.mutation<void, { serverId: number; userId: number }>({
-      query: ({ serverId, userId }) => ({
-        url: `/moderation/servers/${serverId}/kick/${userId}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: [{ type: "AuditLogs", id: "LIST" }],
-    }),
-    getBannedUsers: builder.query<any[], number>({
-  query: (serverId) => `/moderation/servers/${serverId}/banned`,
-}),
+        unbanUser: builder.mutation<void, { serverId: number; userId: number }>({
+            query: ({ serverId, userId }) => ({
+                url: `/moderation/servers/${serverId}/ban/${userId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: [{ type: "AuditLogs", id: "LIST" }],
+        }),
+
+        kickUser: builder.mutation<void, { serverId: number; userId: number }>({
+            query: ({ serverId, userId }) => ({
+                url: `/moderation/servers/${serverId}/kick/${userId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: [{ type: "AuditLogs", id: "LIST" }],
+        }),
+        getBannedUsers: builder.query<any[], number>({
+            query: (serverId) => `/moderation/servers/${serverId}/banned`,
+        }),
     }),
 });
 
 export const {
-  useGetAuditLogsQuery,
-  useBanUserMutation,
-  useUnbanUserMutation,
-  useKickUserMutation,
-  useGetBannedUsersQuery 
+    useGetAuditLogsQuery,
+    useBanUserMutation,
+    useUnbanUserMutation,
+    useKickUserMutation,
+    useGetBannedUsersQuery,
 } = moderationApi;

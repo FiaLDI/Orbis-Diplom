@@ -3,13 +3,17 @@ import react from "@vitejs/plugin-react";
 import fs from "fs";
 import path from "path";
 import tailwindcss from '@tailwindcss/vite'
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const socketServerUrl =
     process.env.VITE_MEDIA_SERVICE_SERVER_URL || "https://26.234.138.233:3007";
 
 export default defineConfig({
-    plugins: [tailwindcss(), react()],
+    plugins: [react()],
+
     server: {
         host: '0.0.0.0',
         port: 5173,

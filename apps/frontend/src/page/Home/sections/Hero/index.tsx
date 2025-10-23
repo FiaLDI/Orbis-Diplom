@@ -15,8 +15,8 @@ export const HeroSection = () => {
                 </h1>
                 <p className="text-3xl my-10 lg:text-3xl max-w-[600px]">
                     Общайтесь, сотрудничайте и создавайте проекты вместе <br />
-                        Даже на расстоянии планет, <br />
-                        ORBIS держит вашу команду на связи.
+                    Даже на расстоянии планет, <br />
+                    ORBIS держит вашу команду на связи.
                 </p>
                 <div className="flex items-center justify-center my-20 lg:my-5">
                     {window.innerWidth < 1199 ? (
@@ -62,10 +62,16 @@ export const HeroSection = () => {
                     )}
                 </div>
                 <div className="flex flex-col gap-10 w-full justify-center items-center lg:flex-row ">
-                    <ButtonHome buttonclass="lg:!py-2 lg:text-2xl lg:w-1/3" handler={()=>navigator("/login")}>
+                    <ButtonHome
+                        buttonclass="lg:!py-2 lg:text-2xl lg:w-1/3"
+                        handler={() => navigator("/login")}
+                    >
                         Загрузить
                     </ButtonHome>
-                    <ButtonHome buttonclass="lg:!py-2 lg:text-2xl lg:w-1/3" handler={()=>navigator("/login")}>
+                    <ButtonHome
+                        buttonclass="lg:!py-2 lg:text-2xl lg:w-1/3"
+                        handler={() => navigator("/login")}
+                    >
                         Открыть в браузере
                     </ButtonHome>
                 </div>

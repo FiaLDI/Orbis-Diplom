@@ -11,24 +11,21 @@ const chatSlice = createSlice({
         setActiveChat(state, action: PayloadAction<chat | undefined>) {
             state.activeChat = action.payload;
         },
-        
     },
     extraReducers: (builder) => {
         builder.addMatcher(
-        chatApi.endpoints.updateChat.matchFulfilled,
-        (state: any, action: any) => {
-            console.log(action.payload);
-            state.activeChat = 
-                {
+            chatApi.endpoints.updateChat.matchFulfilled,
+            (state: any, action: any) => {
+                console.log(action.payload);
+                state.activeChat = {
                     ...state.activeChat,
-                    name: action.payload.name
-                }
-        })
-    }
+                    name: action.payload.name,
+                };
+            }
+        );
+    },
 });
 
-export const {
-    setActiveChat,
-} = chatSlice.actions;
+export const { setActiveChat } = chatSlice.actions;
 
 export default chatSlice.reducer;

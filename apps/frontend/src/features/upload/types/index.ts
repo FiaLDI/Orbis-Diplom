@@ -1,18 +1,17 @@
 export interface UploadResponse {
-  uploaded: string[];
+    uploaded: string[];
 }
 
 export interface UploadFileState {
-  name: string;
-  progress: number;
-  url?: string;
-  error?: string;
+    name: string;
+    progress: number;
+    url?: string;
+    error?: string;
 }
 
 export interface UploadState {
-  files: UploadFileState[];
-  overallProgress: number;
-  loading: boolean;
-  error?: string;
+    files: UploadFileState[];
+    overallProgress: number;
+    loading: boolean;
+    error?: string;
 }
-

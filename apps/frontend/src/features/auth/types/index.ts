@@ -18,13 +18,13 @@ export interface UserData {
 }
 
 export interface ProfileInfo {
-  first_name?: string;
-  last_name?: string;
-  birth_date?: string;
-  avatar_url?: string;
-  gender?: string;
-  location?: string;
-  about?: string;
+    first_name?: string;
+    last_name?: string;
+    birth_date?: string;
+    avatar_url?: string;
+    gender?: string;
+    location?: string;
+    about?: string;
 }
 
 export interface AuthState {

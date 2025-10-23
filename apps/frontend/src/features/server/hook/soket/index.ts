@@ -1,1 +1,1 @@
-export * from "./useServerJournalSocket"
+export * from "./useServerJournalSocket";

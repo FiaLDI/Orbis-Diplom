@@ -1,0 +1,23 @@
+{
+    "search": "Search users",
+    "placeholder": "Enter name",
+    "result": "Result: ",
+    "modal": {
+        "message": "Message",
+        "addfriend": "Add friend"
+    },
+    "action": {
+        "startchat": "Start chat",
+        "deletefriend": "Delete from friend",
+        "unblock": "Unblock",
+        "block": "Block"
+    },
+    "option": {
+        "all": "All Friends",
+        "online": "Online Friends",
+        "offline": "Offline Friends",
+        "sent": "Sent Invites",
+        "recive": "Received Invites",
+        "block": "Blocked Friends"
+    }
+}

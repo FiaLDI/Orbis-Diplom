@@ -4,7 +4,7 @@ import { Props } from "./interface";
 export const Component: React.FC<Props> = ({ children, handler }) => {
     return (
         <button
-            className="bg-[#1f4de4] pl-5 pr-5 text-4xl  lg:text-base "
+            className="bg-background p-3 px-10 w-fit lg:text-base rounded-2xl "
             onClick={() => handler()}
         >
             {children}

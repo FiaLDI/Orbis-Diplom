@@ -12,7 +12,9 @@ export const ShowCase = () => {
                     <br />
                     ОБЩЕНИЕ - ВСЁ ЗДЕСЬ!
                 </TitleSection>
-                <div className=""><img src="/img/preview.png" alt="" /></div>
+                <div className="">
+                    <img src="/img/preview.png" alt="" />
+                </div>
             </SectionLayout>
         </div>
     );

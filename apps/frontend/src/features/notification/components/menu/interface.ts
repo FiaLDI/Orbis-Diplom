@@ -1,4 +1,3 @@
-
-export interface Props{
-    connected: boolean
+export interface Props {
+    connected: boolean;
 }

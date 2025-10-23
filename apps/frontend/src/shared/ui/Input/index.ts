@@ -1,1 +1,1 @@
-export { Component as ModalInput } from "./modal"
+export { Component as ModalInput } from "./modal";
