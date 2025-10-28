@@ -3,6 +3,7 @@ import { PagesRouter } from "@/routes";
 import { useAutoRefreshToken } from "./features/auth/hooks/useAutoRefreshToken";
 import { useApplyTheme } from "@/features/settings";
 import { useAppSelector } from "./app/hooks";
+import { ToastContainer } from "@/features/toast"
 
 export const App: React.FC = () => {
     const theme = useAppSelector((s) => s.settings.theme);
@@ -24,6 +25,7 @@ export const App: React.FC = () => {
 
     return (
         <>
+            <ToastContainer />
             <div
                 className={`${getBackgroundClass()} fixed w-full h-full -z-50 overflow-hidden bg-cover bg-no-repeat`}
             ></div>

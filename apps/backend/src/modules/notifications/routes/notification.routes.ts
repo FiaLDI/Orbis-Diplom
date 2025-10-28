@@ -5,7 +5,7 @@ import {
   deleteNotification,
   subscribePush,
   unsubscribePush,
-} from "../controllers/notifications.controller";
+} from "../controllers/notifications.controller.old";
 import { authenticate } from "@/modules/auth";
 
 export const notificationRouter = Router();

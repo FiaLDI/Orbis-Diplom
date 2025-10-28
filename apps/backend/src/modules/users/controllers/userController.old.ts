@@ -21,14 +21,13 @@ export const getUserById = async (req: Request, res: Response) => {
     const user = await prisma.users.findUnique({
       where: { id },
       include: {
-        user_profile: true,       // 🔹 добавили профиль
-        user_preferences: true,   // если нужны настройки
+        user_profile: true,
+        user_preferences: true,
       },
     });
 
     if (!user) return res.sendStatus(404);
 
-    // 🔹 Делаем плоский объект (удобно для фронта)
     res.json({
       id: user.id,
       email: user.email,

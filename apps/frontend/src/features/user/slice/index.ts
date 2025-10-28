@@ -30,7 +30,7 @@ const userSlice = createSlice({
         builder
             .addMatcher(userApi.endpoints.getInfoUser.matchFulfilled, (state, action) => {
                 state.isOpenProfile = true;
-                state.openProfile = action.payload;
+                state.openProfile = action.payload.data;
                 state.loadedProfiles?.push(action.payload);
             })
             .addMatcher(userApi.endpoints.GetChatsUsers.matchFulfilled, (state, action) => {
