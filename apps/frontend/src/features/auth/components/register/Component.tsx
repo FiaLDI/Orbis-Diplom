@@ -7,27 +7,42 @@ import {
 } from "../../api";
 import { InputField, SubmitButton } from "../fields";
 import { useNavigate } from "react-router-dom";
-import { CodeFormData, EmailFormData, RegisterFormData, Step } from "./interface";
+
+import { Step } from "./interface";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+    CodeFormData,
+    codeSchema,
+    EmailFormData,
+    emailSchema,
+    RegisterFormData,
+    registerSchema,
+} from "../../validation";
+import { useTranslation } from "react-i18next";
 
 export const Component: React.FC = () => {
+    const { t } = useTranslation("auth");
     const navigator = useNavigate();
     const [step, setStep] = useState<Step>("email");
     const [email, setEmail] = useState("");
     const [verificationCode, setVerificationCode] = useState("");
-    // RTK Query мутации
     const [sendCode] = useSendVerificationCodeMutation();
     const [verifyCode] = useVerifyCodeMutation();
     const [registerUser, { isSuccess, isError }] = useRegisterUserMutation();
 
-    // Формы для разных шагов
-    const emailForm = useForm<EmailFormData>();
-    const codeForm = useForm<CodeFormData>();
-    const registerForm = useForm<RegisterFormData>();
+    const emailForm = useForm<EmailFormData>({
+        resolver: zodResolver(emailSchema),
+    });
 
-    // Обработчики
-    const handleEmailSubmit: SubmitHandler<EmailFormData> = async ({
-        email,
-    }) => {
+    const codeForm = useForm<CodeFormData>({
+        resolver: zodResolver(codeSchema),
+    });
+
+    const registerForm = useForm<RegisterFormData>({
+        resolver: zodResolver(registerSchema),
+    });
+
+    const handleEmailSubmit: SubmitHandler<EmailFormData> = async ({ email }) => {
         try {
             await sendCode(email).unwrap();
             setEmail(email);
@@ -50,9 +65,7 @@ export const Component: React.FC = () => {
         }
     };
 
-    const handleRegisterSubmit: SubmitHandler<RegisterFormData> = async (
-        data,
-    ) => {
+    const handleRegisterSubmit: SubmitHandler<RegisterFormData> = async (data) => {
         try {
             await registerUser({
                 code: verificationCode,
@@ -72,117 +85,96 @@ export const Component: React.FC = () => {
     }, [isSuccess]);
 
     return (
-        <>
-            <div className="auth p-10 bg-[#04122f80] text-white flex flex-col gap-5">
-                {(step == "email" || step == "code") && (
-                    <>
-                        <form
-                            className="auth-code flex flex-col gap-10 "
-                            onSubmit={emailForm.handleSubmit(handleEmailSubmit)}
-                            autoComplete="off"
-                        >
-                            <div className="">
-                                <h1 className="text-3xl text-center">
-                                    Инициирование регистрации
-                                </h1>
-                            </div>
-                            <div className="relative">
-                                <InputField<EmailFormData>
-                                    type="email"
-                                    placeholder="Почта"
-                                    name="email"
-                                    readOnly={step == "code"}
-                                    register={emailForm.register}
-                                    error={emailForm.formState.errors.email}
-                                    validation={{ required: "Required" }}
-                                />
-                                <SubmitButton
-                                    label="Отправить код"
-                                    disabled={step == "code"}
-                                />
-                            </div>
-                        </form>
-                        <form
-                            className="flex flex-col gap-10 "
-                            onSubmit={codeForm.handleSubmit(handleCodeSubmit)}
-                            autoComplete="off"
-                        >
-                            <InputField<CodeFormData>
-                                readOnly={true}
-                                type="text"
-                                placeholder="Код подтверждения"
-                                name="code"
-                                register={codeForm.register}
-                                error={codeForm.formState.errors.code}
-                                validation={{ required: "Required" }}
+        <div className="rounded-md p-10 bg-background/30 text-white flex flex-col gap-5 w-[450px]">
+            {(step == "email" || step == "code") && (
+                <>
+                    <form
+                        className="flex flex-col gap-5 w-full "
+                        onSubmit={emailForm.handleSubmit(handleEmailSubmit)}
+                        autoComplete="off"
+                    >
+                        <div className="w-full">
+                            <h1 className="text-center text-2xl">{t("register.email.title")}</h1>
+                        </div>
+                        <div className="flex items-end gap-5">
+                            <InputField<EmailFormData>
+                                type="email"
+                                placeholder={t("register.email.placeholder")}
+                                name="email"
+                                readOnly={step == "code"}
+                                register={emailForm.register}
+                                error={emailForm.formState.errors.email}
                             />
                             <SubmitButton
-                                label="Начать регистрацию"
-                                disabled={step !== "code"}
+                                label={t("register.email.submit")}
+                                disabled={step == "code"}
                             />
-                        </form>
-                    </>
-                )}
-
-                {step == "register" && (
-                    <form
-                        onSubmit={registerForm.handleSubmit(
-                            handleRegisterSubmit,
-                        )}
-                        autoComplete="off"
-                        className="flex flex-col gap-10 "
-                    >
-                        <h1 className="text-3xl text-center">Регистрация</h1>
-                        <InputField<RegisterFormData>
-                            type="password"
-                            placeholder="Пароль"
-                            name="password"
-                            register={registerForm.register}
-                            error={registerForm.formState.errors.password}
-                            validation={{ required: "Required", minLength: 6 }}
-                        />
-                        <InputField<RegisterFormData>
-                            type="text"
-                            placeholder="Отображаемое имя"
-                            name="display_name"
-                            register={registerForm.register}
-                            error={registerForm.formState.errors.display_name}
-                            validation={{ required: "Required" }}
-                        />
-                        <InputField<RegisterFormData>
-                            type="text"
-                            placeholder="Имя пользователя"
-                            name="username"
-                            register={registerForm.register}
-                            error={registerForm.formState.errors.username}
-                            validation={{ required: "Required" }}
-                        />
-                        <InputField<RegisterFormData>
-                            type="date"
-                            placeholder="Birth Date"
-                            name="birth_date"
-                            register={registerForm.register}
-                            error={registerForm.formState.errors.birth_date}
-                            validation={{ required: "Required" }}
-                        />
-                        <SubmitButton label="Зарегистрироваться" />
+                        </div>
                     </form>
-                )}
-                <span
-                    className="text-center relative text-3xl"
-                    style={{ textAlign: "center", position: "relative" }}
-                >
-                    <a
-                        href=""
-                        onClick={(e) => {
-                            e.preventDefault();
-                            navigator("/login");
-                        }}
+                    <form
+                        className="flex flex-col gap-5 "
+                        onSubmit={codeForm.handleSubmit(handleCodeSubmit)}
+                        autoComplete="off"
                     >
-                        Назад
-                    </a>
-                </span>
-            </div>
-        </>
+                        <InputField<CodeFormData>
+                            readOnly={true}
+                            type="text"
+                            placeholder={t("register.code.placeholder")}
+                            name="code"
+                            register={codeForm.register}
+                            error={codeForm.formState.errors.code}
+                            disabled={step !== "code"}
+                        />
+                        <SubmitButton
+                            label={t("register.code.submit")}
+                            disabled={step !== "code"}
+                        />
+                    </form>
+                </>
+            )}
+
+            {step == "register" && (
+                <form
+                    onSubmit={registerForm.handleSubmit(handleRegisterSubmit)}
+                    autoComplete="off"
+                    className="flex flex-col gap-10 "
+                >
+                    <h1 className="text-center text-2xl">{t("register.register.title")}</h1>
+                    <InputField<RegisterFormData>
+                        type="text"
+                        placeholder={t("register.register.username")}
+                        name="username"
+                        register={registerForm.register}
+                        error={registerForm.formState.errors.username}
+                    />
+                    <InputField<RegisterFormData>
+                        type="password"
+                        placeholder={t("register.register.password")}
+                        name="password"
+                        register={registerForm.register}
+                        error={registerForm.formState.errors.password}
+                    />
+                    <InputField<RegisterFormData>
+                        type="date"
+                        placeholder={t("register.register.birth_date")}
+                        name="birth_date"
+                        register={registerForm.register}
+                        error={registerForm.formState.errors.birth_date}
+                    />
+                    <SubmitButton label={t("register.register.submit")} />
+                </form>
+            )}
+            <span className="text-center relative">
+                <a
+                    href=""
+                    onClick={(e) => {
+                        e.preventDefault();
+                        navigator("/login");
+                    }}
+                >
+                    {t("back")}
+                </a>
+            </span>
+        </div>
     );
 };

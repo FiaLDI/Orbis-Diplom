@@ -7,7 +7,7 @@ export const Slider = () => {
         <div className="bg-[rgba(27,30,75,0.3)] flex justify-center">
             <div className="w-[720px]">
                 <SectionLayout>
-                    <TitleSection >
+                    <TitleSection>
                         Пусть друзья выбирают себе ники — у тебя всё равно своё имя для каждого.
                     </TitleSection>
                 </SectionLayout>

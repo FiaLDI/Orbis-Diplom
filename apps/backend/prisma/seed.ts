@@ -6,7 +6,7 @@ import 'dotenv/config';
 async function main() {
   const permissions = [
     "ADMIN",
-    "MANAGE_SERVER_INFO",
+    "MANAGE_SERVER",
     "MANAGE_ROLES",
     "MANAGE_CHATS",
     "KICK_USERS",

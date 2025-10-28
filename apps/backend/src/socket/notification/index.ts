@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Socket, Namespace } from "socket.io";
 import { prisma, redisClient } from "@/config";
+import { getNamespace } from "@/socket/registry"
 
 export const notificationSocket = (ioNotification: Namespace, socket: Socket) => {
   const token = socket.handshake.auth?.token;
@@ -81,7 +82,6 @@ async function broadcastPresence(ioNotification: Namespace, userId: number, isOn
 }
 
 export const emitNotification = (userId: number, data: any) => {
-  const { getNamespace } = require("./registry");
   const ioNotification: Namespace = getNamespace("notification");
   ioNotification.to(`user_${userId}`).emit("notification", data);
 };

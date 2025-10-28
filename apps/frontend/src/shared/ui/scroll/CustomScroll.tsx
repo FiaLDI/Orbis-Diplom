@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const CustomScroll: React.FC<{ children: React.ReactNode }> = ({
-    children,
-}) => {
+const CustomScroll: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isScrolling, setIsScrolling] = useState(false);
     const scrollTimeout = useRef<any>(null); // Таймер для сброса стиля
 
@@ -66,10 +64,7 @@ const CustomScroll: React.FC<{ children: React.ReactNode }> = ({
             // Ограничиваем targetScroll в пределах страницы
             targetScroll = Math.max(
                 0,
-                Math.min(
-                    targetScroll,
-                    document.body.scrollHeight - viewportHeight,
-                ),
+                Math.min(targetScroll, document.body.scrollHeight - viewportHeight)
             );
 
             // Плавно прокручиваем страницу
@@ -105,10 +100,7 @@ const CustomScroll: React.FC<{ children: React.ReactNode }> = ({
 
             targetScroll = Math.max(
                 0,
-                Math.min(
-                    targetScroll,
-                    document.body.scrollHeight - viewportHeight,
-                ),
+                Math.min(targetScroll, document.body.scrollHeight - viewportHeight)
             );
 
             window.scrollTo({

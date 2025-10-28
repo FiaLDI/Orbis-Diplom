@@ -7,4 +7,4 @@ export type friendState = {
     friendsMode: ModeKeys;
     friends: UserInfo[];
     isSearchActive?: boolean;
-}
+};

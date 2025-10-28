@@ -27,8 +27,7 @@ const Article: React.FC<ArticleProps> = ({ title, description, content }) => {
             } else if (line.startsWith("#### ")) {
                 // Новый подпункт
                 if (currentSection) {
-                    currentSection.subSections =
-                        currentSection.subSections || [];
+                    currentSection.subSections = currentSection.subSections || [];
                     currentSection.subSections.push(line.replace("#### ", ""));
                 }
             } else if (line.trim() !== "") {
@@ -64,9 +63,7 @@ const Article: React.FC<ArticleProps> = ({ title, description, content }) => {
                     {chapter.sections &&
                         chapter.sections.map((section, idx) => (
                             <div key={idx} className="section">
-                                <h3 className="section-title">
-                                    {section.title}
-                                </h3>
+                                <h3 className="section-title">{section.title}</h3>
                                 {section.content &&
                                     section.content.map((paragraph, idx) => (
                                         <p key={idx} className="paragraph">
@@ -74,18 +71,11 @@ const Article: React.FC<ArticleProps> = ({ title, description, content }) => {
                                         </p>
                                     ))}
                                 {section.subSections &&
-                                    section.subSections.map(
-                                        (subSection, idx) => (
-                                            <div
-                                                key={idx}
-                                                className="sub-section"
-                                            >
-                                                <h4 className="sub-section-title">
-                                                    {subSection}
-                                                </h4>
-                                            </div>
-                                        ),
-                                    )}
+                                    section.subSections.map((subSection, idx) => (
+                                        <div key={idx} className="sub-section">
+                                            <h4 className="sub-section-title">{subSection}</h4>
+                                        </div>
+                                    ))}
                             </div>
                         ))}
                 </div>

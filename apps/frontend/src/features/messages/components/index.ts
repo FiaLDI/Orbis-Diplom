@@ -1,4 +1,2 @@
-
-
-export {Component as InputChatComponent} from "./input";
-export {Component as HistoryChatComponent} from "./history"
+export { Component as InputChatComponent } from "./input";
+export { Component as HistoryChatComponent } from "./history";

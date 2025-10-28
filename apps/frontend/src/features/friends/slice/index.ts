@@ -12,7 +12,6 @@ const friendSlice = createSlice({
     name: "friends",
     initialState,
     reducers: {
-        
         startSearch(state) {
             state.isSearchActive = true;
         },
@@ -25,32 +24,25 @@ const friendSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            
-            .addMatcher(
-                friendsApi.endpoints.getFriend.matchFulfilled,
-                (state, action) => {
-                    state.friends = action.payload;
-                },
-            )
+
+            .addMatcher(friendsApi.endpoints.getFriend.matchFulfilled, (state, action) => {
+                state.friends = action.payload;
+            })
             .addMatcher(
                 friendsApi.endpoints.getIncomingRequests.matchFulfilled,
                 (state, action) => {
                     state.friends = action.payload;
-                },
+                }
             )
             .addMatcher(
                 friendsApi.endpoints.getOutcomingRequests.matchFulfilled,
                 (state, action) => {
                     state.friends = action.payload;
-                },
+                }
             );
     },
 });
 
-export const {
-    startSearch,
-    setFriendMode,
-    endSearch,
-} = friendSlice.actions;
+export const { startSearch, setFriendMode, endSearch } = friendSlice.actions;
 
 export default friendSlice.reducer;

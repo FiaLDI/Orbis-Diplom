@@ -1,0 +1,50 @@
+{
+    "audit": {
+        "title": "Moderation",
+        "members": "Members",
+        "itsyou": "its you",
+        "action": {
+            "kick": {
+                "submit": "Kick",
+                "titleyourself": "You cannot kick yourself",
+                "title": "Kick member"
+            },
+                "ban": {
+                "submit": "Ban",
+                "titleyourself": "You cannot ban yourself",
+                "title": "Ban member"
+            },
+                "unban": {
+                "submit": "Unban",
+                "titleyourself": "You cannot unban yourself",
+                "title": "Unban member"
+            }
+
+        },
+        "reason": "Reason (not require)",
+        "banned": {
+            "title": "Banned Users",
+            "time": "Banned",
+            "refresh": "Refresh",
+            "loading": "Loading...",
+            "nobanned": "No banned user",
+            "reason": "Reason: "
+        },
+        "logs": {
+            "title": "Audit Log",
+            "refresh": "Refresh",
+            "loading": "Loading...",
+            "nologs": "no logs",
+            "action": {
+                "BAN_ADD": "banned",
+                "BAN_REMOVE": "unbaned",
+                "KICK": "kick"
+            },
+            "user": "user"
+        },
+        "form": {
+            "cancel": "Cancel",
+            "submit": "Ban"
+        }
+    }
+}

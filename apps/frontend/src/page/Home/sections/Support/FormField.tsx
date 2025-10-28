@@ -1,11 +1,5 @@
 import React from "react";
-import {
-    UseFormRegister,
-    FieldError,
-    FieldValues,
-    RegisterOptions,
-    Path,
-} from "react-hook-form";
+import { UseFormRegister, FieldError, FieldValues, RegisterOptions, Path } from "react-hook-form";
 
 interface InputFieldProps<T extends FieldValues> {
     type: string;
@@ -27,29 +21,26 @@ export const InputField = <T extends FieldValues>({
     error,
     validation,
 }: InputFieldProps<T>) => (
-        <div className="flex flex-col gap-2 w-full">
-            {label ? <label className="flex text-lg">{label}</label> : null}
-            <div className="border-b-2">
-                <input
-                    type={type}
-                    placeholder={placeholder}
-                    className="w-full box-border outline-none text-lg p-2"
-                    {...register(name, validation)}
-                />
-            </div>
-            {error && <div>{error.message}</div>}
+    <div className="flex flex-col gap-2 w-full">
+        {label ? <label className="flex text-lg">{label}</label> : null}
+        <div className="border-b-2">
+            <input
+                type={type}
+                placeholder={placeholder}
+                className="w-full box-border outline-none text-lg p-2"
+                {...register(name, validation)}
+            />
         </div>
-    );
+        {error && <div>{error.message}</div>}
+    </div>
+);
 
 interface SubmitButtonProps {
     label: string;
     disabled?: boolean;
 }
 
-export const SubmitButton: React.FC<SubmitButtonProps> = ({
-    label,
-    disabled,
-}) => (
+export const SubmitButton: React.FC<SubmitButtonProps> = ({ label, disabled }) => (
     <button
         type="submit"
         disabled={disabled}

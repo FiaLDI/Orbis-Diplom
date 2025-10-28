@@ -29,7 +29,6 @@ export const getAuditLogs = async (req: Request, res: Response) => {
   }
 };
 
-// --- Бан пользователя (Ban = Kick + запись о бане + уведомление) ---
 export const banUser = async (req: any, res: Response) => {
   const serverId = parseInt(req.params.id, 10);
   const userId = parseInt(req.params.userId, 10);
@@ -85,7 +84,6 @@ export const banUser = async (req: any, res: Response) => {
       return banEntry;
     });
 
-    // 🔔 Отправляем уведомление пользователю
     await sendNotification(userId, {
       type: "server_kick",
       title: `Вы были забанены на сервере`,
@@ -104,7 +102,6 @@ export const banUser = async (req: any, res: Response) => {
   }
 };
 
-// --- Разбан пользователя (и возврат на сервер с дефолтной ролью + уведомление) ---
 export const unbanUser = async (req: any, res: Response) => {
   const serverId = parseInt(req.params.id, 10);
   const userId = parseInt(req.params.userId, 10);
@@ -115,17 +112,14 @@ export const unbanUser = async (req: any, res: Response) => {
 
   try {
     await prisma.$transaction(async (tx) => {
-      // удалить запись о бане
       await tx.server_bans.delete({
         where: { server_id_user_id: { server_id: serverId, user_id: userId } },
       });
 
-      // найти дефолтную роль
       const defaultRole = await tx.role_server.findFirst({
         where: { server_id: serverId, name: "default" },
       });
 
-      // вернуть пользователя
       await tx.user_server.create({
         data: {
           user_id: userId,
@@ -136,7 +130,6 @@ export const unbanUser = async (req: any, res: Response) => {
         },
       });
 
-      // лог
       await tx.audit_logs.create({
         data: {
           server_id: serverId,
@@ -147,7 +140,6 @@ export const unbanUser = async (req: any, res: Response) => {
       });
     });
 
-    // 🔔 уведомление о разбане
     await sendNotification(userId, {
       type: "system",
       title: "Вы были разбанены",
@@ -164,7 +156,6 @@ export const unbanUser = async (req: any, res: Response) => {
   }
 };
 
-// --- Кик пользователя (без бана, с уведомлением) ---
 export const kickUser = async (req: any, res: Response) => {
   const serverId = parseInt(req.params.id, 10);
   const userId = parseInt(req.params.userId, 10);
@@ -175,17 +166,14 @@ export const kickUser = async (req: any, res: Response) => {
 
   try {
     await prisma.$transaction(async (tx) => {
-      // удалить роли
       await tx.user_server_roles.deleteMany({
         where: { user_id: userId, server_id: serverId },
       });
 
-      // удалить из user_server
       await tx.user_server.delete({
         where: { user_id_server_id: { user_id: userId, server_id: serverId } },
       });
 
-      // лог
       await tx.audit_logs.create({
         data: {
           server_id: serverId,
@@ -196,14 +184,12 @@ export const kickUser = async (req: any, res: Response) => {
       });
     });
 
-    // 🔔 уведомление
     await sendNotification(userId, {
       type: "server_kick",
       title: "Вы были исключены с сервера",
       body: "Администратор удалил вас с сервера.",
       data: { serverId },
     });
-
     
     res.json({ message: "User kicked from server" });
   } catch (err: any) {

@@ -28,9 +28,7 @@ export default function ScrollTop() {
 
     return (
         <>
-            <div
-                className={`fixed-container ${isVisible ? "visible" : "hidden"}`}
-            >
+            <div className={`fixed-container ${isVisible ? "visible" : "hidden"}`}>
                 <button
                     onClick={() =>
                         window.scrollTo({

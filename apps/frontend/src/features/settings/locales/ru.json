@@ -1,0 +1,102 @@
+{
+    "menu": {
+        "account": {
+            "title": "Аккаунт",
+            "form": {
+                "field": {
+                    "username": {
+                        "label":"Имя пользователя",
+                        "placeholder": "Введите имя пользователя"
+                    },
+                    "email": {
+                        "label":"Почта",
+                        "placeholder": "Введите новую почту"
+                    },
+                    "password":  {
+                        "label":"Пароль",
+                        "placeholder": "Введите новый пароль"
+                    },
+                    "number": {
+                        "label":"Номер телефона",
+                        "placeholder": "Введите номер телефона"
+                    }
+                },
+                "submit": "Сохранить изменения",
+                "loading": "Сохраняем..."
+            }
+        },
+        "profile": {
+            "title": "Профиль",
+            "form": {
+                "field": {
+                    "avatar": {
+                        "label":"Изменить фото"
+                    },
+                    "firstname": {
+                        "label":"Реальное имя",
+                        "placeholder": "Введите реальное имя"
+                    },
+                    "secondname":  {
+                        "label":"Фамилия",
+                        "placeholder": "Введите фамиилию"
+                    },
+                    "date": {
+                        "label": "Ваша дата рождения"
+                    },
+                    "gender": {
+                        "label":"Ваш пол",
+                        "select": "Пол не выбран",
+                        "option": {
+                            "1": "Мужской",
+                            "2": "Женский",
+                            "3": "Другое"
+                        }
+                    },
+                    "location":  {
+                        "label":"Ваше местонахождение",
+                        "placeholder": "Введите ваше местонахождение"
+                    },
+                    "aboutme":  {
+                        "label":"Обо мне",
+                        "placeholder": "Информация о вас"
+                    }
+
+                },
+                "submit": "Save changed",
+                "loading": "Saving..."
+            }
+        },
+        "appearance": {
+            "title": "Внешний вид",
+            "theme": {
+                "title": "Выберите тему",
+                "dark": "Темная тема",
+                "light": "Светлая тема",
+                "standart": "Стандартная тема"
+            }
+        },
+        "notification": {
+            "title": "Уведомления"
+        },
+        "language": {
+            "title": "Язык",
+            "label": "Выберите язык",
+            "ru": "Русский",
+            "en": "Английский"
+        },
+        "back": {
+            "title": "Назад"
+        },
+        "exit": {
+            "title": "Выйти"
+        }
+    },
+    "title": {
+        "account": "Настройки аккаунта",
+        "profile": "Настройки профиля",
+        "appearance": "Настройки внешнего вида",
+        "notification": "Настройки уведомлений",
+        "language": "Настройки языка"
+    }
+  
+}
