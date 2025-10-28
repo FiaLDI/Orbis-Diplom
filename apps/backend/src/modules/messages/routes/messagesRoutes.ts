@@ -17,4 +17,3 @@ messagesRouter.post("/chats/:id/messages", sendMessages);
 messagesRouter.get("/:id", getMessageById);
 messagesRouter.put("/:id", editMessage);
 messagesRouter.delete("/:id", deleteMessage);
-

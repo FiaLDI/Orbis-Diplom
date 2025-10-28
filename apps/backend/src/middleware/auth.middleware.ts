@@ -9,11 +9,11 @@ import { Errors } from "@/common/errors";
  * Расширенный тип запроса с добавленным пользователем
  */
 export interface AuthRequest extends Request {
-  user?: {
-    id: number;
-    email?: string | null;
-    username?: string | null;
-  };
+    user?: {
+        id: number;
+        email?: string | null;
+        username?: string | null;
+    };
 }
 
 /**
@@ -22,35 +22,31 @@ export interface AuthRequest extends Request {
  */
 @injectable()
 export class AuthMiddleware {
-  constructor(@inject(TYPES.Prisma) private prisma: PrismaClient) {}
+    constructor(@inject(TYPES.Prisma) private prisma: PrismaClient) {}
 
-  async handle(req: AuthRequest, _res: Response, next: NextFunction) {
-    try {
-      const header = req.headers["authorization"];
-      if (!header) throw Errors.unauthorized("Authorization header missing");
+    async handle(req: AuthRequest, _res: Response, next: NextFunction) {
+        try {
+            const header = req.headers["authorization"];
+            if (!header) throw Errors.unauthorized("Authorization header missing");
 
-      const token = header.split(" ")[1];
-      if (!token) throw Errors.unauthorized("Authorization token missing");
+            const token = header.split(" ")[1];
+            if (!token) throw Errors.unauthorized("Authorization token missing");
 
-      const decoded = jwt.verify(
-        token,
-        process.env.ACCESS_TOKEN_SECRET!
-      ) as jwt.JwtPayload;
+            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as jwt.JwtPayload;
 
-      if (!decoded || !decoded.id)
-        throw Errors.unauthorized("Invalid or expired token");
+            if (!decoded || !decoded.id) throw Errors.unauthorized("Invalid or expired token");
 
-      const user = await this.prisma.users.findUnique({
-        where: { id: decoded.id },
-        select: { id: true, email: true, username: true },
-      });
+            const user = await this.prisma.users.findUnique({
+                where: { id: decoded.id },
+                select: { id: true, email: true, username: true },
+            });
 
-      if (!user) throw Errors.notFound("User not found");
+            if (!user) throw Errors.notFound("User not found");
 
-      req.user = user;
-      next();
-    } catch (err) {
-      next(err);
+            req.user = user;
+            next();
+        } catch (err) {
+            next(err);
+        }
     }
-  }
 }

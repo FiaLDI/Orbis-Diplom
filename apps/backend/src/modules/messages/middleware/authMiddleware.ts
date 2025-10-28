@@ -8,11 +8,7 @@ interface AuthenticatedRequest extends Request {
     user?: string | JwtPayload;
 }
 
-export const authenticate = (
-    req: AuthenticatedRequest,
-    res: Response,
-    next: NextFunction,
-) => {
+export const authenticate = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
 
@@ -29,10 +25,7 @@ export const authenticate = (
     }
 };
 
-export const authenticateSocket = (
-    socket: Socket,
-    next: (err?: Error) => void,
-) => {
+export const authenticateSocket = (socket: Socket, next: (err?: Error) => void) => {
     const token = socket.handshake.auth.token;
 
     if (!token) {
@@ -42,7 +35,7 @@ export const authenticateSocket = (
     try {
         const decoded = jwt.verify(
             token,
-            process.env.ACCESS_TOKEN_SECRET!,
+            process.env.ACCESS_TOKEN_SECRET!
         ) as AuthenticatedSocket["user"];
         (socket as AuthenticatedSocket).user = decoded;
         next();

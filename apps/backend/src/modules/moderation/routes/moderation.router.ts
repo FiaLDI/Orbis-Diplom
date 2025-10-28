@@ -1,10 +1,10 @@
 import { Router } from "express";
 import {
-  getAuditLogs,
-  banUser,
-  unbanUser,
-  kickUser,
-  getBannedUsers,
+    getAuditLogs,
+    banUser,
+    unbanUser,
+    kickUser,
+    getBannedUsers,
 } from "../controllers/moderation.controller";
 import { authenticate } from "@/modules/auth";
 

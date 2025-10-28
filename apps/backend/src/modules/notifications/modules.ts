@@ -13,5 +13,3 @@ export const notificationModule = express.Router();
 // notificationModule.delete("/:id", auth.handle.bind(auth),  controller.deleteNotification.bind(controller));
 // notificationModule.post("/read", auth.handle.bind(auth), controller.markAllNotificationRead.bind(controller));
 // notificationModule.delete("/", auth.handle.bind(auth),  controller.deleteAllNotification.bind(controller));
-
-

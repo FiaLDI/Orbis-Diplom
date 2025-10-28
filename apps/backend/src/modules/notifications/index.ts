@@ -1,2 +1,2 @@
-export * from "./services/notification.service"
-export * from "./modules"
+export * from "./services/notification.service";
+export * from "./modules";

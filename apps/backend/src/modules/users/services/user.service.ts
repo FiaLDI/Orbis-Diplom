@@ -8,35 +8,35 @@ import { UserProfile } from "../entity/user.profile";
 
 @injectable()
 export class UserService {
-  constructor(
-    @inject(TYPES.Prisma) private prisma: PrismaClient,
-    @inject(TYPES.Redis) private redis: RedisClientType
-  ) {}
+    constructor(
+        @inject(TYPES.Prisma) private prisma: PrismaClient,
+        @inject(TYPES.Redis) private redis: RedisClientType
+    ) {}
 
-  async getProfileById(id: number) {
-    const user = await this.prisma.users.findUnique({
-      where: { id },
-      include: {
-        user_profile: true,
-        user_preferences: true,
-        blocks_initiated: true,
-        blocks_received: true,
-      },
-    });
+    async getProfileById(id: number) {
+        const user = await this.prisma.users.findUnique({
+            where: { id },
+            include: {
+                user_profile: true,
+                user_preferences: true,
+                blocks_initiated: true,
+                blocks_received: true,
+            },
+        });
 
-    if (!user) throw Errors.notFound("User not found");
-    const entity = new UserProfile(user);
+        if (!user) throw Errors.notFound("User not found");
+        const entity = new UserProfile(user);
 
-    return entity;
-  }
+        return entity;
+    }
 
-  async getUsernameById(id: number) {
-    const user = await this.prisma.users.findUnique({
-      where: { id },
-    });
+    async getUsernameById(id: number) {
+        const user = await this.prisma.users.findUnique({
+            where: { id },
+        });
 
-    if (!user) throw Errors.notFound("User not found");
+        if (!user) throw Errors.notFound("User not found");
 
-    return {id: user.id};
-  }
+        return { id: user.id };
+    }
 }

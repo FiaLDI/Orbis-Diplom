@@ -8,16 +8,16 @@ import { errorHandler } from "./middleware/error.middleware";
 import { AuthMiddleware } from "./middleware/auth.middleware";
 import { friendModule } from "./modules/friends/module";
 import { userModule } from "./modules/users";
-import { notificationModule  } from "./modules/notifications";
+import { notificationModule } from "./modules/notifications";
 
 export const app = express();
 
 // middlewares
 app.use(
-  cors({
-    origin: ENVCONFIG.FRONTENDADDRES,
-    credentials: true,
-  }),
+    cors({
+        origin: ENVCONFIG.FRONTENDADDRES,
+        credentials: true,
+    })
 );
 app.use(cookieParser());
 app.use(express.json());
@@ -36,4 +36,3 @@ app.use("/api/users", userModule);
 // app.use("/api/servers", planningRouter);
 
 app.use(errorHandler);
-

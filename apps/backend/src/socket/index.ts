@@ -8,40 +8,40 @@ import { setIo, setNamespace } from "./registry";
 import { AuthenticatedSocket } from "./types";
 
 export const initSockets = (server: any) => {
-  const io = new Server(server, {
-    cors: { origin: ENVCONFIG.FRONTENDADDRES },
-  });
-  setIo(io);
-
-  const namespaces = {
-    chat: io.of("/chat"),
-    journal: io.of("/journal"),
-    notification: io.of("/notification"),
-  };
-
-  for (const [name, ns] of Object.entries(namespaces)) {
-    // 🧠 авторизация перед подключением
-    ns.use(authenticateSocket);
-
-    ns.on("connection", (socket) => {
-      const s = socket as AuthenticatedSocket;
-
-      switch (name) {
-        case "chat":
-          chatSocket(ns, s);
-          break;
-        case "journal":
-          journalSocket(ns, s);
-          break;
-        case "notification":
-          notificationSocket(ns, s);
-          break;
-      }
+    const io = new Server(server, {
+        cors: { origin: ENVCONFIG.FRONTENDADDRES },
     });
+    setIo(io);
 
-    setNamespace(name, ns);
-  }
+    const namespaces = {
+        chat: io.of("/chat"),
+        journal: io.of("/journal"),
+        notification: io.of("/notification"),
+    };
 
-  console.log("🧩 Socket namespaces ready:", Object.keys(namespaces).join(", "));
-  return io;
+    for (const [name, ns] of Object.entries(namespaces)) {
+        // 🧠 авторизация перед подключением
+        ns.use(authenticateSocket);
+
+        ns.on("connection", (socket) => {
+            const s = socket as AuthenticatedSocket;
+
+            switch (name) {
+                case "chat":
+                    chatSocket(ns, s);
+                    break;
+                case "journal":
+                    journalSocket(ns, s);
+                    break;
+                case "notification":
+                    notificationSocket(ns, s);
+                    break;
+            }
+        });
+
+        setNamespace(name, ns);
+    }
+
+    console.log("🧩 Socket namespaces ready:", Object.keys(namespaces).join(", "));
+    return io;
 };

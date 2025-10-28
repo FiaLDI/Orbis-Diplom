@@ -1,9 +1,5 @@
 import { Router } from "express";
-import {
-  searchUsers,
-  searchServers,
-  searchMessages,
-} from "../controllers/search.controller";
+import { searchUsers, searchServers, searchMessages } from "../controllers/search.controller";
 import { authenticate } from "@/modules/auth";
 
 export const searchRouter = Router();

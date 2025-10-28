@@ -5,8 +5,7 @@ import { NotificationService } from "../services/notification.service";
 
 @injectable()
 export class NotificationController {
-  constructor(
-    @inject(TYPES.NotificationService) private notificationService: NotificationService
-  ) {}
-
+    constructor(
+        @inject(TYPES.NotificationService) private notificationService: NotificationService
+    ) {}
 }

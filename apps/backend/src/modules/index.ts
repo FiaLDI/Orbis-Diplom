@@ -1,5 +1,3 @@
-
-
 export { authModule } from "./auth";
 // export { chatRouter } from "./chat";
 export { friendRouter } from "./friends";

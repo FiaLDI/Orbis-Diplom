@@ -12,4 +12,3 @@ authModule.post("/register", controller.register.bind(controller));
 authModule.post("/login", controller.login.bind(controller));
 authModule.post("/refresh", controller.refresh.bind(controller));
 authModule.post("/logout", controller.logout.bind(controller));
-
