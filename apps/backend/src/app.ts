@@ -8,6 +8,7 @@ import { errorHandler } from "./middleware/error.middleware";
 import { AuthMiddleware } from "./middleware/auth.middleware";
 import { friendModule } from "./modules/friends/module";
 import { userModule } from "./modules/users";
+import { notificationModule  } from "./modules/notifications";
 
 export const app = express();
 
@@ -27,7 +28,7 @@ app.use("/api/auth", authModule);
 app.use("/api/friends", friendModule);
 // app.use("/api/messages", messagesRouter);
 // app.use("/api/moderation", moderationRouter);
-// app.use("/api/notifications", notificationRouter);
+app.use("/api/notifications", notificationModule);
 // app.use("/api/servers", rolesRouter);
 // app.use("/api/search", searchRouter);
 // app.use("/api/servers", serverRouter);
