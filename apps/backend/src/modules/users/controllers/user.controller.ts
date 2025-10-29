@@ -37,10 +37,10 @@ export class UserController {
             next(err);
         }
     };
-    
+
     updateUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const dto = GetUserChatsSchema.parse({...(req as any).user, ...req.body});
+            const dto = GetUserChatsSchema.parse({ ...(req as any).user, ...req.body });
             const entity = await this.userService.updateUser(dto);
 
             return res.json({
@@ -50,11 +50,11 @@ export class UserController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     searchUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const dto = SearchUserSchema.parse({...(req as any).user, name: req.query.name});
+            const dto = SearchUserSchema.parse({ ...(req as any).user, name: req.query.name });
             const entity = await this.userService.searchUser(dto.id, dto.name);
 
             return res.json({
@@ -64,10 +64,9 @@ export class UserController {
         } catch (err) {
             next(err);
         }
-    }
+    };
 
     deleteUser = async (req: Request, res: Response, next: NextFunction) => {
-    
         const dto = GetUserProfileSchema.parse({ id: Number((req as any).user.id) });
-    }
+    };
 }

@@ -99,7 +99,7 @@ export class AuthService {
             expires_in: 15 * 60,
         });
 
-        const user_profile = await this.userService.getProfileById(user.id)
+        const user_profile = await this.userService.getProfileById(user.id);
 
         return { token: tokenEntity, user: user_profile };
     }
@@ -130,8 +130,8 @@ export class AuthService {
             refresh_token: refreshToken,
             expires_in: 15 * 60,
         });
-        
-        const user_profile = await this.userService.getProfileById(decoded.id)
+
+        const user_profile = await this.userService.getProfileById(decoded.id);
 
         return { token: tokenEntity, user: user_profile };
     }

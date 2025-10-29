@@ -13,7 +13,9 @@ export class ChatController {
     updateChat = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = UpdateChatSchema.parse({
-                ...(req as any).user, chatId: parseInt(req.params.id), name: req.body.name  
+                ...(req as any).user,
+                chatId: parseInt(req.params.id),
+                name: req.body.name,
             });
             const entity = await this.chatService.updateChat(dto.id, dto.chatId, dto.name);
 
@@ -28,7 +30,10 @@ export class ChatController {
 
     deleteChat = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const dto = DeleteChatSchema.parse({ ...(req as any).user, chatId: parseInt(req.params.id) });
+            const dto = DeleteChatSchema.parse({
+                ...(req as any).user,
+                chatId: parseInt(req.params.id),
+            });
             const entity = await this.chatService.deleteChat(dto.id, dto.chatId);
 
             return res.json({
@@ -42,7 +47,10 @@ export class ChatController {
 
     startChat = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const dto = StartChatSchema.parse({ ...(req as any).user, userId: parseInt(req.params.id) });
+            const dto = StartChatSchema.parse({
+                ...(req as any).user,
+                userId: parseInt(req.params.id),
+            });
             const entity = await this.chatService.startChat(dto.id, dto.userId);
 
             return res.json({

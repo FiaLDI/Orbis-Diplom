@@ -70,7 +70,6 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
             return res.status(403).json({ message: "Access denied to this chat" });
         }
 
-        // 💬 Загружаем сообщения + аватар
         const messages = await prisma.messages.findMany({
             where: { chat_id: chatId },
             orderBy: { created_at: "desc" },

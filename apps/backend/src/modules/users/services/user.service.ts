@@ -44,14 +44,14 @@ export class UserService {
     }
 
     async getUserChats(id: number) {
-        const chats = await this.chatService.getUsersChat(id)
+        const chats = await this.chatService.getUsersChat(id);
 
         const chatsWithProfiles = await Promise.all(
             chats.map(async (chat) => {
                 const members = await Promise.all(
                     chat.chat_users.map(async (cu) => {
                         const profile = await this.getProfileById(cu.user_id);
-                    return profile.toJSON();
+                        return profile.toJSON();
                     })
                 );
 
@@ -88,31 +88,31 @@ export class UserService {
         const updated = await this.prisma.users.update({
             where: { id },
             data: clean({
-            email,
-            username,
-            number,
-            user_profile: {
-                upsert: {
-                update: clean({
-                    first_name,
-                    last_name,
-                    birth_date: birth_date ? new Date(birth_date) : undefined,
-                    avatar_url,
-                    gender,
-                    location,
-                    about,
-                }),
-                create: clean({
-                    first_name,
-                    last_name,
-                    birth_date: birth_date ? new Date(birth_date) : undefined,
-                    avatar_url,
-                    gender,
-                    location,
-                    about,
-                }),
+                email,
+                username,
+                number,
+                user_profile: {
+                    upsert: {
+                        update: clean({
+                            first_name,
+                            last_name,
+                            birth_date: birth_date ? new Date(birth_date) : undefined,
+                            avatar_url,
+                            gender,
+                            location,
+                            about,
+                        }),
+                        create: clean({
+                            first_name,
+                            last_name,
+                            birth_date: birth_date ? new Date(birth_date) : undefined,
+                            avatar_url,
+                            gender,
+                            location,
+                            about,
+                        }),
+                    },
                 },
-            },
             }),
             include: { user_profile: true },
         });
@@ -133,6 +133,6 @@ export class UserService {
     async deleteUser(id: number) {
         await this.prisma.users.delete({ where: { id } });
 
-        return { message: "Success delete"};
+        return { message: "Success delete" };
     }
 }

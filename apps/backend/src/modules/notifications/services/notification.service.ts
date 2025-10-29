@@ -32,15 +32,15 @@ export class NotificationService {
             emitNotification(userId, notif);
         }
     }
-    
-    async getNotifications(id: number) {
-      const notifications = await this.prisma.notifications.findMany({
-          where: { user_id: id },
-          orderBy: { created_at: "desc" },
-          take: 50,
-      });
 
-      return notifications
+    async getNotifications(id: number) {
+        const notifications = await this.prisma.notifications.findMany({
+            where: { user_id: id },
+            orderBy: { created_at: "desc" },
+            take: 50,
+        });
+
+        return notifications;
     }
 
     async markNotificationRead(id: number, notificationId: number) {
@@ -49,7 +49,7 @@ export class NotificationService {
             data: { is_read: true },
         });
 
-      return { message: `Success mark as read ${notificationId}` }
+        return { message: `Success mark as read ${notificationId}` };
     }
 
     async deleteNotification(id: number, notificationId: number) {
@@ -57,7 +57,7 @@ export class NotificationService {
             where: { id: notificationId, user_id: id },
         });
 
-      return { message: `Success delete ${notificationId}` }
+        return { message: `Success delete ${notificationId}` };
     }
 
     async markAllNotificationRead(id: number) {
@@ -66,7 +66,7 @@ export class NotificationService {
             data: { is_read: true },
         });
 
-      return { message: "Success mark as read all" }
+        return { message: "Success mark as read all" };
     }
 
     async deleteAllNotification(id: number) {
@@ -74,6 +74,6 @@ export class NotificationService {
             where: { user_id: id },
         });
 
-      return { message: "Success delete all" }
+        return { message: "Success delete all" };
     }
 }

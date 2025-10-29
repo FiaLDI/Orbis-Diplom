@@ -16,7 +16,7 @@ export const TYPES = {
 
     ChatService: Symbol.for("ChatService"),
     ChatController: Symbol.for("ChatController"),
-    
+
     MessageService: Symbol.for("MessageService"),
     MessageController: Symbol.for("MessageController"),
 

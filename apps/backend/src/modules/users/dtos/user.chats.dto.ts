@@ -10,16 +10,19 @@ export const GetUserChatsSchema = z.object({
     number: z.string().optional(),
     first_name: z.string().optional(),
     last_name: z.string().optional(),
-    birth_date: z.string().refine((value) => {
-        const d = new Date(value);
-        if (isNaN(d.getTime())) return false;
+    birth_date: z
+        .string()
+        .refine((value) => {
+            const d = new Date(value);
+            if (isNaN(d.getTime())) return false;
 
-        const now = new Date();
-        const yearNow = now.getFullYear();
-        const age = yearNow - d.getFullYear();
+            const now = new Date();
+            const yearNow = now.getFullYear();
+            const age = yearNow - d.getFullYear();
 
-        return age >= MIN_AGE && age <= MAX_AGE;
-    }, "Birth date is out of allowed range").optional(),
+            return age >= MIN_AGE && age <= MAX_AGE;
+        }, "Birth date is out of allowed range")
+        .optional(),
     avatar_url: z.string().optional(),
     gender: z.string().optional(),
     location: z.string().optional(),

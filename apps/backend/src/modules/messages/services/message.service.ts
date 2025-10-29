@@ -14,29 +14,29 @@ import { emitTo } from "@/socket/registry";
 export class MessageService {
     constructor(
         @inject(TYPES.Prisma) private prisma: PrismaClient,
-        @inject(TYPES.UserService) private userService: UserService,
+        @inject(TYPES.UserService) private userService: UserService
     ) {}
 
     async getMessages({ chatId, offset = 0 }: MessageHistoryDto) {
         const messages = await this.prisma.messages.findMany({
-        where: { chat_id: chatId },
-        orderBy: { created_at: "desc" },
-        take: 20,
-        skip: offset * 20,
-        include: {
-            messages_content: {
+            where: { chat_id: chatId },
+            orderBy: { created_at: "desc" },
+            take: 20,
+            skip: offset * 20,
             include: {
-                content: { select: { id: true, text: true, url: true } },
+                messages_content: {
+                    include: {
+                        content: { select: { id: true, text: true, url: true } },
+                    },
+                },
             },
-            },
-        },
         });
 
         const messageList = new MessageListEntity(messages);
         const userIds = messageList.getUserIds();
 
         const profiles = await Promise.all(
-            userIds.map(id => this.userService.getProfileById(id))
+            userIds.map((id) => this.userService.getProfileById(id))
         );
 
         const profilesMap = UserProfile.getUsersMap(profiles);
@@ -45,10 +45,10 @@ export class MessageService {
     }
 
     async createMessage(
-        id: number, 
+        id: number,
         chatId: number,
-        contentsRow: MessageSendDto['content'],
-        replyToId?: number | undefined,
+        contentsRow: MessageSendDto["content"],
+        replyToId?: number | undefined
     ) {
         const message = await this.prisma.messages.create({
             data: {
@@ -68,11 +68,12 @@ export class MessageService {
             },
         });
 
-        return message
+        return message;
     }
 
     async createContent(
-        id: string, type: "text" | "image" | "file" | "video" | "audio", 
+        id: string,
+        type: "text" | "image" | "file" | "video" | "audio",
         text?: string | undefined,
         url?: string | undefined
     ) {
@@ -92,10 +93,10 @@ export class MessageService {
         };
     }
 
-    async sendMessage({id, chatId, content, replyToId = undefined}: MessageSendDto){
+    async sendMessage({ id, chatId, content, replyToId = undefined }: MessageSendDto) {
         const profile = await this.userService.getProfileById(id);
 
-        const contentsRow: MessageSendDto['content'] = content;
+        const contentsRow: MessageSendDto["content"] = content;
 
         const createdContent = await Promise.all(
             contentsRow.map((f) =>
@@ -103,11 +104,9 @@ export class MessageService {
             )
         );
 
-
         const message = await this.createMessage(id, chatId, createdContent, replyToId);
 
         const entity = new MessageItemEntity(message, profile, createdContent);
-
 
         emitTo("chat", `chat_${chatId}`, "new-message", entity.toJSON());
 

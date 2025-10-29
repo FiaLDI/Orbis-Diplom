@@ -12,72 +12,84 @@ export class NotificationController {
     ) {}
 
     getNotifications = async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const dto = getNotificationSchema.parse({ ...(req as any).user });
-        const entity = await this.notificationService.getNotifications(dto.id);
+        try {
+            const dto = getNotificationSchema.parse({ ...(req as any).user });
+            const entity = await this.notificationService.getNotifications(dto.id);
 
-        return res.json({
-            message: "Notification",
-            data: entity,
-        });
-      } catch (err) {
-        next(err);
-      }
+            return res.json({
+                message: "Notification",
+                data: entity,
+            });
+        } catch (err) {
+            next(err);
+        }
     };
 
     markNotificationRead = async (req: any, res: Response, next: NextFunction) => {
-      try {
-        const dto = markNotificationSchema.parse({ ...(req as any).user, notificationId: parseInt(req.params.id, 10) });
-        const entity = await this.notificationService.markNotificationRead(dto.id, dto.notificationId);
+        try {
+            const dto = markNotificationSchema.parse({
+                ...(req as any).user,
+                notificationId: parseInt(req.params.id, 10),
+            });
+            const entity = await this.notificationService.markNotificationRead(
+                dto.id,
+                dto.notificationId
+            );
 
-        return res.json({
-            message: "Notification",
-            data: entity,
-        });
-      } catch (err) {
-        next(err);
-      }
-    }
+            return res.json({
+                message: "Notification",
+                data: entity,
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
 
     markNotificationDelete = async (req: any, res: Response, next: NextFunction) => {
-      try {
-        const dto = markNotificationSchema.parse({ ...(req as any).user, notificationId: parseInt(req.params.id, 10) });
-        const entity = await this.notificationService.deleteNotification(dto.id, dto.notificationId);
+        try {
+            const dto = markNotificationSchema.parse({
+                ...(req as any).user,
+                notificationId: parseInt(req.params.id, 10),
+            });
+            const entity = await this.notificationService.deleteNotification(
+                dto.id,
+                dto.notificationId
+            );
 
-        return res.json({
-            message: "Notification",
-            data: entity,
-        });
-      } catch (err) {
-        next(err);
-      }
-    }
+            return res.json({
+                message: "Notification",
+                data: entity,
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
 
     markAllNotificationRead = async (req: any, res: Response, next: NextFunction) => {
-      try {
-        const dto = getNotificationSchema.parse((req as any).user);
-        const entity = await this.notificationService.markAllNotificationRead(dto.id);
+        try {
+            const dto = getNotificationSchema.parse((req as any).user);
+            const entity = await this.notificationService.markAllNotificationRead(dto.id);
 
-        return res.json({
-            message: "Notification",
-            data: entity,
-        });
-      } catch (err) {
-        next(err);
-      }
-    }
+            return res.json({
+                message: "Notification",
+                data: entity,
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
 
     markAllNotificationDelete = async (req: any, res: Response, next: NextFunction) => {
-      try {
-        const dto = getNotificationSchema.parse((req as any).user);
-        const entity = await this.notificationService.deleteAllNotification(dto.id);
+        try {
+            const dto = getNotificationSchema.parse((req as any).user);
+            const entity = await this.notificationService.deleteAllNotification(dto.id);
 
-        return res.json({
-            message: "Notification",
-            data: entity,
-        });
-      } catch (err) {
-        next(err);
-      }
-    }
+            return res.json({
+                message: "Notification",
+                data: entity,
+            });
+        } catch (err) {
+            next(err);
+        }
+    };
 }

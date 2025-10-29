@@ -5,9 +5,7 @@ import { Errors } from "@/common/errors";
 
 @injectable()
 export class ChatService {
-    constructor(
-        @inject(TYPES.Prisma) private prisma: PrismaClient,
-    ) {}
+    constructor(@inject(TYPES.Prisma) private prisma: PrismaClient) {}
 
     async getUsersChat(id: number) {
         const chats = await this.prisma.chats.findMany({
@@ -21,7 +19,7 @@ export class ChatService {
             },
         });
 
-        return chats
+        return chats;
     }
 
     async updateChat(id: number, chatId: number, name: string) {
@@ -34,15 +32,17 @@ export class ChatService {
 
     async deleteChat(id: number, chatId: number) {
         await this.prisma.chat_users.deleteMany({
-            where: { chat_id: chatId}
-        })
+            where: { chat_id: chatId },
+        });
 
         await this.prisma.chats.delete({ where: { id: chatId } });
         return { message: "Deleted" };
     }
 
     async startChat(id: number, userId: number) {
-        const existingChat = await this.prisma.$queryRaw<{ chat_id: number; u1: string; u2: string }[]>`
+        const existingChat = await this.prisma.$queryRaw<
+            { chat_id: number; u1: string; u2: string }[]
+        >`
             SELECT cu1.chat_id, u1.username as u1, u2.username as u2
             FROM chat_users cu1
             JOIN chat_users cu2 ON cu1.chat_id = cu2.chat_id
@@ -50,25 +50,25 @@ export class ChatService {
             JOIN users u2 ON u2.id = cu2.user_id
             WHERE cu1.user_id = ${Number(id)} AND cu2.user_id = ${userId}
         `;
-        
+
         const u1 = await this.prisma.users.findUnique({
             where: { id: Number(id) },
             select: { username: true },
         });
-        
+
         const u2 = await this.prisma.users.findUnique({
             where: { id: Number(userId) },
             select: { username: true },
         });
-        
+
         if (!u1 || !u2) {
             return Errors.notFound("User not found");
         }
-        
+
         if (existingChat.length > 0) {
             return Errors.conflict("Chat already exists");
         }
-        
+
         const chat = await this.prisma.$transaction(async (tx) => {
             const createdChat = await tx.chats.create({
                 data: {
@@ -87,8 +87,7 @@ export class ChatService {
 
             return createdChat;
         });
-        
+
         return chat.id;
     }
-
 }

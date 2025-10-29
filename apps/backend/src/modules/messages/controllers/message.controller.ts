@@ -7,17 +7,20 @@ import { MessageSendSchema } from "../dtos/message.send.dto";
 
 @injectable()
 export class MessageController {
-    constructor(
-        @inject(TYPES.MessageService) private messageService: MessageService) {}
+    constructor(@inject(TYPES.MessageService) private messageService: MessageService) {}
 
     getPersonalMessages = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = MessageHistorySchema.parse({
                 ...(req as any).user,
                 chatId: parseInt(req.params.id),
-                offset: Number(req.query.offset) || Number(0)
+                offset: Number(req.query.offset) || Number(0),
             });
-            const entity = await this.messageService.getMessages({id: dto.id, chatId: dto.chatId, offset: dto.offset});
+            const entity = await this.messageService.getMessages({
+                id: dto.id,
+                chatId: dto.chatId,
+                offset: dto.offset,
+            });
 
             return res.json({
                 message: "Messages",
@@ -36,10 +39,10 @@ export class MessageController {
                 chatId: parseInt(req.params.id),
             });
             const entity = await this.messageService.sendMessage({
-                id: dto.id, 
-                chatId: dto.chatId, 
+                id: dto.id,
+                chatId: dto.chatId,
                 content: dto.content,
-                replyToId: dto.replyToId
+                replyToId: dto.replyToId,
             });
 
             return res.json({
@@ -56,9 +59,13 @@ export class MessageController {
             const dto = MessageHistorySchema.parse({
                 ...(req as any).user,
                 chatId: parseInt(req.params.id),
-                offset: req.query.offset
+                offset: req.query.offset,
             });
-            const entity = await this.messageService.getMessages({id: dto.id, chatId: dto.chatId, offset: dto.offset});
+            const entity = await this.messageService.getMessages({
+                id: dto.id,
+                chatId: dto.chatId,
+                offset: dto.offset,
+            });
 
             return res.json({
                 message: "Profile",
@@ -74,9 +81,13 @@ export class MessageController {
             const dto = MessageHistorySchema.parse({
                 ...(req as any).user,
                 chatId: parseInt(req.params.id),
-                offset: req.query.offset
+                offset: req.query.offset,
             });
-            const entity = await this.messageService.getMessages({id: dto.id, chatId: dto.chatId, offset: dto.offset});
+            const entity = await this.messageService.getMessages({
+                id: dto.id,
+                chatId: dto.chatId,
+                offset: dto.offset,
+            });
 
             return res.json({
                 message: "Profile",
@@ -92,9 +103,13 @@ export class MessageController {
             const dto = MessageHistorySchema.parse({
                 ...(req as any).user,
                 chatId: parseInt(req.params.id),
-                offset: req.query.offset
+                offset: req.query.offset,
             });
-            const entity = await this.messageService.getMessages({id: dto.id, chatId: dto.chatId, offset: dto.offset});
+            const entity = await this.messageService.getMessages({
+                id: dto.id,
+                chatId: dto.chatId,
+                offset: dto.offset,
+            });
 
             return res.json({
                 message: "Profile",
