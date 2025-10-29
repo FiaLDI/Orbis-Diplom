@@ -23,7 +23,9 @@ export const Component: React.FC = () => {
         defaultValues: {
             first_name: user?.first_name || "",
             last_name: user?.last_name || "",
-            birth_date: user?.birth_date ? user.birth_date.split("T")[0] : "",
+            birth_date: user?.birth_date
+                ? new Date(user.birth_date).toISOString().split("T")[0]
+                : "",
             gender: user?.gender || "",
             location: user?.location || "",
             about: user?.about || "",

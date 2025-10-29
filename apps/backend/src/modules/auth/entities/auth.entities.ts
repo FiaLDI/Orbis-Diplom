@@ -10,6 +10,7 @@ export class UserEntity {
     password_hash?: string | null;
 
     constructor(partial: Partial<UserEntity>) {
+        console.log(partial)
         Object.assign(this, partial);
     }
 

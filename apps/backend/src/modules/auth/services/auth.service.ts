@@ -9,12 +9,14 @@ import { UserEntity } from "../entities/auth.entities";
 import { TokenEntity } from "../entities/token.entity";
 import { CodeEntity } from "../entities/code.entity";
 import { Errors } from "@/common/errors";
+import { UserService } from "@/modules/users";
 
 @injectable()
 export class AuthService {
     constructor(
         @inject(TYPES.Prisma) private prisma: PrismaClient,
-        @inject(TYPES.Redis) private redis: RedisClientType
+        @inject(TYPES.Redis) private redis: RedisClientType,
+        @inject(TYPES.UserService) private userService: UserService
     ) {}
 
     async sendCode(email: string) {
@@ -97,16 +99,9 @@ export class AuthService {
             expires_in: 15 * 60,
         });
 
-        const userEntity = new UserEntity({
-            id: user.id,
-            email: user.email,
-            username: user.username,
-            avatar_url: user.user_profile?.avatar_url || null,
-            birth_date: user.user_profile?.birth_date || null,
-            number: user.number ?? null,
-        });
+        const user_profile = await this.userService.getProfileById(user.id)
 
-        return { token: tokenEntity, user: userEntity };
+        return { token: tokenEntity, user: user_profile };
     }
 
     async refresh(refreshToken: string) {
@@ -135,14 +130,9 @@ export class AuthService {
             refresh_token: refreshToken,
             expires_in: 15 * 60,
         });
+        
+        const user_profile = await this.userService.getProfileById(decoded.id)
 
-        const userEntity = new UserEntity({
-            id: dbUser.id,
-            email: dbUser.email,
-            username: dbUser.username,
-            avatar_url: dbUser.user_profile?.avatar_url || null,
-        });
-
-        return { token: tokenEntity, user: userEntity };
+        return { token: tokenEntity, user: user_profile };
     }
 }

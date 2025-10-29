@@ -23,16 +23,16 @@ app.use(cookieParser());
 app.use(express.json());
 
 // routes
-app.use("/api/auth", authModule);
+app.use("/api/auth", authModule());
 // app.use("/api/chats", chatRouter);
-app.use("/api/friends", friendModule);
+app.use("/api/friends", friendModule());
 // app.use("/api/messages", messagesRouter);
 // app.use("/api/moderation", moderationRouter);
-app.use("/api/notifications", notificationModule);
+app.use("/api/notifications", notificationModule());
 // app.use("/api/servers", rolesRouter);
 // app.use("/api/search", searchRouter);
 // app.use("/api/servers", serverRouter);
-app.use("/api/users", userModule);
+app.use("/api/users", userModule());
 // app.use("/api/servers", planningRouter);
 
 app.use(errorHandler);

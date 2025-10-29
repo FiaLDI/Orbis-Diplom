@@ -19,7 +19,7 @@ export const GetUserChatsSchema = z.object({
         const age = yearNow - d.getFullYear();
 
         return age >= MIN_AGE && age <= MAX_AGE;
-    }, "Birth date is out of allowed range"),
+    }, "Birth date is out of allowed range").optional(),
     avatar_url: z.string().optional(),
     gender: z.string().optional(),
     location: z.string().optional(),

@@ -61,8 +61,8 @@ export class AuthController {
 
             return res.json({
                 access_token: token.access_token,
-                username: user.username,
-                info: user.toPublic(),
+                username: user.toJSON().username,
+                info: user.toJSON(),
             });
         } catch (err) {
             next(err);
@@ -79,12 +79,8 @@ export class AuthController {
 
             return res.json({
                 access_token: token.access_token,
-                username: user.username,
-                info: {
-                    id: user.id,
-                    username: user.username,
-                    avatar_url: user.avatar_url ?? null,
-                },
+                username: user.toJSON().username,
+                info: user.toJSON(),
             });
         } catch (err) {
             next(err);
