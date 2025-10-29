@@ -13,17 +13,21 @@ export const Component: React.FC<ChatListProps> = ({ isServer, search }) => {
     const filteredPersonal = useMemo(() => {
         if (!personalChats) return [];
 
-        return personalChats.filter(
-            (c) =>
-                c.name?.toLowerCase().includes(normalizedSearch.toLowerCase()) ||
-                c.username?.toLowerCase().includes(normalizedSearch.toLowerCase())
-        );
+        return personalChats.filter((c) => {
+            const matchTitle = c.title?.toLowerCase().includes(normalizedSearch);
+            const matchMember = c.members?.some((m: any) =>
+                m.username?.toLowerCase().includes(normalizedSearch)
+            );
+
+            return matchTitle || matchMember;
+        });
     }, [personalChats, normalizedSearch]);
+
 
     const filteredServer = useMemo(() => {
         if (!serverChats) return [];
         return serverChats.filter((c) =>
-            c.name?.toLowerCase().includes(normalizedSearch.toLowerCase())
+            c.title?.toLowerCase().includes(normalizedSearch.toLowerCase())
         );
     }, [serverChats, normalizedSearch]);
 

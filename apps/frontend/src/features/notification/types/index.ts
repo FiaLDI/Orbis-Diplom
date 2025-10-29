@@ -9,6 +9,6 @@ export interface Notification {
 }
 
 export interface NotificationState {
-    list: Notification[];
+    list: Notification[]
     onlineUsers: number[];
 }

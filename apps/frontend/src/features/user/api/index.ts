@@ -20,8 +20,8 @@ export const userApi = createApi({
     }),
     endpoints: (builder) => ({
         GetChatsUsers: builder.query({
-            query: (id) => ({
-                url: `/users/${id}/chats`,
+            query: () => ({
+                url: `/users/chats`,
                 method: "GET",
             }),
         }),

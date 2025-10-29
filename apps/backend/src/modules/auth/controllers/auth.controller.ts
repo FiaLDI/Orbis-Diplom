@@ -20,7 +20,6 @@ export class AuthController {
             return res.json({
                 message: "Verification code generated and stored",
                 email: codeEntity.email,
-                code: codeEntity.code, // dev only
             });
         } catch (err) {
             next(err);

@@ -8,8 +8,8 @@ const controller = container.get<NotificationController>(TYPES.NotificationContr
 const auth = container.get<AuthMiddleware>(TYPES.AuthMiddleware);
 export const notificationModule = express.Router();
 
-// notificationModule.get("/", auth.handle.bind(auth), controller.getNotifications.bind(controller));
-// notificationModule.post("/read/:id", auth.handle.bind(auth), controller.markNotificationRead.bind(controller));
-// notificationModule.delete("/:id", auth.handle.bind(auth),  controller.deleteNotification.bind(controller));
-// notificationModule.post("/read", auth.handle.bind(auth), controller.markAllNotificationRead.bind(controller));
-// notificationModule.delete("/", auth.handle.bind(auth),  controller.deleteAllNotification.bind(controller));
+notificationModule.get("/", auth.handle.bind(auth), controller.getNotifications.bind(controller));
+notificationModule.put("/:id/read", auth.handle.bind(auth), controller.markNotificationRead.bind(controller));
+notificationModule.delete("/:id", auth.handle.bind(auth),  controller.markNotificationDelete.bind(controller));
+notificationModule.put("/read", auth.handle.bind(auth), controller.markAllNotificationRead.bind(controller));
+notificationModule.delete("/", auth.handle.bind(auth),  controller.markAllNotificationDelete.bind(controller));

@@ -32,4 +32,48 @@ export class NotificationService {
             emitNotification(userId, notif);
         }
     }
+    
+    async getNotifications(id: number) {
+      const notifications = await this.prisma.notifications.findMany({
+          where: { user_id: id },
+          orderBy: { created_at: "desc" },
+          take: 50,
+      });
+
+      return notifications
+    }
+
+    async markNotificationRead(id: number, notificationId: number) {
+        await this.prisma.notifications.updateMany({
+            where: { id: notificationId, user_id: id },
+            data: { is_read: true },
+        });
+
+      return { message: `Success mark as read ${notificationId}` }
+    }
+
+    async deleteNotification(id: number, notificationId: number) {
+        await this.prisma.notifications.deleteMany({
+            where: { id: notificationId, user_id: id },
+        });
+
+      return { message: `Success delete ${notificationId}` }
+    }
+
+    async markAllNotificationRead(id: number) {
+        await this.prisma.notifications.updateMany({
+            where: { user_id: id },
+            data: { is_read: true },
+        });
+
+      return { message: "Success mark as read all" }
+    }
+
+    async deleteAllNotification(id: number) {
+        await this.prisma.notifications.deleteMany({
+            where: { user_id: id },
+        });
+
+      return { message: "Success delete all" }
+    }
 }

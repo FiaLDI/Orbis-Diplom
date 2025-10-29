@@ -34,7 +34,7 @@ const userSlice = createSlice({
                 state.loadedProfiles?.push(action.payload);
             })
             .addMatcher(userApi.endpoints.GetChatsUsers.matchFulfilled, (state, action) => {
-                state.chats = action.payload;
+                state.chats = action.payload.data;
             });
     },
 });
