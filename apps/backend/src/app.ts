@@ -9,6 +9,7 @@ import { AuthMiddleware } from "./middleware/auth.middleware";
 import { friendModule } from "./modules/friends/module";
 import { userModule } from "./modules/users";
 import { notificationModule } from "./modules/notifications";
+import { chatModule, messageModule } from "./modules";
 
 export const app = express();
 
@@ -24,9 +25,9 @@ app.use(express.json());
 
 // routes
 app.use("/api/auth", authModule());
-// app.use("/api/chats", chatRouter);
+app.use("/api/chats", chatModule());
 app.use("/api/friends", friendModule());
-// app.use("/api/messages", messagesRouter);
+app.use("/api/messages", messageModule());
 // app.use("/api/moderation", moderationRouter);
 app.use("/api/notifications", notificationModule());
 // app.use("/api/servers", rolesRouter);

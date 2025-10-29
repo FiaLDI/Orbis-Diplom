@@ -120,7 +120,7 @@ export const getMessages = async (req: AuthRequest, res: Response) => {
 };
 
 export const sendMessages = async (req: AuthRequest, res: Response) => {
-    const { chat_id, content, reply_to_id } = req.body;
+    const { chatId, content, replyToId } = req.body;
     const user = req.user;
 
     try {
@@ -155,9 +155,9 @@ export const sendMessages = async (req: AuthRequest, res: Response) => {
 
         const message = await prisma.messages.create({
             data: {
-                chat_id: Number(chat_id),
+                chat_id: Number(chatId),
                 user_id: user.id,
-                reply_to_id: reply_to_id ? Number(reply_to_id) : null,
+                reply_to_id: replyToId ? Number(replyToId) : null,
                 is_edited: false,
                 created_at: new Date(),
                 messages_content: {
@@ -173,18 +173,17 @@ export const sendMessages = async (req: AuthRequest, res: Response) => {
 
         const fullMessage = {
             id: message.id,
-            chat_id,
+            chatId,
             user_id: user.id,
             username: user.username,
             reply_to_id: message.reply_to_id ? Number(message.reply_to_id) : null,
             is_edited: message.is_edited,
             content: contentsRow,
-            // ✅ теперь ISO
             timestamp: message.created_at ? message.created_at.toISOString() : "",
             updated_at: null,
         };
 
-        emitTo("chat", `chat_${chat_id}`, "new-message", fullMessage);
+        emitTo("chat", `chat_${chatId}`, "new-message", fullMessage);
 
         return res.status(200).json(fullMessage);
     } catch (err) {

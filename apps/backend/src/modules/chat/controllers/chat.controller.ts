@@ -1,182 +1,56 @@
-import { Request, Response } from "express";
-import { prisma } from "@/config";
-import jwt from "jsonwebtoken";
+import { injectable, inject } from "inversify";
+import { Request, Response, NextFunction } from "express";
+import { TYPES } from "@/di/types";
+import { ChatService } from "../services/chat.service";
+import { UpdateChatSchema } from "../dtos/update.chat.dto";
+import { DeleteChatSchema } from "../dtos/delete.chat.dto";
+import { StartChatSchema } from "../dtos/start.chat.dto";
 
-export const getChats = async (req: Request, res: Response) => {
-    try {
-        const { userId } = req.query;
+@injectable()
+export class ChatController {
+    constructor(@inject(TYPES.ChatService) private chatService: ChatService) {}
 
-        const where = userId
-            ? {
-                  chat_users: {
-                      some: { user_id: Number(userId) },
-                  },
-              }
-            : {};
+    updateChat = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = UpdateChatSchema.parse({
+                ...(req as any).user, chatId: parseInt(req.params.id), name: req.body.name  
+            });
+            const entity = await this.chatService.updateChat(dto.id, dto.chatId, dto.name);
 
-        const chats = await prisma.chats.findMany({
-            where,
-            include: {
-                chat_users: { include: { users: true } },
-                messages: { take: 10, orderBy: { created_at: "desc" } },
-            },
-        });
-
-        res.json(chats);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
-    }
-};
-
-export const getChatById = async (req: Request, res: Response) => {
-    try {
-        const id = Number(req.params.id);
-        const chat = await prisma.chats.findUnique({
-            where: { id },
-            include: { chat_users: true, messages: true },
-        });
-        if (!chat) return res.sendStatus(404);
-        res.json(chat);
-    } catch (err) {
-        res.status(500).json({ message: "Server error" });
-    }
-};
-
-export const createChat = async (req: Request, res: Response) => {
-    try {
-        const { creator_id, name } = req.body;
-        const chat = await prisma.chats.create({
-            data: {
-                creator_id,
-                created_at: new Date(),
-                name,
-            },
-        });
-        res.status(201).json(chat);
-    } catch (err) {
-        res.status(500).json({ message: "Server error" });
-    }
-};
-
-export const updateChat = async (req: Request, res: Response) => {
-    try {
-        const id = Number(req.params.id);
-        const { name } = req.body;
-        const chat = await prisma.chats.update({
-            where: { id },
-            data: { name },
-        });
-        res.json(chat);
-    } catch (err) {
-        res.status(500).json({ message: "Server error" });
-    }
-};
-
-export const deleteChat = async (req: Request, res: Response) => {
-    try {
-        const id = Number(req.params.id);
-        await prisma.chats.delete({ where: { id } });
-        res.json({ message: "Deleted" });
-    } catch (err) {
-        res.status(500).json({ message: "Server error" });
-    }
-};
-
-export const startChat = async (req: Request, res: Response) => {
-    const id_user = parseInt(req.params.id, 10);
-    if (isNaN(id_user)) {
-        return res.status(400).json({ error: "Invalid user id" });
-    }
-
-    try {
-        const token = req.headers["authorization"]?.split(" ")[1];
-        if (!token) return res.sendStatus(401);
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
-        if (!decoded) return res.sendStatus(401);
-
-        const existingChat = await prisma.$queryRaw<{ chat_id: number; u1: string; u2: string }[]>`
-            SELECT cu1.chat_id, u1.username as u1, u2.username as u2
-            FROM chat_users cu1
-            JOIN chat_users cu2 ON cu1.chat_id = cu2.chat_id
-            JOIN users u1 ON u1.id = cu1.user_id
-            JOIN users u2 ON u2.id = cu2.user_id
-            WHERE cu1.user_id = ${Number(decoded.id)} AND cu2.user_id = ${id_user}
-        `;
-
-        const u1 = await prisma.users.findUnique({
-            where: { id: Number(decoded.id) },
-            select: { username: true },
-        });
-        const u2 = await prisma.users.findUnique({
-            where: { id: Number(id_user) },
-            select: { username: true },
-        });
-
-        if (!u1 || !u2) {
-            return res.status(404).json({ message: "User not found" });
+            return res.json({
+                message: "Updated chat",
+                data: entity,
+            });
+        } catch (err) {
+            next(err);
         }
+    };
 
-        if (existingChat.length > 0) {
-            return res.status(400).json({
-                message: "Chat already exists",
-                chatId: existingChat[0].chat_id,
+    deleteChat = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = DeleteChatSchema.parse({ ...(req as any).user, chatId: parseInt(req.params.id) });
+            const entity = await this.chatService.deleteChat(dto.id, dto.chatId);
+
+            return res.json({
+                message: "Chat deleted",
+                data: entity,
             });
+        } catch (err) {
+            next(err);
         }
+    };
 
-        const chat = await prisma.$transaction(async (tx) => {
-            const createdChat = await tx.chats.create({
-                data: {
-                    name: `${u1.username}, ${u2.username}`,
-                    creator_id: decoded.id,
-                    created_at: new Date(),
-                },
+    startChat = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = StartChatSchema.parse({ ...(req as any).user, userId: parseInt(req.params.id) });
+            const entity = await this.chatService.startChat(dto.id, dto.userId);
+
+            return res.json({
+                message: "Chat started",
+                data: entity,
             });
-
-            await tx.chat_users.createMany({
-                data: [
-                    { user_id: decoded.id, chat_id: createdChat.id },
-                    { user_id: Number(id_user), chat_id: createdChat.id },
-                ],
-            });
-
-            return createdChat;
-        });
-
-        res.json({ message: "Success", chatId: chat.id });
-    } catch (err) {
-        console.error(err);
-        res.status(401).json({ message: "need refresh" });
-    }
-};
-
-// GET /chats/unread
-export const getUnreadCounts = async (req: any, res: Response) => {
-    const userId = req.user.id;
-
-    try {
-        const unreadCounts = await prisma.$queryRaw<{ chat_id: number; unread_count: bigint }[]>`
-      SELECT c.id as chat_id,
-             COUNT(m.id) as unread_count
-      FROM chat_users cu
-      JOIN chats c ON c.id = cu.chat_id
-      LEFT JOIN message_reads mr 
-        ON mr.chat_id = c.id AND mr.user_id = ${userId}
-      JOIN messages m ON m.chat_id = c.id
-      WHERE cu.user_id = ${userId}
-        AND (mr.last_read_message_id IS NULL OR m.id > mr.last_read_message_id)
-      GROUP BY c.id
-    `;
-
-        // конвертируем bigint → number для JSON
-        const formatted = unreadCounts.map((row) => ({
-            chat_id: row.chat_id,
-            unread_count: Number(row.unread_count),
-        }));
-
-        res.json(formatted);
-    } catch (err) {
-        console.error("Error in getUnreadCounts:", err);
-        res.status(500).json({ message: "Internal server error" });
-    }
-};
+        } catch (err) {
+            next(err);
+        }
+    };
+}

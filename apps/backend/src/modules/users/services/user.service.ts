@@ -7,12 +7,13 @@ import { Errors } from "@/common/errors";
 import { UserProfile } from "../entity/user.profile";
 import { GetUserChatsDto } from "../dtos/user.chats.dto";
 import { UserUpdate } from "../entity/user.update";
+import { ChatService } from "@/modules/chat";
 
 @injectable()
 export class UserService {
     constructor(
         @inject(TYPES.Prisma) private prisma: PrismaClient,
-        @inject(TYPES.Redis) private redis: RedisClientType
+        @inject(TYPES.ChatService) private chatService: ChatService
     ) {}
 
     async getProfileById(id: number) {
@@ -43,16 +44,7 @@ export class UserService {
     }
 
     async getUserChats(id: number) {
-        const chats = await this.prisma.chats.findMany({
-            where: {
-                chat_users: {
-                    some: { user_id: id },
-                },
-            },
-            include: {
-                chat_users: true,
-            },
-        });
+        const chats = await this.chatService.getUsersChat(id)
 
         const chatsWithProfiles = await Promise.all(
             chats.map(async (chat) => {
@@ -73,7 +65,6 @@ export class UserService {
         );
 
         return chatsWithProfiles;
-        
     }
 
     async updateUser(dto: Partial<GetUserChatsDto>) {

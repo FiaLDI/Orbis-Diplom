@@ -14,5 +14,11 @@ export const TYPES = {
     NotificationService: Symbol.for("NotificationService"),
     NotificationController: Symbol.for("NotificationController"),
 
+    ChatService: Symbol.for("ChatService"),
+    ChatController: Symbol.for("ChatController"),
+    
+    MessageService: Symbol.for("MessageService"),
+    MessageController: Symbol.for("MessageController"),
+
     AuthMiddleware: Symbol.for("AuthMiddleware"),
 };
