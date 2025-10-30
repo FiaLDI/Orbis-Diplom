@@ -1,1 +1,2 @@
-export * from "./routes/chat.routes";
+export * from "./module";
+export * from "./services/chat.service";

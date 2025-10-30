@@ -24,20 +24,19 @@ const friendSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-
             .addMatcher(friendsApi.endpoints.getFriend.matchFulfilled, (state, action) => {
-                state.friends = action.payload;
+                state.friends = action.payload.data;
             })
             .addMatcher(
                 friendsApi.endpoints.getIncomingRequests.matchFulfilled,
                 (state, action) => {
-                    state.friends = action.payload;
+                    state.friends = action.payload.data;
                 }
             )
             .addMatcher(
                 friendsApi.endpoints.getOutcomingRequests.matchFulfilled,
                 (state, action) => {
-                    state.friends = action.payload;
+                    state.friends = action.payload.data;
                 }
             );
     },

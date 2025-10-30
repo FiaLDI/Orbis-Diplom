@@ -104,22 +104,11 @@ export const Component: React.FC = () => {
         const content = createContentArray();
         if (!content.length) return;
 
-        const newMessage: Message = {
-            id: Date.now(),
-            chat_id: Number(activeChat.id),
-            user_id: Number(auth?.id ?? 0),
-            username: auth?.username ?? "Unknown",
-            is_edited: false,
-            timestamp: new Date().toISOString(),
-            reply_to_id: replyTo ? Number(replyTo) : undefined,
-            content,
-        };
-
         try {
             await createMessage({
-                chat_id: Number(activeChat.id),
-                content: newMessage.content,
-                reply_to_id: newMessage.reply_to_id,
+                chatId: Number(activeChat.id),
+                content: content,
+                replyToId: replyTo ? Number(replyTo) : undefined,
             }).unwrap();
         } catch (err) {
             console.error("Ошибка при отправке:", err);

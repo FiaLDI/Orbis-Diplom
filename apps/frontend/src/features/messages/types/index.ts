@@ -7,15 +7,15 @@ export interface MessageContent {
 
 export interface Message {
     id: number;
-    chat_id: number;
-    user_id: number;
+    chatId: number;
+    userId: number;
     username: string;
-    avatar_url?: string | null;
-    reply_to_id?: number | null;
-    is_edited: boolean;
+    avatarUrl?: string | null;
+    replyToId?: number | null;
+    isEdited: boolean;
     content: MessageContent[];
-    timestamp: string;
-    updated_at?: string | null;
+    createdAt: string;
+    updatedAt?: string | null;
 }
 
 export interface Content {
@@ -31,7 +31,7 @@ export interface messageSliceState {
     activeHistory: Message[];
     histories: Record<string, ChatHistory>;
     openMessage?: Message;
-    uploadstate: boolean;
+    uploadstate: boolean;   
     activeChat?: {
         id: string;
         name?: string;

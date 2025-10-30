@@ -44,3 +44,4 @@ export interface UserInfo {
     location?: string | null;
     is_blocked?: boolean;
 }
+

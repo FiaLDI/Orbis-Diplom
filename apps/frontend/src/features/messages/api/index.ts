@@ -26,26 +26,26 @@ export const messageApi = createApi({
             }),
         }),
         GetMessage: builder.query({
-            query: ({ chat_id, id }) => ({
-                url: `/message?chat_id=${chat_id}&message_id=${id}`,
+            query: ({ chatId, id }) => ({
+                url: `/message?chat_id=${chatId}&message_id=${id}`,
                 method: "GET",
             }),
         }),
         createMessage: builder.mutation({
-            query: ({ chat_id, content, reply_to_id }) => ({
-                url: `/messages/chats/${chat_id}/messages`,
+            query: ({ chatId, content, replyToId }) => ({
+                url: `/messages/chats/${chatId}/messages`,
                 method: "POST",
-                body: { chat_id, content, reply_to_id },
+                body: { chatId, content, replyToId },
             }),
         }),
         RemoveMessage: builder.mutation({
-            query: ({ chat_id, id }) => ({
+            query: ({ chatId, id }) => ({
                 url: `/messages/${id}`,
                 method: "DELETE",
             }),
         }),
         EditMessage: builder.mutation({
-            query: ({ chat_id, id, content }) => ({
+            query: ({ chatId, id, content }) => ({
                 url: `/messages/${id}`,
                 method: "PUT",
                 body: { content },

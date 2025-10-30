@@ -33,22 +33,22 @@ const CoreComponent: React.FC<SingleMessageProps> = ({ message, onClick, current
     const activeChatId = useAppSelector((s) => s.chat.activeChat?.id);
 
     const repliedMsg = useMemo(() => {
-        if (!message.reply_to_id || !activeChatId) return null;
+        if (!message.replyToId || !activeChatId) return null;
         const messages = allHistories?.[activeChatId] ?? [];
-        return messages.find((m) => m.id === message.reply_to_id) ?? null;
-    }, [message.reply_to_id, activeChatId, allHistories]);
+        return messages.find((m) => m.id === message.replyToId) ?? null;
+    }, [message.replyToId, activeChatId, allHistories]);
 
     useEffect(() => {
         if (isEditing) inputRef.current?.focus();
     }, [isEditing]);
 
     const avatarSrc =
-        message.user_id === currentUser?.id && currentUser?.avatar_url
+        message.userId === currentUser?.id && currentUser?.avatar_url
             ? currentUser.avatar_url
-            : message.avatar_url
-              ? message.avatar_url.startsWith("http")
-                  ? message.avatar_url
-                  : `${config.cdnServiceUrl}/${message.avatar_url}`
+            : message.avatarUrl
+              ? message.avatarUrl.startsWith("http")
+                  ? message.avatarUrl
+                  : `${config.cdnServiceUrl}/${message.avatarUrl}`
               : "img/icon.png";
 
     const handleFilesSelect = async (files: FileList | File[]) => {
@@ -96,7 +96,7 @@ const CoreComponent: React.FC<SingleMessageProps> = ({ message, onClick, current
                 updateMessageInHistory({
                     ...message,
                     content,
-                    is_edited: true,
+                    isEdited: true,
                 })
             );
             dispatch(resetUpload());
@@ -133,7 +133,7 @@ const CoreComponent: React.FC<SingleMessageProps> = ({ message, onClick, current
                 <h3 className="text-3xl lg:text-base font-semibold">
                     {message.username}{" "}
                     <span className="text-2xl lg:text-sm opacity-70">
-                        {new Date(message.timestamp).toLocaleTimeString([], {
+                        {new Date(message.createdAt).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
                         })}
@@ -156,10 +156,10 @@ const CoreComponent: React.FC<SingleMessageProps> = ({ message, onClick, current
                     >
                         <img
                             src={
-                                repliedMsg.avatar_url
-                                    ? repliedMsg.avatar_url.startsWith("http")
-                                        ? repliedMsg.avatar_url
-                                        : `${config.cdnServiceUrl}/${repliedMsg.avatar_url}`
+                                repliedMsg.avatarUrl
+                                    ? repliedMsg.avatarUrl.startsWith("http")
+                                        ? repliedMsg.avatarUrl
+                                        : `${config.cdnServiceUrl}/${repliedMsg.avatarUrl}`
                                     : "img/icon.png"
                             }
                             alt={`Аватар ${repliedMsg.username}`}
@@ -172,7 +172,7 @@ const CoreComponent: React.FC<SingleMessageProps> = ({ message, onClick, current
                                     {repliedMsg.username}
                                 </span>
                                 <span className="opacity-70">
-                                    {new Date(repliedMsg.timestamp).toLocaleTimeString([], {
+                                    {new Date(repliedMsg.createdAt).toLocaleTimeString([], {
                                         hour: "2-digit",
                                         minute: "2-digit",
                                     })}
@@ -284,7 +284,6 @@ const CoreComponent: React.FC<SingleMessageProps> = ({ message, onClick, current
                     <>
                         {message.content?.map((val) => {
                             if (!val) return null;
-
                             if (val.type === "text")
                                 return (
                                     <div
@@ -292,7 +291,7 @@ const CoreComponent: React.FC<SingleMessageProps> = ({ message, onClick, current
                                         className="text-3xl lg:text-base break-words whitespace-pre-wrap"
                                     >
                                         {val.text}
-                                        {message.is_edited && (
+                                        {message.isEdited && (
                                             <span className="text-xs text-gray-400 ml-2">
                                                 {t("edited")}
                                             </span>

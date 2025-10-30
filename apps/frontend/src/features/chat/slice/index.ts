@@ -16,7 +16,6 @@ const chatSlice = createSlice({
         builder.addMatcher(
             chatApi.endpoints.updateChat.matchFulfilled,
             (state: any, action: any) => {
-                console.log(action.payload);
                 state.activeChat = {
                     ...state.activeChat,
                     name: action.payload.name,

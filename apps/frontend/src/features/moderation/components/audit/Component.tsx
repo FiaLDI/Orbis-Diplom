@@ -39,8 +39,8 @@ export const Component: React.FC = () => {
     const refreshData = async () => {
         if (!activeserver?.id) return;
         await Promise.all([
-            refetch(), // обновить аудит-лог
-            triggerMembers(activeserver.id), // обновить участников
+            refetch(),
+            triggerMembers(activeserver.id),
         ]);
     };
 
@@ -49,7 +49,7 @@ export const Component: React.FC = () => {
         const reason = reasonMap[userId]?.trim() || undefined;
         try {
             await banUser({ serverId: activeserver.id, userId, reason }).unwrap();
-            await refreshData(); // ✅ обновить данные
+            await refreshData();
         } catch (err: any) {
             console.error("Ban error:", err);
         }
@@ -59,7 +59,7 @@ export const Component: React.FC = () => {
         if (!activeserver?.id || userId === Number(meId)) return;
         try {
             await unbanUser({ serverId: activeserver.id, userId }).unwrap();
-            await refreshData(); // ✅ обновить данные
+            await refreshData();
         } catch (err: any) {
             console.error("Unban error:", err);
         }
@@ -69,7 +69,7 @@ export const Component: React.FC = () => {
         if (!activeserver?.id || userId === Number(meId)) return;
         try {
             await kickUser({ serverId: activeserver.id, userId }).unwrap();
-            await refreshData(); // ✅ обновить данные
+            await refreshData();
         } catch (err: any) {
             console.error("Kick error:", err);
         }
@@ -219,7 +219,7 @@ export const Component: React.FC = () => {
                                 <div className="opacity-60">{t("audit.banned.loading")}</div>
                             )}
                             {!bannedUsers?.length && !isBannedFetching && (
-                                <div className="opacity-60">{t("audit.banned.nobaning")}</div>
+                                <div className="opacity-60">{t("audit.banned.nobanned")}</div>
                             )}
 
                             <div className="max-h-[300px] overflow-y-auto scroll-hidden">

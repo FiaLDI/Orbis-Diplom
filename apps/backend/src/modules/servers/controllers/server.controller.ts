@@ -7,15 +7,10 @@ const getServers = async (req: Request, res: Response) => {
     try {
         const token = req.headers["authorization"]?.split(" ")[1];
         if (!token) {
-            return res
-                .status(401)
-                .json({ message: "Authorization token missing" });
+            return res.status(401).json({ message: "Authorization token missing" });
         }
 
-        const decoded = jwt.verify(
-            token,
-            process.env.ACCESS_TOKEN_SECRET!,
-        ) as any;
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
 
         const servers = await prisma.servers.findMany({
             where: {
@@ -38,9 +33,7 @@ const getServers = async (req: Request, res: Response) => {
         console.error("Error in getServers:", err);
 
         if (err instanceof jwt.JsonWebTokenError) {
-            return res
-                .status(401)
-                .json({ message: "Invalid or expired token" });
+            return res.status(401).json({ message: "Invalid or expired token" });
         }
 
         return res.status(500).json({ message: "Internal server error" });
@@ -84,10 +77,7 @@ const getServerInfo = async (req: Request, res: Response) => {
         const token = req.headers["authorization"]?.split(" ")[1];
         if (!token) return res.sendStatus(401);
 
-        const decoded = jwt.verify(
-            token,
-            process.env.ACCESS_TOKEN_SECRET!,
-        ) as any;
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
 
         // Получаем сервер с чатами и голосовыми каналами
         const server = await prisma.servers.findUnique({
@@ -129,155 +119,159 @@ const getServerInfo = async (req: Request, res: Response) => {
 };
 
 const createServer = async (req: Request, res: Response) => {
-  const { name } = req.body;
+    const { name } = req.body;
 
-  try {
-    const token = req.headers["authorization"]?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "Token is missing" });
+    try {
+        const token = req.headers["authorization"]?.split(" ")[1];
+        if (!token) return res.status(401).json({ message: "Token is missing" });
 
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
-    if (!decoded) return res.status(401).json({ message: "Invalid token" });
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
+        if (!decoded) return res.status(401).json({ message: "Invalid token" });
 
-    const result = await prisma.$transaction(async (tx) => {
-      // сервер
-      const server = await tx.servers.create({
-        data: {
-          creator_id: decoded.id,
-          name,
-          created_at: new Date(),
-          updated_at: new Date(),
-        },
-      });
+        const result = await prisma.$transaction(async (tx) => {
+            // сервер
+            const server = await tx.servers.create({
+                data: {
+                    creator_id: decoded.id,
+                    name,
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                },
+            });
 
-      // роль creator
-      const creatorRole = await tx.role_server.create({
-        data: { name: "creator", server_id: server.id },
-      });
+            // роль creator
+            const creatorRole = await tx.role_server.create({
+                data: { name: "creator", server_id: server.id },
+            });
 
-      // роль default
-      const defaultRole = await tx.role_server.create({
-        data: { name: "default", server_id: server.id },
-      });
+            // роль default
+            const defaultRole = await tx.role_server.create({
+                data: { name: "default", server_id: server.id },
+            });
 
-      // все права
-      const allPerms = await tx.permission_type.findMany();
+            // все права
+            const allPerms = await tx.permission_type.findMany();
 
-      // creator получает все
-      await tx.role_permission.createMany({
-        data: allPerms.map((p) => ({
-          role_id: creatorRole.id,
-          permission_id: p.id,
-        })),
-      });
+            // creator получает все
+            await tx.role_permission.createMany({
+                data: allPerms.map((p) => ({
+                    role_id: creatorRole.id,
+                    permission_id: p.id,
+                })),
+            });
 
-      // default получает только ограниченный список
-      const defaultPerms = ["MANAGE_MESSAGES", "SEND_MESSAGES", "ATTACH_FILES", "VIEW_CHANNEL"];
-      const allowed = allPerms.filter((p) => defaultPerms.includes(p.name));
+            // default получает только ограниченный список
+            const defaultPerms = [
+                "MANAGE_MESSAGES",
+                "SEND_MESSAGES",
+                "ATTACH_FILES",
+                "VIEW_CHANNEL",
+            ];
+            const allowed = allPerms.filter((p) => defaultPerms.includes(p.name));
 
-      await tx.role_permission.createMany({
-        data: allowed.map((p) => ({
-          role_id: defaultRole.id,
-          permission_id: p.id,
-        })),
-      });
+            await tx.role_permission.createMany({
+                data: allowed.map((p) => ({
+                    role_id: defaultRole.id,
+                    permission_id: p.id,
+                })),
+            });
 
-      // участник (создатель сервера)
-      await tx.user_server.create({
-        data: {
-          user_id: decoded.id,
-          server_id: server.id,
-          created_at: new Date(),
-        },
-      });
+            // участник (создатель сервера)
+            await tx.user_server.create({
+                data: {
+                    user_id: decoded.id,
+                    server_id: server.id,
+                    created_at: new Date(),
+                },
+            });
 
-      // creator назначается создателю
-      await tx.user_server_roles.create({
-        data: {
-          user_id: decoded.id,
-          server_id: server.id,
-          role_id: creatorRole.id,
-        },
-      });
+            // creator назначается создателю
+            await tx.user_server_roles.create({
+                data: {
+                    user_id: decoded.id,
+                    server_id: server.id,
+                    role_id: creatorRole.id,
+                },
+            });
 
-      return server;
-    });
+            return server;
+        });
 
-    res.status(200).json({
-      message: "Server created successfully",
-      serverId: result.id,
-    });
-  } catch (err) {
-    if (err instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({ message: "Invalid or expired token" });
+        res.status(200).json({
+            message: "Server created successfully",
+            serverId: result.id,
+        });
+    } catch (err) {
+        if (err instanceof jwt.JsonWebTokenError) {
+            return res.status(401).json({ message: "Invalid or expired token" });
+        }
+        console.error("Server creation error:", err);
+        res.status(500).json({ message: "Internal server error" });
     }
-    console.error("Server creation error:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
 };
 
-
 const joinServer = async (req: Request, res: Response) => {
-  const serverId = parseInt(req.params.id, 10);
-  if (!serverId) return res.status(400).json({ message: "Server ID is required" });
+    const serverId = parseInt(req.params.id, 10);
+    if (!serverId) return res.status(400).json({ message: "Server ID is required" });
 
-  try {
-    const token = req.headers["authorization"]?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "Token is missing" });
+    try {
+        const token = req.headers["authorization"]?.split(" ")[1];
+        if (!token) return res.status(401).json({ message: "Token is missing" });
 
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
-    if (!decoded) return res.status(401).json({ message: "Invalid token" });
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
+        if (!decoded) return res.status(401).json({ message: "Invalid token" });
 
-    const userId = decoded.id;
+        const userId = decoded.id;
 
-    // Проверяем, состоит ли уже юзер в сервере
-    const existing = await prisma.user_server.findUnique({
-      where: {
-        user_id_server_id: {
-          user_id: userId,
-          server_id: serverId,
-        },
-      },
-    });
-
-    if (existing) {
-      return res.status(409).json({ message: "User already joined this server" });
-    }
-
-    await prisma.$transaction(async (tx) => {
-      // создаём запись user_server
-      await tx.user_server.create({
-        data: {
-          user_id: userId,
-          server_id: serverId,
-          created_at: new Date(),
-        },
-      });
-
-      // ищем роль default для этого сервера
-      const defaultRole = await tx.role_server.findFirst({
-        where: { server_id: serverId, name: "default" },
-      });
-
-      if (defaultRole) {
-        // назначаем default роль
-        await tx.user_server_roles.create({
-          data: {
-            user_id: userId,
-            server_id: serverId,
-            role_id: defaultRole.id,
-          },
+        // Проверяем, состоит ли уже юзер в сервере
+        const existing = await prisma.user_server.findUnique({
+            where: {
+                user_id_server_id: {
+                    user_id: userId,
+                    server_id: serverId,
+                },
+            },
         });
-      }
-    });
 
-    res.status(200).json({ message: "Successfully joined the server" });
-  } catch (err) {
-    console.error("Join server error:", err);
-    if (err instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({ message: "Invalid or expired token" });
+        if (existing) {
+            return res.status(409).json({ message: "User already joined this server" });
+        }
+
+        await prisma.$transaction(async (tx) => {
+            // создаём запись user_server
+            await tx.user_server.create({
+                data: {
+                    user_id: userId,
+                    server_id: serverId,
+                    created_at: new Date(),
+                },
+            });
+
+            // ищем роль default для этого сервера
+            const defaultRole = await tx.role_server.findFirst({
+                where: { server_id: serverId, name: "default" },
+            });
+
+            if (defaultRole) {
+                // назначаем default роль
+                await tx.user_server_roles.create({
+                    data: {
+                        user_id: userId,
+                        server_id: serverId,
+                        role_id: defaultRole.id,
+                    },
+                });
+            }
+        });
+
+        res.status(200).json({ message: "Successfully joined the server" });
+    } catch (err) {
+        console.error("Join server error:", err);
+        if (err instanceof jwt.JsonWebTokenError) {
+            return res.status(401).json({ message: "Invalid or expired token" });
+        }
+        res.status(500).json({ message: "Internal server error" });
     }
-    res.status(500).json({ message: "Internal server error" });
-  }
 };
 
 const createChat = async (req: Request, res: Response) => {
@@ -287,10 +281,7 @@ const createChat = async (req: Request, res: Response) => {
         const token = req.headers["authorization"]?.split(" ")[1];
         if (!token) return res.sendStatus(401);
 
-        const decoded = jwt.verify(
-            token,
-            process.env.ACCESS_TOKEN_SECRET!,
-        ) as any;
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
         if (!decoded) return res.sendStatus(401);
 
         // Проверяем, что сервер существует
@@ -312,18 +303,15 @@ const createChat = async (req: Request, res: Response) => {
                         id_server: Number(id),
                     },
                 },
-                
             },
         });
-        emitTo("journal", `server:${id}`, "chat-created", { chatId: chat.id })
+        emitTo("journal", `server:${id}`, "chat-created", { chatId: chat.id });
 
         res.status(200).json({ message: "Successfully created the chat" });
     } catch (err) {
         console.error(err);
         if (err instanceof jwt.JsonWebTokenError) {
-            return res
-                .status(401)
-                .json({ message: "Invalid or expired token" });
+            return res.status(401).json({ message: "Invalid or expired token" });
         }
         res.status(500).json({ message: "Internal server error" });
     }
@@ -358,56 +346,55 @@ const updateServer = async (req: Request, res: Response) => {
 };
 
 const deleteServer = async (req: Request, res: Response) => {
-  const serverId = parseInt(req.params.id);
+    const serverId = parseInt(req.params.id);
 
-  try {
-    const token = req.headers["authorization"]?.split(" ")[1];
-    if (!token) return res.sendStatus(401);
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
+    try {
+        const token = req.headers["authorization"]?.split(" ")[1];
+        if (!token) return res.sendStatus(401);
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
 
-    const server = await prisma.servers.findUnique({ where: { id: serverId } });
-    if (!server) return res.status(404).json({ message: "Server not found" });
+        const server = await prisma.servers.findUnique({ where: { id: serverId } });
+        if (!server) return res.status(404).json({ message: "Server not found" });
 
-    if (server.creator_id !== decoded.id) {
-      return res.status(403).json({ message: "Forbidden" });
+        if (server.creator_id !== decoded.id) {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        await prisma.$transaction(async (tx) => {
+            // удаляем все user_server_roles
+            await tx.user_server_roles.deleteMany({ where: { server_id: serverId } });
+
+            // удаляем все user_server
+            await tx.user_server.deleteMany({ where: { server_id: serverId } });
+
+            // удаляем все роли
+            await tx.role_permission.deleteMany({
+                where: { role: { server_id: serverId } },
+            });
+            await tx.role_server.deleteMany({ where: { server_id: serverId } });
+
+            // удаляем все server_chats и сами чаты
+            await tx.server_chats.deleteMany({ where: { id_server: serverId } });
+            await tx.chats.deleteMany({
+                where: { server_chats: { some: { id_server: serverId } } },
+            });
+
+            // удаляем баны, инвайты, логи, репорты
+            await tx.server_bans.deleteMany({ where: { server_id: serverId } });
+            await tx.invites.deleteMany({ where: { server_id: serverId } });
+            await tx.audit_logs.deleteMany({ where: { server_id: serverId } });
+            await tx.reports.deleteMany({ where: { server_id: serverId } });
+
+            // сам сервер
+            await tx.servers.delete({ where: { id: serverId } });
+        });
+
+        res.json({ message: "Server and all related data deleted" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
     }
-
-    await prisma.$transaction(async (tx) => {
-      // удаляем все user_server_roles
-      await tx.user_server_roles.deleteMany({ where: { server_id: serverId } });
-
-      // удаляем все user_server
-      await tx.user_server.deleteMany({ where: { server_id: serverId } });
-
-      // удаляем все роли
-      await tx.role_permission.deleteMany({
-        where: { role: { server_id: serverId } },
-      });
-      await tx.role_server.deleteMany({ where: { server_id: serverId } });
-
-      // удаляем все server_chats и сами чаты
-      await tx.server_chats.deleteMany({ where: { id_server: serverId } });
-      await tx.chats.deleteMany({
-        where: { server_chats: { some: { id_server: serverId } } },
-      });
-
-      // удаляем баны, инвайты, логи, репорты
-      await tx.server_bans.deleteMany({ where: { server_id: serverId } });
-      await tx.invites.deleteMany({ where: { server_id: serverId } });
-      await tx.audit_logs.deleteMany({ where: { server_id: serverId } });
-      await tx.reports.deleteMany({ where: { server_id: serverId } });
-
-      // сам сервер
-      await tx.servers.delete({ where: { id: serverId } });
-    });
-
-    res.json({ message: "Server and all related data deleted" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal server error" });
-  }
 };
-
 
 // DELETE /servers/:id/members/:userId
 const kickMember = async (req: Request, res: Response) => {
@@ -490,68 +477,66 @@ const getServerChats = async (req: Request, res: Response) => {
 
 // GET /servers/:id/members
 const getServerMembers = async (req: Request, res: Response) => {
-  const serverId = parseInt(req.params.id, 10);
+    const serverId = parseInt(req.params.id, 10);
 
-  try {
-    const members = await prisma.users.findMany({
-      where: {
-        user_server: { some: { server_id: serverId } },
-      },
-      select: {
-        id: true,
-        username: true,
-        user_profile: {
-          select: {
-            avatar_url: true,
-            about: true,
-          },
-        },
-        user_server: {
-          where: { server_id: serverId },
-          select: {
-            roles: {
-              select: {
-                role: {
-                  select: {
-                    id: true,
-                    name: true,
-                    color: true,
-                    role_permission: {
-                      select: {
-                        permission: { select: { id: true, name: true } },
-                      },
-                    },
-                  },
-                },
-              },
+    try {
+        const members = await prisma.users.findMany({
+            where: {
+                user_server: { some: { server_id: serverId } },
             },
-          },
-        },
-      },
-    });
+            select: {
+                id: true,
+                username: true,
+                user_profile: {
+                    select: {
+                        avatar_url: true,
+                        about: true,
+                    },
+                },
+                user_server: {
+                    where: { server_id: serverId },
+                    select: {
+                        roles: {
+                            select: {
+                                role: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        color: true,
+                                        role_permission: {
+                                            select: {
+                                                permission: { select: { id: true, name: true } },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
 
-    // Преобразуем чтобы сразу получить permissions в удобном виде
-    const mapped = members.map((m) => ({
-      ...m,
-      user_server: m.user_server.map((us) => ({
-        ...us,
-        roles: us.roles.map((r) => ({
-          id: r.role.id,
-          name: r.role.name,
-          color: r.role.color,
-          permissions: r.role.role_permission.map((rp) => rp.permission),
-        })),
-      })),
-    }));
+        // Преобразуем чтобы сразу получить permissions в удобном виде
+        const mapped = members.map((m) => ({
+            ...m,
+            user_server: m.user_server.map((us) => ({
+                ...us,
+                roles: us.roles.map((r) => ({
+                    id: r.role.id,
+                    name: r.role.name,
+                    color: r.role.color,
+                    permissions: r.role.role_permission.map((rp) => rp.permission),
+                })),
+            })),
+        }));
 
-    res.json(mapped);
-  } catch (err) {
-    console.error("Error in getServerMembers:", err);
-    res.status(500).json({ message: "Internal server error" });
-  }
+        res.json(mapped);
+    } catch (err) {
+        console.error("Error in getServerMembers:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
 };
-
-
 
 // GET /servers/:id/chats/:chatId
 const getChatInfo = async (req: Request, res: Response) => {
@@ -610,7 +595,6 @@ const deleteChat = async (req: Request, res: Response) => {
     }
 };
 
-
 export {
     getServers,
     getServerInfo,
@@ -628,4 +612,3 @@ export {
     getChatInfo,
     deleteChat,
 };
-

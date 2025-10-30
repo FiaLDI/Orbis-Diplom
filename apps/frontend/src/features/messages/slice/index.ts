@@ -62,14 +62,12 @@ const messagesSlice = createSlice({
 
         updateMessageInHistory: (state, action: PayloadAction<Message>) => {
             const updated = action.payload;
-            const chatId = String(updated.chat_id);
+            const chatId = String(updated.chatId);
 
-            // Обновляем активную историю (если открыта)
             state.activeHistory = state.activeHistory.map((msg) =>
                 msg.id === updated.id ? updated : msg
             );
 
-            // Обновляем кеш истории чата (если сохранён)
             if (state.histories[chatId]) {
                 state.histories[chatId] = state.histories[chatId].map((msg) =>
                     msg.id === updated.id ? updated : msg
@@ -87,9 +85,9 @@ const messagesSlice = createSlice({
                 if (!state.histories) state.histories = {};
 
                 if (offset === 0) {
-                    state.histories[id] = payload;
+                    state.histories[id] = payload.data;
                 } else {
-                    state.histories[id] = [...(payload || []), ...(state.histories[id] || [])];
+                    state.histories[id] = [...(payload.data || []), ...(state.histories[id] || [])];
                 }
 
                 state.activeHistory = state.histories[id];

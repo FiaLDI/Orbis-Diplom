@@ -1,77 +1,62 @@
 import globals from "globals";
-import jsConfig from "@eslint/js";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
+import js from "@eslint/js";
 import tsParser from "@typescript-eslint/parser";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
 import reactPlugin from "eslint-plugin-react";
-import prettier from "eslint-plugin-prettier"; // Import the Prettier plugin
-import tsEslintPlugin from "@typescript-eslint/eslint-plugin"; // Import the TypeScript ESLint plugin
-import stylisticJs from '@stylistic/eslint-plugin-js'
+import prettierPlugin from "eslint-plugin-prettier";
 
-/** @type {import('eslint').Linter.FlatConfigArray} */
+/** @type {import("eslint").Linter.FlatConfigArray} */
 export default [
-  {
-    ignores: ["node_modules/", "build/", "**/*.config.js", "**/*.config.mjs"], // Игнорируемые файлы и папки
-  },
-  // Настройка для всех файлов
-  {
-    files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
-    languageOptions: {
-      parser: tsParser, // Используем TypeScript parser
-      parserOptions: {
-        ecmaVersion: "latest", // Поддержка последней версии ECMAScript
-        sourceType: "module", // Модульный код
-        ecmaFeatures: {
-          jsx: true, // Включение поддержки JSX
+    {
+        ignores: ["node_modules", "build", "dist", "**/*.config.js", "**/*.config.mjs"],
+    },
+    {
+        files: ["**/*.{js,jsx,ts,tsx}"],
+        languageOptions: {
+            parser: tsParser,
+            parserOptions: {
+                ecmaVersion: "latest",
+                sourceType: "module",
+                ecmaFeatures: { jsx: true },
+            },
+            globals: globals.browser,
         },
-      },
-      globals: globals.browser, // Глобальные переменные для браузера
-    },
-  },
+        plugins: {
+            "@typescript-eslint": tsPlugin,
+            react: reactPlugin,
+            prettier: prettierPlugin,
+        },
+        rules: {
+            // --- Базовые JS правила ---
+            ...js.configs.recommended.rules,
 
-  // Рекомендуемые правила JavaScript
-  {
-    rules: jsConfig.configs.recommended.rules,
-  },
-  // Рекомендуемые правила TypeScript
-  {
-    rules: tsPlugin.configs.recommended.rules,
-  },
-  // Рекомендуемые правила React
-  {
-    rules: reactPlugin.configs.recommended.rules,
-  },
-  {
-    plugins: {
-      prettier, // Указываем плагин Prettier в объекте
-      "@typescript-eslint": tsEslintPlugin, // Указываем плагин TypeScript ESLint
-      react: reactPlugin, // Указываем плагин React
-      '@stylistic/js': stylisticJs
+            // --- TypeScript ---
+            ...tsPlugin.configs.recommended.rules,
+            "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+
+            // --- React ---
+            ...reactPlugin.configs.recommended.rules,
+            "react/react-in-jsx-scope": "off",
+            "react/prop-types": "off",
+            "react/display-name": "warn",
+
+            // --- Prettier как главный форматтер ---
+            "prettier/prettier": [
+                "error",
+                {
+                    tabWidth: 4,
+                    singleQuote: false,
+                    semi: true,
+                    trailingComma: "es5",
+                    printWidth: 100,
+                    endOfLine: "auto",
+                },
+            ],
+        },
+        settings: {
+            react: {
+                version: "detect",
+            },
+        },
     },
-    rules: {
-      
-      '@stylistic/js/indent': ['error', 4],
-      '@stylistic/js/max-len': ['error', {
-        "code": 80,
-        "tabWidth": 4
-      }],
-      "react/react-in-jsx-scope": "off", // Отключаем правило для импорта React
-      "@typescript-eslint/no-unused-vars": "warn", // Предупреждения для неиспользуемых переменных
-      "react/prop-types": "off", // Отключение проверки prop-types для TypeScript
-      "react/display-name": "warn", // Включение правила для display-name в React компонентах
-      "prettier/prettier": [
-        "error",
-        {
-          tabWidth: 4,
-          useTabs: false
-        }
-      ] , 
-        
-    },
-    
-    settings: {
-      react: {
-        version: "detect", // Автоматическое определение версии React
-      },
-    },
-  },
 ];

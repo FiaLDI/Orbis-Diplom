@@ -28,15 +28,10 @@ export const Component: React.FC = () => {
     const dispatch = useAppDispatch();
     const emitUpdate = useEmitServerUpdate();
 
-    const [getPersonalChats] = useLazyGetChatsUsersQuery();
     const [createText] = useCreateChatMutation();
 
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
     const [search, setSearch] = useState<string>("");
-
-    useEffect(() => {
-        if (userId) getPersonalChats(userId);
-    }, [userId]);
 
     const isChat = !activeServer?.id;
 
