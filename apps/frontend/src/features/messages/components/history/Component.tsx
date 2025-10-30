@@ -35,20 +35,27 @@ export const Component: React.FC<Props> = ({ bottomRef, topRef }) => {
         HTMLUListElement
     >();
 
+    const prevChatId = useRef<number | undefined>();
+
     useEffect(() => {
-        if (!activeChat?.id) return;
+    if (activeChat?.id === prevChatId.current) return;
 
-        if (allHistories[activeChat.id]?.length) {
-            dispatch(setActiveHistory(allHistories[activeChat.id]));
-            return;
-        }
+    prevChatId.current = activeChat?.id;
 
+    if (!activeChat?.id) {
         dispatch(clearActiveHistory());
+        return;
+    }
+
+    if (allHistories[activeChat.id]?.length) {
+        dispatch(setActiveHistory(allHistories[activeChat.id]));
+    } else {
         setHasMore(true);
         offsetRef.current = 0;
         setOffset(0);
         getMessages({ id: activeChat.id, offset: 0 }).catch(() => {});
-    }, [activeChat?.id]);
+    }
+}, [activeChat?.id]);
 
     useEffect(() => {
         if (!activeHistory?.length || offset !== 0) return;
@@ -103,12 +110,12 @@ export const Component: React.FC<Props> = ({ bottomRef, topRef }) => {
 
     const handleEditMessage = () => {
         const msg = contextMenu?.data;
-        if (!msg?.id || !msg.chat_id) return;
+        if (!msg?.id || !msg.chatId) return;
         dispatch(
             setEditMode({
                 enabled: true,
                 messagesId: String(msg.id),
-                chatId: String(msg.chat_id),
+                chatId: String(msg.chatId),
             })
         );
         closeMenu();
@@ -146,9 +153,9 @@ export const Component: React.FC<Props> = ({ bottomRef, topRef }) => {
             className="overflow-y-auto bg-background/50 p-4 h-[calc(100vh_-_370px)] lg:h-screen text-white flex flex-col gap-3"
         >
             <div ref={topRef} />
-            {activeHistory?.map((message, idx) => (
+            {Array.isArray(activeHistory) && activeHistory?.map((message, idx) => (
                 <SingleMessage
-                    key={`single-${message.chat_id}-${idx}`}
+                    key={`single-${message.chatId}-${idx}`}
                     message={message}
                     onClick={(e) => handleContextMenu(e, message)}
                     currentUser={currentUser}

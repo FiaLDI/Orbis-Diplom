@@ -4,6 +4,9 @@ import { TYPES } from "@/di/types";
 import { MessageService } from "../services/message.service";
 import { MessageHistorySchema } from "../dtos/message.history.dto";
 import { MessageSendSchema } from "../dtos/message.send.dto";
+import { Errors } from "@/common/errors";
+import { MessageDeleteSchema } from "../dtos/message.delete.dto";
+import { MessageEditSchema } from "../dtos/message.edit.dto";
 
 @injectable()
 export class MessageController {
@@ -78,19 +81,27 @@ export class MessageController {
 
     editMessage = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const dto = MessageHistorySchema.parse({
+            const dto = MessageEditSchema.parse({
                 ...(req as any).user,
-                chatId: parseInt(req.params.id),
-                offset: req.query.offset,
+                ...req.body,
+                messageId: parseInt(req.params.id),
             });
-            const entity = await this.messageService.getMessages({
+
+            const { check, checkData } = await this.messageService.checkMessage(dto.messageId);
+
+            if(!check) throw Errors.notFound("Message not found")
+            if (!checkData.chatId) throw Errors.notFound("Message not found")
+            if (!checkData.userId) throw Errors.notFound("User not found")
+
+            const entity = await this.messageService.editMessage({
                 id: dto.id,
-                chatId: dto.chatId,
-                offset: dto.offset,
+                chatId: checkData.chatId,
+                messageId: dto.messageId,
+                content: dto.content
             });
 
             return res.json({
-                message: "Profile",
+                message: "Edited message",
                 data: entity,
             });
         } catch (err) {
@@ -100,19 +111,21 @@ export class MessageController {
 
     deleteMessage = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const dto = MessageHistorySchema.parse({
+            const dto = MessageDeleteSchema.parse({
                 ...(req as any).user,
-                chatId: parseInt(req.params.id),
-                offset: req.query.offset,
-            });
-            const entity = await this.messageService.getMessages({
-                id: dto.id,
-                chatId: dto.chatId,
-                offset: dto.offset,
+                messageId: parseInt(req.params.id, 10),
             });
 
+            const { check, checkData } = await this.messageService.checkMessage(dto.messageId);
+
+            if(!check) throw Errors.notFound("Message not found")
+            if (!checkData.chatId) throw Errors.notFound("Message not found")
+            if (!checkData.userId) throw Errors.notFound("User not found")
+
+            const entity = await this.messageService.deleteMessage(checkData.chatId, dto.messageId);
+
             return res.json({
-                message: "Profile",
+                message: "Deleted message",
                 data: entity,
             });
         } catch (err) {

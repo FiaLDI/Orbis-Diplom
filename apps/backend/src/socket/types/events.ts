@@ -5,7 +5,7 @@ export interface ChatEvents {
     "user-typing-start": { chatId: string; username?: string };
     "user-typing-stop": { chatId: string; username?: string };
     "edit-message": any;
-    "delete-message": { message_id: number };
+    "delete-message": { messageId: number };
 }
 
 export interface NotificationEvents {

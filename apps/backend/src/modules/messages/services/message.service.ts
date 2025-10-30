@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/di/types";
-import type { content, PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
 import { MessageHistoryDto } from "../dtos/message.history.dto";
 import { UserService } from "@/modules/users";
 import { MessageListEntity } from "../entity/message.list.entity";
@@ -9,6 +9,10 @@ import { MessageSendDto } from "../dtos/message.send.dto";
 import { v4 as uuidv4 } from "uuid";
 import { MessageItemEntity } from "../entity/message.item.entity";
 import { emitTo } from "@/socket/registry";
+import { MessageCheckEntity } from "../entity/message.check.entity";
+import { MessageEditDto } from "../dtos/message.edit.dto";
+import { MessageContentDto } from "../dtos/message.content.dto";
+import { Errors } from "@/common/errors";
 
 @injectable()
 export class MessageService {
@@ -16,6 +20,62 @@ export class MessageService {
         @inject(TYPES.Prisma) private prisma: PrismaClient,
         @inject(TYPES.UserService) private userService: UserService
     ) {}
+
+    async checkMessage(messageId: number) {
+        const message = await this.prisma.messages.findUnique({
+            where: { id: messageId },
+            select: { user_id: true, chat_id: true },
+        });
+
+        const entity = new MessageCheckEntity(message);
+
+        return {
+            check: entity.boolean(),
+            checkData: entity.toJSON()
+        }
+    }
+
+    async getMessageById(messageId: number) {
+        const message = await this.prisma.messages.findUnique({
+            where: { id: messageId },
+            include: {
+            messages_content: {
+                include: {
+                content: { select: { id: true, text: true, url: true } },
+                },
+            },
+            },
+        });
+
+        if (!message) {
+            throw Errors.notFound(`Message with id ${messageId} not found`);
+        }
+
+        if (!message.user_id) {
+            throw Errors.notFound(`User with id ${message.user_id} not found`);
+        }
+
+        const profile = await this.userService.getProfileById(message.user_id);
+
+        if (!profile) {
+            throw Errors.notFound(`Profile for user ${message.user_id} not found`);
+        }
+
+        const entity = new MessageItemEntity(
+            message,
+            profile,
+            message.messages_content.map((mc) => ({
+            id: mc.content.id,
+            type: mc.type ?? "text",
+            text: mc.content.text ?? null,
+            url: mc.content.url ?? null,
+            size: mc.size ?? null,
+            uploaded_at: mc.uploaded_at,
+            }))
+        );
+
+        return entity.toJSON();
+    }
 
     async getMessages({ chatId, offset = 0 }: MessageHistoryDto) {
         const messages = await this.prisma.messages.findMany({
@@ -32,12 +92,16 @@ export class MessageService {
             },
         });
 
-        const messageList = new MessageListEntity(messages);
-        const userIds = messageList.getUserIds();
+        const messageList = new MessageListEntity(messages.reverse());
+        const userIds = messageList.getUserIds().filter((id): id is number => id !== null);
+
+        if (userIds.length === 0) {
+            return [];
+        }
 
         const profiles = await Promise.all(
             userIds.map((id) => this.userService.getProfileById(id))
-        );
+        );  
 
         const profilesMap = UserProfile.getUsersMap(profiles);
 
@@ -111,5 +175,92 @@ export class MessageService {
         emitTo("chat", `chat_${chatId}`, "new-message", entity.toJSON());
 
         return entity.toJSON();
+    }
+
+    async deleteContent(tx: Prisma.TransactionClient, messageId: number) {
+        const contentLinks = await tx.messages_content.findMany({
+            where: { id_messages: messageId },
+            select: { id_content: true },
+        });
+
+        await tx.messages_content.deleteMany({
+            where: { id_messages: messageId },
+        });
+
+        const contentIds = contentLinks.map((c) => c.id_content);
+        if (contentIds.length) {
+            await tx.content.deleteMany({
+                where: { id: { in: contentIds } },
+            });
+        }
+    }
+
+    async deleteMessage(chatId: number, messageId: number) {
+        await this.prisma.$transaction(async (tx) => {
+            await this.deleteContent(tx, messageId);
+            await tx.messages.delete({ where: { id: messageId } });
+        });
+
+        emitTo("chat", `chat_${chatId}`, "delete-message", { messageId: messageId });
+    }
+
+    async editContent(
+        tx: Prisma.TransactionClient,
+        messageId: number,
+        content: MessageContentDto[]
+    ) {
+        await this.deleteContent(tx, messageId);
+
+        const newContent = await Promise.all(
+            content.map((item) =>
+            this.createContent(
+                uuidv4(),
+                item.type,
+                item.text ?? undefined,
+                item.url ?? undefined
+            )
+            )
+        );
+
+        const updated = await tx.messages.update({
+            where: { id: messageId },
+            data: {
+            is_edited: true,
+            updated_at: new Date(),
+            messages_content: {
+                create: newContent.map((c) => ({
+                id_content: c.id,
+                type: c.type,
+                uploaded_at: new Date(),
+                })),
+            },
+            },
+            include: {
+            messages_content: {
+                include: { content: true },
+            },
+            },
+        });
+
+        return { updated, newContent };
+    }
+
+    async editMessage({ id, chatId, messageId, content }: MessageEditDto & { chatId: number }) {
+        const profile = await this.userService.getProfileById(id);
+
+        const { updated, newContent } = await this.prisma.$transaction(async (tx) => {
+            return await this.editContent(tx, messageId, content);
+        });
+
+        const entity = new MessageItemEntity(
+            updated,
+            profile,
+            updated.messages_content.map((mc) => mc.content)
+        );
+
+        const result = entity.toJSON();
+
+        emitTo("chat", `chat_${chatId}`, "edit-message", result);
+        return result;
     }
 }
