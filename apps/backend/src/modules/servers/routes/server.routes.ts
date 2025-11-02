@@ -15,18 +15,18 @@ import {
     getChatInfo,
     deleteChat,
     getServerMembers,
-} from "../controllers/server.controller";
+} from "../controllers/server.controller.old";
 
 export const serverRouter = express.Router();
 
-serverRouter.get("", getServers);
-serverRouter.post("", createServer);
-serverRouter.get("/:id", getServerInfo);
+//serverRouter.get("", getServers);
+///serverRouter.post("", createServer);
+//serverRouter.get("/:id", getServerInfo);
 serverRouter.patch("/:id", updateServer);
 serverRouter.delete("/:id", deleteServer);
 
 serverRouter.get("/:id/members", getServerMembers);
-serverRouter.post("/:id/join", joinServer);
+//serverRouter.post("/:id/join", joinServer);
 serverRouter.delete("/:id/members/:userId", kickMember);
 serverRouter.post("/:id/members/:userId/ban", banMember);
 serverRouter.delete("/:id/members/:userId/ban", unbanMember);

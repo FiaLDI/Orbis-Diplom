@@ -7,6 +7,7 @@ import { ChatListProps } from "./inteface";
 export const Component: React.FC<ChatListProps> = ({ isServer, search }) => {
     const personalChats = useAppSelector((state) => state.user.chats);
     const serverChats = useAppSelector((state) => state.server.activeserver?.chats);
+    const server = useAppSelector((state) => state.server);
 
     const normalizedSearch = (search ?? "").toLowerCase();
 

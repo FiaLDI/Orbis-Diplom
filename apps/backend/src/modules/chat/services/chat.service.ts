@@ -2,6 +2,7 @@ import { injectable, inject } from "inversify";
 import { TYPES } from "@/di/types";
 import type { PrismaClient } from "@prisma/client";
 import { Errors } from "@/common/errors";
+import { Chat } from "../entities/chat.entities";
 
 @injectable()
 export class ChatService {
@@ -19,7 +20,24 @@ export class ChatService {
             },
         });
 
-        return chats;
+    const chatInfo = new Chat({userChat: chats})
+
+        return chatInfo;
+    }
+
+    async getServerChat(serverId: number) {
+        const chats = await this.prisma.chats.findMany({
+            where: {server_chats: {
+                some: {id_server: serverId}
+            } },
+            include: {
+                server_chats: true
+            }
+        })
+        
+        const chatInfo = new Chat({serverChat: chats})
+
+        return chatInfo
     }
 
     async updateChat(id: number, chatId: number, name: string) {

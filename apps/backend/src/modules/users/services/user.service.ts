@@ -47,9 +47,9 @@ export class UserService {
         const chats = await this.chatService.getUsersChat(id);
 
         const chatsWithProfiles = await Promise.all(
-            chats.map(async (chat) => {
+            chats.toJSONU().map(async (chat) => {
                 const members = await Promise.all(
-                    chat.chat_users.map(async (cu) => {
+                    chat.chatUsers.map(async (cu) => {
                         const profile = await this.getProfileById(cu.user_id);
                         return profile.toJSON();
                     })
@@ -58,7 +58,7 @@ export class UserService {
                 return {
                     id: chat.id,
                     title: chat.name,
-                    created_at: chat.created_at,
+                    created_at: chat.createdAt,
                     members,
                 };
             })

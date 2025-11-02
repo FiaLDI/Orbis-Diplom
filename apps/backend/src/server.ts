@@ -26,8 +26,6 @@ initSockets(server);
 const PORT = Number(ENVCONFIG.PORT);
 const HOST = "0.0.0.0";
 
-console.log("✅ Mounted routes:", app._router.stack);
-
 server.listen(PORT, HOST, () => {
     console.log(`✅ Server is running on port ${PORT}`);
     console.log(`🌍 Frontend origin: ${ENVCONFIG.FRONTENDADDRES}`);

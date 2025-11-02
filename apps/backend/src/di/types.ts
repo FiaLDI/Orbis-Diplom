@@ -20,5 +20,11 @@ export const TYPES = {
     MessageService: Symbol.for("MessageService"),
     MessageController: Symbol.for("MessageController"),
 
+    ServerService: Symbol.for("ServerService"),
+    ServerController: Symbol.for("ServerController"),
+
+    RolesService: Symbol.for("RolesService"),
+    RolesController: Symbol.for("RolesController"),
+
     AuthMiddleware: Symbol.for("AuthMiddleware"),
 };

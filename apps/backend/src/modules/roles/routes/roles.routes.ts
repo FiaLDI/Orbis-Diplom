@@ -9,17 +9,17 @@ import {
     removeRoleFromMember,
     updateRolePermissions,
     updateServerRole,
-} from "../controllers/roles.controller";
+} from "../controllers/roles.controller.old";
 
 export const rolesRouter = Router();
 
 /**
  * Роли сервера
  */
-rolesRouter.get("/:id/roles", getServerRoles);
-rolesRouter.post("/:id/roles", createServerRole);
-rolesRouter.patch("/:id/roles/:roleId", updateServerRole);
-rolesRouter.delete("/:id/roles/:roleId", deleteServerRole);
+//rolesRouter.get("/:id/roles", getServerRoles);
+//rolesRouter.post("/:id/roles", createServerRole);
+//rolesRouter.patch("/:id/roles/:roleId", updateServerRole);
+//rolesRouter.delete("/:id/roles/:roleId", deleteServerRole);
 
 /**
  * Назначение / снятие ролей пользователям
@@ -30,6 +30,6 @@ rolesRouter.delete("/:id/members/:userId/roles/:roleId", removeRoleFromMember);
 /**
  * Работа с permissions
  */
-rolesRouter.get("/roles/permissions", getAllPermissions);
+//rolesRouter.get("/roles/permissions", getAllPermissions);
 rolesRouter.get("/roles/:roleId/permissions", getRolePermissions);
 rolesRouter.patch("/roles/:roleId/permissions", updateRolePermissions);

@@ -31,7 +31,7 @@ const serverSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addMatcher(serverApi.endpoints.GetServers.matchFulfilled, (state, action) => {
-                state.servers = action.payload;
+                state.servers = action.payload.data;
             })
             .addMatcher(serverApi.endpoints.GetServersMembers.matchFulfilled, (state, action) => {
                 if (!state.activeserver) return;
@@ -44,7 +44,7 @@ const serverSlice = createSlice({
                 if (!state.activeserver) return;
                 state.activeserver = {
                     ...state.activeserver,
-                    ...action.payload,
+                    ...action.payload.data,
                 };
             })
             .addMatcher(serverApi.endpoints.GetPermissions.matchFulfilled, (state, action) => {

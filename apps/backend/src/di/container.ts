@@ -23,6 +23,12 @@ import { ChatController } from "@/modules/chat/controllers/chat.controller";
 import { MessageService } from "@/modules/messages/services/message.service";
 import { MessageController } from "@/modules/messages/controllers/message.controller";
 
+import { ServerService } from "@/modules/servers/services/server.service";
+import { ServerController } from "@/modules/servers/controllers/server.controller";
+
+import { RolesService } from "@/modules/roles/services/roles.service";
+import { RolesController } from "@/modules/roles/controllers/roles.controller";
+
 const container = new Container({ defaultScope: "Singleton" });
 
 container.bind(TYPES.Prisma).toConstantValue(new PrismaClient());
@@ -45,6 +51,12 @@ container.bind<ChatController>(TYPES.ChatController).to(ChatController);
 
 container.bind<MessageService>(TYPES.MessageService).to(MessageService);
 container.bind<MessageController>(TYPES.MessageController).to(MessageController);
+
+container.bind<ServerService>(TYPES.ServerService).to(ServerService);
+container.bind<ServerController>(TYPES.ServerController).to(ServerController);
+
+container.bind<RolesService>(TYPES.RolesService).to(RolesService);
+container.bind<RolesController>(TYPES.RolesController).to(RolesController);
 
 container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware);
 
