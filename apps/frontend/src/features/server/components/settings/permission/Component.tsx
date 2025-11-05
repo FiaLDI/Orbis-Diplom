@@ -12,7 +12,7 @@ import { X } from "lucide-react";
 
 export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleColor }) => {
     const { t } = useTranslation("server");
-    const roleIdNum = Number(roleId);
+    const roleIdNum = { roleId, serverId};
 
     const { data: allPermissions = [] } = useGetPermissionsQuery({});
     const { data: rolePermissionsData = [], refetch, isFetching } =
@@ -53,7 +53,7 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
 
         await updateServerRole({ roleId, serverId, data: { name, color } });
         if (roleName.toLowerCase() !== "creator") {
-            await updateRolePermissions({ roleId, permissions: rolePermissions });
+            await updateRolePermissions({ serverId: serverId, roleId, permissions: rolePermissions });
         }
         setOpen(false);
     };

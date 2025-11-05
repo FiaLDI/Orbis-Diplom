@@ -7,7 +7,7 @@ import { Component as EditProject } from "./edit";
 import { setOpenProject, toggleIssueMode } from "../..";
 import { useEmitServerUpdate } from "@/features/server";
 
-export const Component: React.FC<Props> = ({ serverid, name }) => {
+export const Component: React.FC<Props> = ({ serverId, name }) => {
     const projects = useAppSelector((s) => s.issue.project);
     const dispatch = useAppDispatch();
 
@@ -16,30 +16,31 @@ export const Component: React.FC<Props> = ({ serverid, name }) => {
     const emitServerUpdate = useEmitServerUpdate();
 
     const handlerCreateProject = async () => {
-        if (!serverid) return;
+        if (!serverId) return;
         try {
             await createProject({
-                id: serverid,
+                id: serverId,
                 data: { name: "default", description: "default" },
             }).unwrap();
 
-            emitServerUpdate(serverid); // ✅ уведомляем всех клиентов
+            emitServerUpdate(serverId);
         } catch (err) {
             console.error("Ошибка при создании проекта:", err);
         }
     };
 
     const open = (id: number) => {
+        if (!serverId) return;
         dispatch(setOpenProject(id));
 
-        getIssue(id);
+        getIssue({serverId, projectId:id});
     };
 
     const handleProject = () => {
         dispatch(toggleIssueMode());
     };
 
-    if (!serverid) return null;
+    if (!serverId) return null;
     if (!name) return null;
     return (
         <div className="h-full w-full overflow-y-auto scroll-hidden">
@@ -77,7 +78,7 @@ export const Component: React.FC<Props> = ({ serverid, name }) => {
                                     projectName={val.name}
                                     projectDescription={val.description}
                                     projectId={val.id}
-                                    serverId={serverid}
+                                    serverId={serverId}
                                 />
                             </div>
                         </div>

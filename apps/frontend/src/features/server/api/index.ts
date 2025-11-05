@@ -87,15 +87,15 @@ export const serverApi = createApi({
             transformResponse: (response: any) => response.data,
         }),
         GetRolePermissions: builder.query({
-            query: (roleId: number) => ({
-                url: `/servers/roles/${roleId}/permissions`,
+            query: ({serverId, roleId}) => ({
+                url: `/servers/${serverId}/roles/${roleId}/permissions`,
                 method: "GET",
             }),
             transformResponse: (response: any) => response.data,
         }),
         UpdateRolePermissions: builder.mutation({
-            query: ({ roleId, permissions }: { roleId: number; permissions: number[] }) => ({
-                url: `/servers/roles/${roleId}/permissions`,
+            query: ({ serverId, roleId, permissions }: { serverId: number, roleId: number; permissions: number[] }) => ({
+                url: `/servers/${serverId}/roles/${roleId}/permissions`,
                 method: "PATCH",
                 body: { permissions },
             }),

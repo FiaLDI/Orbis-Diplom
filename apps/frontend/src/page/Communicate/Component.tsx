@@ -91,9 +91,9 @@ export const Component: React.FC = () => {
             getServerRoles(activeServerId),
             getProject(activeServerId),
             getServerChats(activeServerId),
-            getPermission({}),
-            getStatuses({}),
-            getPriority({}),
+            getPermission(activeServerId),
+            getStatuses(activeServerId),
+            getPriority(activeServerId),
         ]);
 
         dispatch(setSettingsActive(false));
@@ -142,11 +142,11 @@ export const Component: React.FC = () => {
                         {issues.openProjectId ? (
                             <IssueComponent
                                 name={activeserver?.name}
-                                serverid={activeServerId}
+                                serverId={activeServerId}
                                 projectId={issues.openProjectId}
                             />
                         ) : (
-                            <ProjectComponent name={activeserver?.name} serverid={activeServerId} />
+                            <ProjectComponent name={activeserver?.name} serverId={activeServerId} />
                         )}
                     </div>
                 )}

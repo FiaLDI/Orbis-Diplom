@@ -11,9 +11,7 @@ export const issueApi = createApi({
                 auth: { user: { access_token?: string } };
             };
             const token = state.auth.user?.access_token;
-            if (token) {
-                headers.set("authorization", `Bearer ${token}`);
-            }
+            if (token) headers.set("authorization", `Bearer ${token}`);
             return headers;
         },
     }),
@@ -21,17 +19,18 @@ export const issueApi = createApi({
     endpoints: (builder) => ({
         /* 🔹 Projects */
         getProject: builder.query({
-            query: (id) => `/servers/${id}/projects`,
-            providesTags: (result, error, id) => [{ type: "Projects", id }],
+            query: (serverId: number) => `/servers/${serverId}/projects`,
+            providesTags: (result, error, serverId) => [{ type: "Projects", id: serverId }],
+            transformResponse: (response: any) => response.data,
         }),
 
         createProject: builder.mutation({
-            query: ({ id, data }) => ({
-                url: `/servers/${id}/projects`,
+            query: ({ serverId, data }) => ({
+                url: `/servers/${serverId}/projects`,
                 method: "POST",
                 body: data,
             }),
-            invalidatesTags: (result, error, { id }) => [{ type: "Projects", id }],
+            invalidatesTags: (result, error, { serverId }) => [{ type: "Projects", id: serverId }],
         }),
 
         updateProject: builder.mutation({
@@ -52,20 +51,22 @@ export const issueApi = createApi({
         }),
 
         /* 🔹 Issues */
-        getIssues: builder.query<any[], number>({
-            query: (projectId) => `/servers/projects/${projectId}/issues`,
-            providesTags: (result, error, projectId) =>
+        getIssues: builder.query<any[], { serverId: number; projectId: number }>({
+            query: ({ serverId, projectId }) =>
+                `/servers/${serverId}/projects/${projectId}/issues`,
+            providesTags: (result, error, { projectId }) =>
                 result
                     ? [
                           ...result.map((issue) => ({ type: "Issues" as const, id: issue.id })),
                           { type: "Issues", id: `PROJECT-${projectId}` },
                       ]
                     : [{ type: "Issues", id: `PROJECT-${projectId}` }],
+            transformResponse: (response: any) => response.data,
         }),
 
         createIssue: builder.mutation({
-            query: ({ projectId, data }) => ({
-                url: `/servers/projects/${projectId}/issues`,
+            query: ({ serverId, projectId, data }) => ({
+                url: `/servers/${serverId}/projects/${projectId}/issues`,
                 method: "POST",
                 body: data,
             }),
@@ -75,8 +76,8 @@ export const issueApi = createApi({
         }),
 
         updateIssue: builder.mutation({
-            query: ({ projectId, issueId, data }) => ({
-                url: `/servers/issues/${issueId}`,
+            query: ({ serverId, projectId, issueId, data }) => ({
+                url: `/servers/${serverId}/projects/${projectId}/issues/${issueId}`,
                 method: "PATCH",
                 body: data,
             }),
@@ -87,8 +88,8 @@ export const issueApi = createApi({
         }),
 
         deleteIssue: builder.mutation({
-            query: ({ projectId, issueId }) => ({
-                url: `/servers/issues/${issueId}`,
+            query: ({ serverId, projectId, issueId }) => ({
+                url: `/servers/${serverId}/projects/${projectId}/issues/${issueId}`,
                 method: "DELETE",
             }),
             invalidatesTags: (result, error, { projectId, issueId }) => [
@@ -96,38 +97,43 @@ export const issueApi = createApi({
                 { type: "Issues", id: `PROJECT-${projectId}` },
             ],
         }),
-        assignUserToIssue: builder.mutation<void, { issueId: number; userId: number }>({
-            query: ({ issueId, userId }) => ({
-                url: `/servers/issues/${issueId}/assignees/${userId}`,
+
+        assignUserToIssue: builder.mutation<void, { serverId: number; issueId: number; userId: number }>({
+            query: ({ serverId, issueId, userId }) => ({
+                url: `/servers/${serverId}/issues/${issueId}/assignees/${userId}`,
                 method: "POST",
             }),
         }),
-        unassignUserFromIssue: builder.mutation<void, { issueId: number; userId: number }>({
-            query: ({ issueId, userId }) => ({
-                url: `/servers/issues/${issueId}/assignees/${userId}`,
+
+        unassignUserFromIssue: builder.mutation<void, { serverId: number; issueId: number; userId: number }>({
+            query: ({ serverId, issueId, userId }) => ({
+                url: `/servers/${serverId}/issues/${issueId}/assignees/${userId}`,
                 method: "DELETE",
             }),
         }),
 
-        /* 🔹 Meta */
+        /* 🔹 Statuses / Priorities */
         getStatuses: builder.query({
-            query: () => `/servers/issues/statuses`,
+            query: (serverId) => `/servers/${serverId}/issues/statuses`,
             providesTags: [{ type: "Statuses", id: "LIST" }],
+            transformResponse: (response: any) => response.data,
         }),
 
         getPriority: builder.query({
-            query: () => `/servers/issues/priorities`,
+            query: (serverId) => `/servers/${serverId}/issues/priorities`,
             providesTags: [{ type: "Priorities", id: "LIST" }],
+            transformResponse: (response: any) => response.data,
         }),
 
-        /* Chats /issues/:id/chats*/
+        /* 🔹 Issue ↔ Chat */
         getChatIssue: builder.query({
-            query: (id) => `/servers/issues/${id}/chats`,
+            query: ({ serverId, issueId }) => `/servers/${serverId}/issues/${issueId}/chats`,
+            transformResponse: (response: any) => response.data,
         }),
 
         createChatIssue: builder.mutation({
-            query: ({ issueId, data }) => ({
-                url: `/servers/issues/${issueId}/chats`,
+            query: ({ serverId, issueId, data }) => ({
+                url: `/servers/${serverId}/issues/${issueId}/chats`,
                 method: "POST",
                 body: data,
             }),
@@ -145,11 +151,13 @@ export const {
     useCreateIssueMutation,
     useUpdateIssueMutation,
     useDeleteIssueMutation,
-    useLazyGetChatIssueQuery,
-    useCreateChatIssueMutation,
+
     useAssignUserToIssueMutation,
     useUnassignUserFromIssueMutation,
 
     useLazyGetStatusesQuery,
     useLazyGetPriorityQuery,
+
+    useLazyGetChatIssueQuery,
+    useCreateChatIssueMutation,
 } = issueApi;

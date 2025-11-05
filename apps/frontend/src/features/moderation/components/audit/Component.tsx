@@ -21,7 +21,7 @@ export const Component: React.FC = () => {
         data: logs = [],
         isFetching,
         refetch,
-    } = useGetAuditLogsQuery({ serverId: activeserver?.id! }, { skip: !activeserver?.id });
+    } = useGetAuditLogsQuery(activeserver?.id!, { skip: !activeserver?.id });
 
     const {
         data: bannedUsers = [],
@@ -110,7 +110,7 @@ export const Component: React.FC = () => {
                                             <div className="flex gap-3 items-center">
                                                 <img
                                                     src={
-                                                        user.user_profile.avatar_url ||
+                                                        user.avatar_url ||
                                                         "/img/icon.png"
                                                     }
                                                     alt=""
