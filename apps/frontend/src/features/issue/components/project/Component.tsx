@@ -33,7 +33,7 @@ export const Component: React.FC<Props> = ({ serverId, name }) => {
         if (!serverId) return;
         dispatch(setOpenProject(id));
 
-        getIssue({serverId, projectId:id});
+        getIssue({ serverId, projectId: id });
     };
 
     const handleProject = () => {

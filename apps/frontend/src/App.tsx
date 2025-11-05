@@ -3,7 +3,7 @@ import { PagesRouter } from "@/routes";
 import { useAutoRefreshToken } from "./features/auth/hooks/useAutoRefreshToken";
 import { useApplyTheme } from "@/features/settings";
 import { useAppSelector } from "./app/hooks";
-import { ToastContainer } from "@/features/toast"
+import { ToastContainer } from "@/features/toast";
 
 export const App: React.FC = () => {
     const theme = useAppSelector((s) => s.settings.theme);

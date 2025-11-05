@@ -1,21 +1,21 @@
 export type ToastType = "success" | "error" | "warning" | "info";
 
 export interface Toast {
-  id: string;
-  message: string;
-  type: ToastType;
-  duration?: number;
+    id: string;
+    message: string;
+    type: ToastType;
+    duration?: number;
 }
 
 export interface ToastState {
-  toasts: Toast[];
-  position: ToastPosition;
+    toasts: Toast[];
+    position: ToastPosition;
 }
 
 export type ToastPosition =
-  | "top-right"
-  | "top-left"
-  | "bottom-right"
-  | "bottom-left"
-  | "top-center"
-  | "bottom-center";
+    | "top-right"
+    | "top-left"
+    | "bottom-right"
+    | "bottom-left"
+    | "top-center"
+    | "bottom-center";

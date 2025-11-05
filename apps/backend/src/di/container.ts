@@ -59,7 +59,6 @@ function safeBind<T>(symbol: symbol, clazz: new (...args: any[]) => T) {
     }
 }
 
-
 // Core dependencies
 try {
     container.bind(TYPES.Prisma).toConstantValue(new PrismaClient());

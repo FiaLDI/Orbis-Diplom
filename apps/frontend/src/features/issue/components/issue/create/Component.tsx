@@ -58,7 +58,7 @@ export const Component: React.FC<FormProps> = ({
         }
         if (onClose) onClose();
 
-        getIssue({serverId, projectId});
+        getIssue({ serverId, projectId });
     };
 
     const save = async () => {
@@ -67,7 +67,7 @@ export const Component: React.FC<FormProps> = ({
         try {
             if (initialData) {
                 await updateIssue({
-                    serverId, 
+                    serverId,
                     projectId,
                     issueId: initialData.id,
                     data: {

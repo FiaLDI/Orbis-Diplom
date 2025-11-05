@@ -74,7 +74,10 @@ export class PlanningService {
             [key: string]: any;
         };
 
-        const buildTree = (issues: IssueWithSubs[], parentId: number | null = null): IssueWithSubs[] => {
+        const buildTree = (
+            issues: IssueWithSubs[],
+            parentId: number | null = null
+        ): IssueWithSubs[] => {
             return issues
                 .filter((i) => i.parent_id === parentId)
                 .map((i) => ({
@@ -87,7 +90,6 @@ export class PlanningService {
 
         return tree;
     }
-
 
     async createIssue(projectId: number, dto: any) {
         const { title, description, priority, statusId, due_date, parent_id } = dto;
@@ -147,7 +149,9 @@ export class PlanningService {
                 issue: {
                     include: {
                         project_issues: {
-                            include: { project: { select: { id: true, name: true, server_id: true } } },
+                            include: {
+                                project: { select: { id: true, name: true, server_id: true } },
+                            },
                         },
                     },
                 },

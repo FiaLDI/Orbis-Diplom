@@ -17,10 +17,9 @@ export const Component: React.FC<Props> = ({ projectId, serverId, issueId, issue
     const [chats, setChats] = useState<any[]>([]);
     const dispatch = useAppDispatch();
 
-
     useEffect(() => {
         if (issue) {
-            getChats({serverId, issueId: issue.id}).then((res: any) => {
+            getChats({ serverId, issueId: issue.id }).then((res: any) => {
                 if (res.data) {
                     setChats(res.data);
                 }

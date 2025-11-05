@@ -87,14 +87,22 @@ export const serverApi = createApi({
             transformResponse: (response: any) => response.data,
         }),
         GetRolePermissions: builder.query({
-            query: ({serverId, roleId}) => ({
+            query: ({ serverId, roleId }) => ({
                 url: `/servers/${serverId}/roles/${roleId}/permissions`,
                 method: "GET",
             }),
             transformResponse: (response: any) => response.data,
         }),
         UpdateRolePermissions: builder.mutation({
-            query: ({ serverId, roleId, permissions }: { serverId: number, roleId: number; permissions: number[] }) => ({
+            query: ({
+                serverId,
+                roleId,
+                permissions,
+            }: {
+                serverId: number;
+                roleId: number;
+                permissions: number[];
+            }) => ({
                 url: `/servers/${serverId}/roles/${roleId}/permissions`,
                 method: "PATCH",
                 body: { permissions },
@@ -180,5 +188,5 @@ export const {
     useAssignRoleToMemberMutation,
     useRemoveRoleFromMemberMutation,
     useDeleteRoleMutation,
-    useLazyGetServersChatsQuery
+    useLazyGetServersChatsQuery,
 } = serverApi;

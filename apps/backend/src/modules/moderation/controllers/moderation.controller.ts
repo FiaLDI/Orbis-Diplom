@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/di/types";
-import { ModerationService } from "../services/moderation.services"
+import { ModerationService } from "../services/moderation.services";
 
 @injectable()
 export class ModerationController {

@@ -1,1 +1,1 @@
-export { Component as ToastContainer } from "./ToastContainer"
+export { Component as ToastContainer } from "./ToastContainer";

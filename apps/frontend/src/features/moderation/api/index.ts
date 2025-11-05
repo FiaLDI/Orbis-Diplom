@@ -35,10 +35,7 @@ export const moderationApi = createApi({
             transformResponse: (response: any) => response.data,
         }),
 
-        banUser: builder.mutation<
-            void,
-            { serverId: number; userId: number; reason?: string }
-        >({
+        banUser: builder.mutation<void, { serverId: number; userId: number; reason?: string }>({
             query: ({ serverId, userId, reason }) => ({
                 url: `/servers/${serverId}/moderation/bans/${userId}`,
                 method: "POST",

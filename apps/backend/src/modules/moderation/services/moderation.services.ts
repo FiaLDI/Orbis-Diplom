@@ -53,7 +53,9 @@ export class ModerationService {
 
         const ban = await this.prisma.$transaction(async (tx) => {
             // удалить все роли и связь с сервером
-            await tx.user_server_roles.deleteMany({ where: { user_id: userId, server_id: serverId } });
+            await tx.user_server_roles.deleteMany({
+                where: { user_id: userId, server_id: serverId },
+            });
             await tx.user_server.deleteMany({ where: { user_id: userId, server_id: serverId } });
 
             // добавить бан

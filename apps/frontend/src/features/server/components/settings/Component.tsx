@@ -62,43 +62,40 @@ export const Component: React.FC = () => {
                         >
                             <div className="flex w-full gap-5 items-center ">
                                 <img
-                                    src={
-                                        user.avatar_url
-                                            ? user.avatar_url
-                                            : "/img/icon.png"
-                                    }
+                                    src={user.avatar_url ? user.avatar_url : "/img/icon.png"}
                                     alt=""
                                     className="shrink-0 w-[40px] h-[40px]"
                                 />
                                 <div className=" ">{user.username}</div>
                                 <div className="flex gap-2">
-                                        {user?.roles?.map((role, index) => (
-                                            <span
-                                                key={`role-${index}-${role.id}`}
-                                                className="px-2 py-0.5 rounded text-xs"
-                                                style={{
-                                                    backgroundColor: role.color || "#2e3ed328",
-                                                }}
-                                            >
-                                                {role.name}
-                                            </span>
-                                        ))}
+                                    {user?.roles?.map((role, index) => (
+                                        <span
+                                            key={`role-${index}-${role.id}`}
+                                            className="px-2 py-0.5 rounded text-xs"
+                                            style={{
+                                                backgroundColor: role.color || "#2e3ed328",
+                                            }}
+                                        >
+                                            {role.name}
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
 
                             <AssignRolesButton
                                 userId={user.id}
                                 serverId={activeserver.id}
-                                availableRoles={activeserver?.roles?.map((r: any) => ({
-                                    id: Number(r.id),
-                                    name: r.name,
-                                    color: r.color,
-                                })) ?? []}
-                                userRoles={user.roles
-                                    .map((r) => ({
+                                availableRoles={
+                                    activeserver?.roles?.map((r: any) => ({
                                         id: Number(r.id),
                                         name: r.name,
-                                    }))}
+                                        color: r.color,
+                                    })) ?? []
+                                }
+                                userRoles={user.roles.map((r) => ({
+                                    id: Number(r.id),
+                                    name: r.name,
+                                }))}
                             />
                         </div>
                     ))}
@@ -115,37 +112,39 @@ export const Component: React.FC = () => {
                         </button>
                     </div>
                     <div className="w-full flex flex-col">
-                        {activeserver?.roles ? activeserver?.roles?.map((role: any, index: number) => (
-                            <div
-                                key={`roles-${index}`}
-                                className="flex w-full items-center justify-between border-b border-white/30 p-2"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <span
-                                        className="px-3 py-1 rounded text-sm"
-                                        style={{ backgroundColor: role.color || "#2e3ed328" }}
-                                    >
-                                        {role.name}
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <PermissionComponent
-                                        roleId={Number(role.id)}
-                                        roleName={role.name}
-                                        serverId={Number(activeserver.id)}
-                                    />
-                                    <button
-                                        onClick={() => handleDeleteRole(Number(role.id))}
-                                        className="px-3 py-1 bg-foreground/70 cursor-pointer rounded hover:bg-foreground text-sm"
-                                        disabled={
-                                            role.name === "creator" || role.name === "default"
-                                        }
-                                    >
-                                        {t("settings.delete")}
-                                    </button>
-                                </div>
-                            </div>
-                        )) : null}
+                        {activeserver?.roles
+                            ? activeserver?.roles?.map((role: any, index: number) => (
+                                  <div
+                                      key={`roles-${index}`}
+                                      className="flex w-full items-center justify-between border-b border-white/30 p-2"
+                                  >
+                                      <div className="flex items-center gap-2">
+                                          <span
+                                              className="px-3 py-1 rounded text-sm"
+                                              style={{ backgroundColor: role.color || "#2e3ed328" }}
+                                          >
+                                              {role.name}
+                                          </span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                          <PermissionComponent
+                                              roleId={Number(role.id)}
+                                              roleName={role.name}
+                                              serverId={Number(activeserver.id)}
+                                          />
+                                          <button
+                                              onClick={() => handleDeleteRole(Number(role.id))}
+                                              className="px-3 py-1 bg-foreground/70 cursor-pointer rounded hover:bg-foreground text-sm"
+                                              disabled={
+                                                  role.name === "creator" || role.name === "default"
+                                              }
+                                          >
+                                              {t("settings.delete")}
+                                          </button>
+                                      </div>
+                                  </div>
+                              ))
+                            : null}
                     </div>
                 </div>
             </div>

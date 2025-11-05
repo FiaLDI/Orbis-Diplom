@@ -82,40 +82,44 @@ export const Component: React.FC = () => {
                             placeHolder={t("placeholder")}
                         />
                         <ul className="flex flex-col gap-3">
-  {data && data?.data && data.data.length > 0 ? (
-    data.data.map((val: any, idx: number) => {
-      if (val.id === myid) return null;
+                            {data && data?.data && data.data.length > 0
+                                ? data.data.map((val: any, idx: number) => {
+                                      if (val.id === myid) return null;
 
-      return (
-        <li
-          key={`search-user-${idx}`}
-          className="flex gap-10 bg-[#4a55e9] p-3 justify-between rounded"
-        >
-          <div className="flex items-center gap-2">
-            <img
-              src={val.user_profile?.avatar_url || "/img/icon.png"}
-              alt=""
-              className="w-15 h-15 lg:w-10 lg:h-10 rounded-full object-cover"
-            />
-            <span className="text-3xl lg:text-base">{val.username}</span>
-          </div>
+                                      return (
+                                          <li
+                                              key={`search-user-${idx}`}
+                                              className="flex gap-10 bg-[#4a55e9] p-3 justify-between rounded"
+                                          >
+                                              <div className="flex items-center gap-2">
+                                                  <img
+                                                      src={
+                                                          val.user_profile?.avatar_url ||
+                                                          "/img/icon.png"
+                                                      }
+                                                      alt=""
+                                                      className="w-15 h-15 lg:w-10 lg:h-10 rounded-full object-cover"
+                                                  />
+                                                  <span className="text-3xl lg:text-base">
+                                                      {val.username}
+                                                  </span>
+                                              </div>
 
-          <div className="flex gap-5">
-            <ModalButton handler={() => startChatting(val.id)}>
-              {t("modal.message")}
-            </ModalButton>
-            <ModalButton handler={() => inviteFriend(val.id)}>
-              {t("modal.addfriend")}
-            </ModalButton>
-          </div>
-        </li>
-      );
-    })
-  ) : find.trim() && (
-    <li className="text-gray-400">{t("notfound")}</li>
-  )}
-</ul>
-
+                                              <div className="flex gap-5">
+                                                  <ModalButton
+                                                      handler={() => startChatting(val.id)}
+                                                  >
+                                                      {t("modal.message")}
+                                                  </ModalButton>
+                                                  <ModalButton handler={() => inviteFriend(val.id)}>
+                                                      {t("modal.addfriend")}
+                                                  </ModalButton>
+                                              </div>
+                                          </li>
+                                      );
+                                  })
+                                : find.trim() && <li className="text-gray-400">{t("notfound")}</li>}
+                        </ul>
                     </div>
                 </div>
             </ModalLayout>

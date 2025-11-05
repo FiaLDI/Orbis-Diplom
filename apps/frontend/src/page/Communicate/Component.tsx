@@ -33,7 +33,7 @@ import { shallowEqual } from "react-redux";
 export const Component: React.FC = () => {
     const dispatch = useAppDispatch();
 
-    const {  userId, activeChat, isSettingsActive, activeserver, issues } = useAppSelector(
+    const { userId, activeChat, isSettingsActive, activeserver, issues } = useAppSelector(
         (s) => ({
             userId: s.auth.user?.info.id,
             activeChat: s.chat.activeChat,
@@ -77,10 +77,8 @@ export const Component: React.FC = () => {
     const fetchUserData = useCallback(async () => {
         if (!userId) return;
 
-        await Promise.all(
-            [getPersonalChats({})]
-        )
-    }, [userId])
+        await Promise.all([getPersonalChats({})]);
+    }, [userId]);
 
     const fetchServerData = useCallback(async () => {
         if (!activeServerId) return;
@@ -122,9 +120,9 @@ export const Component: React.FC = () => {
         fetchServerData();
     }, [fetchServerData]);
 
-    useEffect(()=> {
+    useEffect(() => {
         fetchUserData();
-    }, [fetchUserData])
+    }, [fetchUserData]);
 
     return (
         <div className="flex flex-col lg:flex-row h-screen w-screen">

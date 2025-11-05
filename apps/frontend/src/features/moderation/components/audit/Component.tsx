@@ -38,10 +38,7 @@ export const Component: React.FC = () => {
 
     const refreshData = async () => {
         if (!activeserver?.id) return;
-        await Promise.all([
-            refetch(),
-            triggerMembers(activeserver.id),
-        ]);
+        await Promise.all([refetch(), triggerMembers(activeserver.id)]);
     };
 
     const handleBan = async (userId: number) => {
@@ -109,10 +106,7 @@ export const Component: React.FC = () => {
                                         <div className="flex gap-3 items-center justify-between">
                                             <div className="flex gap-3 items-center">
                                                 <img
-                                                    src={
-                                                        user.avatar_url ||
-                                                        "/img/icon.png"
-                                                    }
+                                                    src={user.avatar_url || "/img/icon.png"}
                                                     alt=""
                                                     className="w-10 h-10 rounded"
                                                 />

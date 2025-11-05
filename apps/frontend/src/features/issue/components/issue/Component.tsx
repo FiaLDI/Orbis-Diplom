@@ -18,7 +18,7 @@ interface Props {
 
 export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
     const issue = useAppSelector((s) => s.issue);
-        console.log(issue)
+    console.log(issue);
     const [deleteIssueApi] = useDeleteIssueMutation();
     const [editingIssue, setEditingIssue] = useState<any | null>(null);
     const [viewMode, setViewMode] = useState<"tree" | "cluster">("tree");

@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useChatSocket } from "./useChatSocket";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
-import {
-    Message,
-    addMessage,
-    setActiveHistory,
-} from "@/features/messages";
+import { Message, addMessage, setActiveHistory } from "@/features/messages";
 
 export const useChatMessages = () => {
     const [typingUsers, setTypingUsers] = useState<string[]>([]);
@@ -42,9 +38,9 @@ export const useChatMessages = () => {
 
         const handleNewMessage = (message: Message) => {
             console.log(message);
-            console.log(activeChat?.id)
-            console.log(activeChat?.chat_id)
-            console.log(activeChat?.id == message.chatId)
+            console.log(activeChat?.id);
+            console.log(activeChat?.chat_id);
+            console.log(activeChat?.id == message.chatId);
             if (message.chatId !== activeChat?.id) return;
             dispatch(addMessage(message));
         };
@@ -86,41 +82,40 @@ export const useChatMessages = () => {
     // ⌨️ События "печатает"
     // ================================
     useEffect(() => {
-    if (!socket || !activeChat?.id) return;
+        if (!socket || !activeChat?.id) return;
 
-    const handleTypingStart = (data: { chatId: number; username?: string }) => {
-        // защита по чатам
-        if (data.chatId !== activeChat.id) return;
+        const handleTypingStart = (data: { chatId: number; username?: string }) => {
+            // защита по чатам
+            if (data.chatId !== activeChat.id) return;
 
-        // ранний выход, чтобы дальше username точно стал string
-        const uname = data.username;
-        if (!uname) return;
+            // ранний выход, чтобы дальше username точно стал string
+            const uname = data.username;
+            if (!uname) return;
 
-        setTypingUsers((prev) => {
-            // prev: string[]
-            if (prev.includes(uname)) return prev;
-            return [...prev, uname]; // string[]
-        });
-    };
+            setTypingUsers((prev) => {
+                // prev: string[]
+                if (prev.includes(uname)) return prev;
+                return [...prev, uname]; // string[]
+            });
+        };
 
-    const handleTypingStop = (data: { chatId: number; username?: string }) => {
-        if (data.chatId !== activeChat.id) return;
+        const handleTypingStop = (data: { chatId: number; username?: string }) => {
+            if (data.chatId !== activeChat.id) return;
 
-        const uname = data.username;
-        if (!uname) return;
+            const uname = data.username;
+            if (!uname) return;
 
-        setTypingUsers((prev) => prev.filter((u) => u !== uname));
-    };
+            setTypingUsers((prev) => prev.filter((u) => u !== uname));
+        };
 
-    socket.on("user-typing-start", handleTypingStart);
-    socket.on("user-typing-stop", handleTypingStop);
+        socket.on("user-typing-start", handleTypingStart);
+        socket.on("user-typing-stop", handleTypingStop);
 
-    return () => {
-        socket.off("user-typing-start", handleTypingStart);
-        socket.off("user-typing-stop", handleTypingStop);
-    };
-}, [socket, activeChat?.id]);
-
+        return () => {
+            socket.off("user-typing-start", handleTypingStart);
+            socket.off("user-typing-stop", handleTypingStop);
+        };
+    }, [socket, activeChat?.id]);
 
     // ================================
     // 🧩 Группировка сообщений по пользователю и минуте

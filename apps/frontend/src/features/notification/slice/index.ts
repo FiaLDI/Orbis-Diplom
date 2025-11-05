@@ -41,16 +41,15 @@ const notificationSlice = createSlice({
         },
     },
 
-
-        extraReducers: (builder) => {
-            builder.addMatcher(
-                notificationApi.endpoints.getNotifications.matchFulfilled,
-                (state, action) => {
-                    console.log(action)
-                    state.list = (action.payload as any).data
-                }
-            );
-        },
+    extraReducers: (builder) => {
+        builder.addMatcher(
+            notificationApi.endpoints.getNotifications.matchFulfilled,
+            (state, action) => {
+                console.log(action);
+                state.list = (action.payload as any).data;
+            }
+        );
+    },
 });
 
 export const {

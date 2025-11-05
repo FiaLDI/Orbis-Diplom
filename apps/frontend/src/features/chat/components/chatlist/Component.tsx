@@ -24,7 +24,6 @@ export const Component: React.FC<ChatListProps> = ({ isServer, search }) => {
         });
     }, [personalChats, normalizedSearch]);
 
-
     const filteredServer = useMemo(() => {
         if (!serverChats) return [];
         return serverChats.filter((c) =>

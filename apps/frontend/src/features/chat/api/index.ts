@@ -42,7 +42,7 @@ export const chatApi = createApi({
                 url: `/chats/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (result, error, { id }) => [{ type: "Chat", id }], 
+            invalidatesTags: (result, error, { id }) => [{ type: "Chat", id }],
         }),
     }),
 });

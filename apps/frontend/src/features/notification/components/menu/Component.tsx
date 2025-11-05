@@ -18,12 +18,16 @@ export const Component: React.FC<Props> = ({ connected }) => {
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
 
-    const { data: apiNotifications = [], isFetching, refetch } = useGetNotificationsQuery(undefined, {
+    const {
+        data: apiNotifications = [],
+        isFetching,
+        refetch,
+    } = useGetNotificationsQuery(undefined, {
         skip: !open,
     });
     const [markRead] = useMarkNotificationReadMutation();
     const [deleteNotif] = useDeleteNotificationMutation();
-    
+
     const [allDeleteNotif] = useDeleteAllNotificationMutation();
     const [allMarkRead] = useMarkAllNotificationReadMutation();
 
@@ -54,7 +58,7 @@ export const Component: React.FC<Props> = ({ connected }) => {
     };
 
     const handleMarkAll = async () => {
-         try {
+        try {
             await allDeleteNotif({});
             notifications.forEach((n) => {
                 if (!n.is_read) dispatch(markAsRead(n.id));
@@ -67,7 +71,7 @@ export const Component: React.FC<Props> = ({ connected }) => {
     const handleClearAll = async () => {
         try {
             await allMarkRead({});
-             dispatch(clearNotifications());
+            dispatch(clearNotifications());
         } catch (e) {
             console.error("Cleared error", e);
         }

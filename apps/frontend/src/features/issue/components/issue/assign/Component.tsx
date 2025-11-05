@@ -16,7 +16,7 @@ interface Props {
     onClose: () => void;
 }
 
-export const Component: React.FC<Props> = ({serverId, issue, onClose, projectId }) => {
+export const Component: React.FC<Props> = ({ serverId, issue, onClose, projectId }) => {
     const [assignUser] = useAssignUserToIssueMutation();
     const [unassignUser] = useUnassignUserFromIssueMutation();
     const [getIssues] = useLazyGetIssuesQuery();
@@ -38,7 +38,7 @@ export const Component: React.FC<Props> = ({serverId, issue, onClose, projectId 
         setLoadingId(userId);
 
         try {
-            await assignUser({ serverId ,issueId: issue.id, userId }).unwrap();
+            await assignUser({ serverId, issueId: issue.id, userId }).unwrap();
         } catch (err) {
             setLocalAssigned((prev) => prev.filter((id) => id !== userId));
         } finally {
@@ -51,7 +51,7 @@ export const Component: React.FC<Props> = ({serverId, issue, onClose, projectId 
         setLoadingId(userId);
 
         try {
-            await unassignUser({serverId, issueId: issue.id, userId }).unwrap();
+            await unassignUser({ serverId, issueId: issue.id, userId }).unwrap();
         } catch (err) {
             console.error("unassign error:", err);
             setLocalAssigned((prev) => [...prev, userId]);
@@ -65,7 +65,7 @@ export const Component: React.FC<Props> = ({serverId, issue, onClose, projectId 
             open={!!issue}
             onClose={() => {
                 onClose();
-                getIssues({serverId, projectId});
+                getIssues({ serverId, projectId });
             }}
         >
             <div className="w-[500px] text-white">
@@ -147,7 +147,7 @@ export const Component: React.FC<Props> = ({serverId, issue, onClose, projectId 
                     <button
                         onClick={() => {
                             onClose();
-                            getIssues({serverId, projectId});
+                            getIssues({ serverId, projectId });
                         }}
                         className="mt-3 w-full py-2 rounded bg-gray-700 hover:bg-gray-600 text-white"
                     >

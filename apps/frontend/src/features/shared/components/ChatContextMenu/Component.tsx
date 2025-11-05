@@ -38,12 +38,11 @@ export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({ triggerElement
             label: t("chat.edit.delete"),
             action: () => {
                 if (!activeServer?.id) {
-                    
                     if (!confirm(`${t("chat.edit.delete")}?`)) return;
                     if (contextMenu?.data.id == activeChat?.id) {
-                        dispatch(setActiveChat(undefined))
+                        dispatch(setActiveChat(undefined));
                     }
-                    deleteChat(contextMenu?.data.id)
+                    deleteChat(contextMenu?.data.id);
                 }
 
                 if (!activeServer?.id || !contextMenu?.data) return;

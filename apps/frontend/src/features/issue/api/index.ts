@@ -52,8 +52,7 @@ export const issueApi = createApi({
 
         /* 🔹 Issues */
         getIssues: builder.query<any[], { serverId: number; projectId: number }>({
-            query: ({ serverId, projectId }) =>
-                `/servers/${serverId}/projects/${projectId}/issues`,
+            query: ({ serverId, projectId }) => `/servers/${serverId}/projects/${projectId}/issues`,
             providesTags: (result, error, { projectId }) =>
                 result
                     ? [
@@ -98,14 +97,20 @@ export const issueApi = createApi({
             ],
         }),
 
-        assignUserToIssue: builder.mutation<void, { serverId: number; issueId: number; userId: number }>({
+        assignUserToIssue: builder.mutation<
+            void,
+            { serverId: number; issueId: number; userId: number }
+        >({
             query: ({ serverId, issueId, userId }) => ({
                 url: `/servers/${serverId}/issues/${issueId}/assignees/${userId}`,
                 method: "POST",
             }),
         }),
 
-        unassignUserFromIssue: builder.mutation<void, { serverId: number; issueId: number; userId: number }>({
+        unassignUserFromIssue: builder.mutation<
+            void,
+            { serverId: number; issueId: number; userId: number }
+        >({
             query: ({ serverId, issueId, userId }) => ({
                 url: `/servers/${serverId}/issues/${issueId}/assignees/${userId}`,
                 method: "DELETE",

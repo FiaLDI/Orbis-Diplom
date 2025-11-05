@@ -31,7 +31,7 @@ export interface messageSliceState {
     activeHistory: Message[];
     histories: Record<string, ChatHistory>;
     openMessage?: Message;
-    uploadstate: boolean;   
+    uploadstate: boolean;
     activeChat?: {
         id: string;
         name?: string;

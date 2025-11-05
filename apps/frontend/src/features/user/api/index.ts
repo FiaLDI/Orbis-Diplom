@@ -55,7 +55,6 @@ export const userApi = createApi({
                 url: `/users/search?name=${name}`,
                 method: "GET",
             }),
-            
         }),
     }),
 });

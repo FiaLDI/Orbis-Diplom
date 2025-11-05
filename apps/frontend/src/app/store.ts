@@ -21,7 +21,6 @@ import { settingsApi } from "@/features/settings";
 import { notificationApi } from "@/features/notification";
 import { moderationApi } from "@/features/moderation";
 
-
 import { toastMiddleware } from "@/features/toast";
 
 export const store = configureStore({

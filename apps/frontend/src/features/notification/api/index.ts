@@ -60,5 +60,5 @@ export const {
     useMarkNotificationReadMutation,
     useDeleteNotificationMutation,
     useMarkAllNotificationReadMutation,
-    useDeleteAllNotificationMutation
+    useDeleteAllNotificationMutation,
 } = notificationApi;

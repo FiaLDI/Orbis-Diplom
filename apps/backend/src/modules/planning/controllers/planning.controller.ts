@@ -38,7 +38,12 @@ export class PlanningController {
             const serverId = Number(req.params.serverId);
             const projectId = Number(req.params.projectId);
             const { name, description } = req.body;
-            const data = await this.planningService.updateProject(serverId, projectId, name, description);
+            const data = await this.planningService.updateProject(
+                serverId,
+                projectId,
+                name,
+                description
+            );
             return res.json({ message: "Project updated", data });
         } catch (err) {
             next(err);

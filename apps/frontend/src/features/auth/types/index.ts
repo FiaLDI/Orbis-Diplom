@@ -1,6 +1,5 @@
 export interface UserData {
     info: {
-
         id: string;
         avatar_url: string;
         email: string;
@@ -13,7 +12,6 @@ export interface UserData {
         location?: string;
         about?: string;
         number?: string;
-        
     };
     access_token: string;
     username: string;
