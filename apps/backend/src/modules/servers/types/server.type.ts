@@ -1,4 +1,3 @@
-
 export interface serverType {
     id: number;
     creator_id: number | null;

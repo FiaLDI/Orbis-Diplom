@@ -60,6 +60,8 @@ container.bind<RolesService>(TYPES.RolesService).to(RolesService);
 container.bind<RolesController>(TYPES.RolesController).to(RolesController);
 
 container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware);
-container.bind<RolePermissionMiddleware>(TYPES.RolePermissionMiddleware).to(RolePermissionMiddleware);
+container
+    .bind<RolePermissionMiddleware>(TYPES.RolePermissionMiddleware)
+    .to(RolePermissionMiddleware);
 
 export { container };

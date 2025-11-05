@@ -89,15 +89,15 @@ export class MessageController {
 
             const { check, checkData } = await this.messageService.checkMessage(dto.messageId);
 
-            if(!check) throw Errors.notFound("Message not found")
-            if (!checkData.chatId) throw Errors.notFound("Message not found")
-            if (!checkData.userId) throw Errors.notFound("User not found")
+            if (!check) throw Errors.notFound("Message not found");
+            if (!checkData.chatId) throw Errors.notFound("Message not found");
+            if (!checkData.userId) throw Errors.notFound("User not found");
 
             const entity = await this.messageService.editMessage({
                 id: dto.id,
                 chatId: checkData.chatId,
                 messageId: dto.messageId,
-                content: dto.content
+                content: dto.content,
             });
 
             return res.json({
@@ -118,9 +118,9 @@ export class MessageController {
 
             const { check, checkData } = await this.messageService.checkMessage(dto.messageId);
 
-            if(!check) throw Errors.notFound("Message not found")
-            if (!checkData.chatId) throw Errors.notFound("Message not found")
-            if (!checkData.userId) throw Errors.notFound("User not found")
+            if (!check) throw Errors.notFound("Message not found");
+            if (!checkData.chatId) throw Errors.notFound("Message not found");
+            if (!checkData.userId) throw Errors.notFound("User not found");
 
             const entity = await this.messageService.deleteMessage(checkData.chatId, dto.messageId);
 

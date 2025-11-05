@@ -30,7 +30,7 @@ export class RolesController {
         try {
             const dto = RolesServerSchema.parse({
                 ...(req as any).user,
-                serverId: parseInt(req.params.id, 10)
+                serverId: parseInt(req.params.id, 10),
             });
             const entity = await this.RolesService.getServerRoles(dto.id, dto.serverId);
 
@@ -47,7 +47,7 @@ export class RolesController {
         try {
             const dto = RolesServerSchema.parse({
                 ...(req as any).user,
-                serverId: parseInt(req.params.id, 10)
+                serverId: parseInt(req.params.id, 10),
             });
             const entity = await this.RolesService.createCustomServerRole(dto.serverId);
 
@@ -66,16 +66,16 @@ export class RolesController {
                 ...(req as any).user,
                 ...req.body,
                 roleId: parseInt(req.params.roleId, 10),
-                serverId: parseInt(req.params.id, 10)
+                serverId: parseInt(req.params.id, 10),
             });
             const check = await this.RolesService.checkRole(dto.roleId, dto.serverId);
 
             if (!check) {
-                throw Errors.notFound("Role not found")
+                throw Errors.notFound("Role not found");
             }
 
             if (check.role?.server_id !== dto.serverId) {
-                throw Errors.notFound("Role not found in this server")
+                throw Errors.notFound("Role not found in this server");
             }
 
             if (
@@ -102,17 +102,17 @@ export class RolesController {
             const dto = RolesDeleteSchema.parse({
                 ...(req as any).user,
                 serverId: parseInt(req.params.id, 10),
-                roleId: parseInt(req.params.roleId, 10)
+                roleId: parseInt(req.params.roleId, 10),
             });
 
             const check = await this.RolesService.checkRole(dto.roleId, dto.serverId);
 
             if (!check) {
-                throw Errors.notFound("Role not found")
+                throw Errors.notFound("Role not found");
             }
 
             if (check.role?.server_id !== dto.serverId) {
-                throw Errors.notFound("Role not found in this server")
+                throw Errors.notFound("Role not found in this server");
             }
 
             if (
@@ -122,7 +122,7 @@ export class RolesController {
             ) {
                 throw Errors.conflict("Cannot delete system role");
             }
-            
+
             const entity = await this.RolesService.deleteServerRole(dto);
 
             return res.json({
@@ -141,22 +141,26 @@ export class RolesController {
                 roleId: parseInt(req.params.roleId, 10),
                 userId: parseInt(req.params.userId, 10),
             });
-            
+
             const check = await this.RolesService.checkRole(dto.roleId, dto.serverId);
 
             if (!check) {
-                throw Errors.notFound("Role not found")
+                throw Errors.notFound("Role not found");
             }
 
             if (check.role?.server_id !== dto.serverId) {
-                throw Errors.notFound("Role not found in this server")
+                throw Errors.notFound("Role not found in this server");
             }
-            
+
             if (check.role.name.toLowerCase() === "creator") {
                 throw Errors.domain("Cannot assign creator role manually");
             }
 
-            const entity = await this.RolesService.assignRoleToMember({...dto, roleName: check.role.name, serverName: check.server?.name});
+            const entity = await this.RolesService.assignRoleToMember({
+                ...dto,
+                roleName: check.role.name,
+                serverName: check.server?.name,
+            });
 
             return res.json({
                 message: "Assign role",
@@ -178,18 +182,22 @@ export class RolesController {
             const check = await this.RolesService.checkRole(dto.roleId, dto.serverId);
 
             if (!check) {
-                throw Errors.notFound("Role not found")
+                throw Errors.notFound("Role not found");
             }
 
             if (check.role?.server_id !== dto.serverId) {
-                throw Errors.notFound("Role not found in this server")
+                throw Errors.notFound("Role not found in this server");
             }
-            
+
             if (check.role.name.toLowerCase() === "creator") {
                 throw Errors.domain("Cannot assign creator role manually");
             }
 
-            const entity = await this.RolesService.unAsignRoleToMember({...dto, roleName: check.role.name, serverName: check.server?.name});
+            const entity = await this.RolesService.unAsignRoleToMember({
+                ...dto,
+                roleName: check.role.name,
+                serverName: check.server?.name,
+            });
 
             return res.json({
                 message: "UnAssign role",
@@ -227,18 +235,17 @@ export class RolesController {
             const { permissions } = req.body;
 
             if (!Array.isArray(permissions)) {
-            throw Errors.validation("permissions must be an array");
+                throw Errors.validation("permissions must be an array");
             }
 
             const updated = await this.RolesService.updateRolePermissions(roleId, permissions);
 
             return res.json({
-            message: "Permissions updated successfully",
-            data: updated,
+                message: "Permissions updated successfully",
+                data: updated,
             });
         } catch (err) {
             next(err);
         }
-        };
-
+    };
 }

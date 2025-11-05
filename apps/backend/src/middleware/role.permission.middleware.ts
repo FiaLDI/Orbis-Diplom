@@ -26,20 +26,18 @@ export class RolePermissionMiddleware {
                         user_id: user.id,
                         server_id: serverId,
                         roles: {
-                        some: {
-                            role: {
-                            role_permission: {
-                                some: {
-                                permission: { name: requiredPermission },
+                            some: {
+                                role: {
+                                    role_permission: {
+                                        some: {
+                                            permission: { name: requiredPermission },
+                                        },
+                                    },
                                 },
                             },
-                            },
-                        },
                         },
                     },
-                    });
-
-
+                });
 
                 if (!hasPermission) {
                     return next(Errors.conflict(`Missing permission: ${requiredPermission}`));

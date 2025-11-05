@@ -17,7 +17,7 @@ export class AuthController {
             const dto = SendCodeSchema.parse(req.body);
             const codeEntity = await this.authService.sendCode(dto.email);
 
-            console.log(codeEntity)
+            console.log(codeEntity);
 
             return res.json({
                 message: "Verification code generated and stored",

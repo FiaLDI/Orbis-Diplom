@@ -31,19 +31,19 @@ export class MessageService {
 
         return {
             check: entity.boolean(),
-            checkData: entity.toJSON()
-        }
+            checkData: entity.toJSON(),
+        };
     }
 
     async getMessageById(messageId: number) {
         const message = await this.prisma.messages.findUnique({
             where: { id: messageId },
             include: {
-            messages_content: {
-                include: {
-                content: { select: { id: true, text: true, url: true } },
+                messages_content: {
+                    include: {
+                        content: { select: { id: true, text: true, url: true } },
+                    },
                 },
-            },
             },
         });
 
@@ -65,12 +65,12 @@ export class MessageService {
             message,
             profile,
             message.messages_content.map((mc) => ({
-            id: mc.content.id,
-            type: mc.type ?? "text",
-            text: mc.content.text ?? null,
-            url: mc.content.url ?? null,
-            size: mc.size ?? null,
-            uploaded_at: mc.uploaded_at,
+                id: mc.content.id,
+                type: mc.type ?? "text",
+                text: mc.content.text ?? null,
+                url: mc.content.url ?? null,
+                size: mc.size ?? null,
+                uploaded_at: mc.uploaded_at,
             }))
         );
 
@@ -101,7 +101,7 @@ export class MessageService {
 
         const profiles = await Promise.all(
             userIds.map((id) => this.userService.getProfileById(id))
-        );  
+        );
 
         const profilesMap = UserProfile.getUsersMap(profiles);
 
@@ -213,32 +213,32 @@ export class MessageService {
 
         const newContent = await Promise.all(
             content.map((item) =>
-            this.createContent(
-                uuidv4(),
-                item.type,
-                item.text ?? undefined,
-                item.url ?? undefined
-            )
+                this.createContent(
+                    uuidv4(),
+                    item.type,
+                    item.text ?? undefined,
+                    item.url ?? undefined
+                )
             )
         );
 
         const updated = await tx.messages.update({
             where: { id: messageId },
             data: {
-            is_edited: true,
-            updated_at: new Date(),
-            messages_content: {
-                create: newContent.map((c) => ({
-                id_content: c.id,
-                type: c.type,
-                uploaded_at: new Date(),
-                })),
-            },
+                is_edited: true,
+                updated_at: new Date(),
+                messages_content: {
+                    create: newContent.map((c) => ({
+                        id_content: c.id,
+                        type: c.type,
+                        uploaded_at: new Date(),
+                    })),
+                },
             },
             include: {
-            messages_content: {
-                include: { content: true },
-            },
+                messages_content: {
+                    include: { content: true },
+                },
             },
         });
 

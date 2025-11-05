@@ -44,7 +44,7 @@ export const createServerRole = async (req: Request, res: Response) => {
                 name: "custom",
                 server_id: serverId,
                 role_permission: {
-                    create: ([]).map((permId: number) => ({
+                    create: [].map((permId: number) => ({
                         permission_id: permId,
                     })),
                 },

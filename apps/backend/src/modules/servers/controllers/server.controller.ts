@@ -33,7 +33,7 @@ export class ServerController {
         try {
             const dto = ServerCreateSchema.parse({
                 ...(req as any).user,
-                ...req.body
+                ...req.body,
             });
             const entity = await this.serverService.createServerUser(dto.id, dto.name);
 
@@ -95,107 +95,139 @@ export class ServerController {
     };
 
     updateServer = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const dto = ServerUpdateSchema.parse({
-        ...(req as any).user,
-        serverId: parseInt(req.params.id),
-        name: req.body?.name,
-        avatar_url: req.body?.avatar_url,
-      });
-      const data = await this.serverService.updateServer(dto);
-      return res.json({ message: "Server updated", data });
-    } catch (err) { next(err); }
-  };
+        try {
+            const dto = ServerUpdateSchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.id),
+                name: req.body?.name,
+                avatar_url: req.body?.avatar_url,
+            });
+            const data = await this.serverService.updateServer(dto);
+            return res.json({ message: "Server updated", data });
+        } catch (err) {
+            next(err);
+        }
+    };
 
-  deleteServer = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const dto = ServerIdOnlySchema.parse({ ...(req as any).user, serverId: parseInt(req.params.id) });
-      const data = await this.serverService.deleteServer(dto);
-      return res.json({ message: "Server deleted", data });
-    } catch (err) { next(err); }
-  };
+    deleteServer = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = ServerIdOnlySchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.id),
+            });
+            const data = await this.serverService.deleteServer(dto);
+            return res.json({ message: "Server deleted", data });
+        } catch (err) {
+            next(err);
+        }
+    };
 
-  kickMember = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const dto = ServerMemberSchema.parse({
-        ...(req as any).user,
-        serverId: parseInt(req.params.id),
-        userId: parseInt(req.params.userId),
-      });
-      const data = await this.serverService.kickMember(dto);
-      return res.json({ message: "Member kicked", data });
-    } catch (err) { next(err); }
-  };
+    kickMember = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = ServerMemberSchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.id),
+                userId: parseInt(req.params.userId),
+            });
+            const data = await this.serverService.kickMember(dto);
+            return res.json({ message: "Member kicked", data });
+        } catch (err) {
+            next(err);
+        }
+    };
 
-  banMember = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const dto = ServerMemberSchema.parse({
-        ...(req as any).user,
-        serverId: parseInt(req.params.id),
-        userId: parseInt(req.params.userId),
-      });
-      const data = await this.serverService.banMember(dto);
-      return res.json({ message: "Member banned", data });
-    } catch (err) { next(err); }
-  };
+    banMember = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = ServerMemberSchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.id),
+                userId: parseInt(req.params.userId),
+            });
+            const data = await this.serverService.banMember(dto);
+            return res.json({ message: "Member banned", data });
+        } catch (err) {
+            next(err);
+        }
+    };
 
-  unbanMember = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const dto = ServerMemberSchema.parse({
-        ...(req as any).user,
-        serverId: parseInt(req.params.id),
-        userId: parseInt(req.params.userId),
-      });
-      const data = await this.serverService.unbanMember(dto);
-      return res.json({ message: "Member unbanned", data });
-    } catch (err) { next(err); }
-  };
+    unbanMember = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = ServerMemberSchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.id),
+                userId: parseInt(req.params.userId),
+            });
+            const data = await this.serverService.unbanMember(dto);
+            return res.json({ message: "Member unbanned", data });
+        } catch (err) {
+            next(err);
+        }
+    };
 
-  getServerChats = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const dto = ServerIdOnlySchema.parse({ ...(req as any).user, serverId: parseInt(req.params.id) });
-      const data = await this.serverService.getServerChats(dto);
-      return res.json({ message: "Server chats list", data });
-    } catch (err) { next(err); }
-  };
+    getServerChats = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = ServerIdOnlySchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.id),
+            });
+            const data = await this.serverService.getServerChats(dto);
+            return res.json({ message: "Server chats list", data });
+        } catch (err) {
+            next(err);
+        }
+    };
 
-  createChat = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const dto = ServerIdOnlySchema.parse({ ...(req as any).user, serverId: parseInt(req.params.id) });
-      const data = await this.serverService.createChat(dto);
-      return res.json({ message: "Chat created", data });
-    } catch (err) { next(err); }
-  };
+    createChat = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = ServerIdOnlySchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.id),
+            });
+            const data = await this.serverService.createChat(dto);
+            return res.json({ message: "Chat created", data });
+        } catch (err) {
+            next(err);
+        }
+    };
 
-  getChatInfo = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const dto = ServerChatIdSchema.parse({
-        ...(req as any).user,
-        serverId: parseInt(req.params.id),
-        chatId: parseInt(req.params.chatId),
-      });
-      const data = await this.serverService.getChatInfo(dto);
-      return res.json({ message: "Chat info", data });
-    } catch (err) { next(err); }
-  };
+    getChatInfo = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = ServerChatIdSchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.id),
+                chatId: parseInt(req.params.chatId),
+            });
+            const data = await this.serverService.getChatInfo(dto);
+            return res.json({ message: "Chat info", data });
+        } catch (err) {
+            next(err);
+        }
+    };
 
-  deleteChat = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const dto = ServerChatIdSchema.parse({
-        ...(req as any).user,
-        serverId: parseInt(req.params.id),
-        chatId: parseInt(req.params.chatId),
-      });
-      const data = await this.serverService.deleteChat(dto);
-      return res.json({ message: "Chat deleted", data });
-    } catch (err) { next(err); }
-  };
+    deleteChat = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = ServerChatIdSchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.id),
+                chatId: parseInt(req.params.chatId),
+            });
+            const data = await this.serverService.deleteChat(dto);
+            return res.json({ message: "Chat deleted", data });
+        } catch (err) {
+            next(err);
+        }
+    };
 
-  getServerMembers = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const dto = ServerIdOnlySchema.parse({ ...(req as any).user, serverId: parseInt(req.params.id) });
-      const data = await this.serverService.getServerMembers(dto);
-      return res.json({ message: "Server members", data });
-    } catch (err) { next(err); }
-  };
+    getServerMembers = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = ServerIdOnlySchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.id),
+            });
+            const data = await this.serverService.getServerMembers(dto);
+            return res.json({ message: "Server members", data });
+        } catch (err) {
+            next(err);
+        }
+    };
 }

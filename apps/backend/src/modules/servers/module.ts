@@ -14,65 +14,69 @@ export const serverModule = () => {
     router.get("", auth.handle.bind(auth), controller.getUserServers.bind(controller));
     router.post("", auth.handle.bind(auth), controller.createServerUser.bind(controller));
     router.get("/:id", auth.handle.bind(auth), controller.getServerInfo.bind(controller));
-    router.get("/:id/members", auth.handle.bind(auth), controller.getServerMembers.bind(controller));
+    router.get(
+        "/:id/members",
+        auth.handle.bind(auth),
+        controller.getServerMembers.bind(controller)
+    );
     router.post("/:id/join", auth.handle.bind(auth), controller.joinServerUser.bind(controller));
-        
+
     router.patch(
-        "/:id", 
+        "/:id",
         auth.handle.bind(auth),
         rolePerm.check("MANAGE_SERVER"),
         controller.updateServer.bind(controller)
     );
 
     router.delete(
-        "/:id", 
+        "/:id",
         auth.handle.bind(auth),
         rolePerm.check("MANAGE_SERVER"),
         controller.deleteServer.bind(controller)
     );
 
     router.delete(
-        "/:id/members/:userId", 
-        auth.handle.bind(auth), 
-        rolePerm.check("KICK_USERS"), 
+        "/:id/members/:userId",
+        auth.handle.bind(auth),
+        rolePerm.check("KICK_USERS"),
         controller.kickMember.bind(controller)
     );
 
     router.post(
-        "/:id/members/:userId/ban", 
-        auth.handle.bind(auth), 
+        "/:id/members/:userId/ban",
+        auth.handle.bind(auth),
         rolePerm.check("BAN_USERS"),
         controller.banMember.bind(controller)
     );
 
     router.delete(
-        "/:id/members/:userId/ban", 
-        auth.handle.bind(auth), 
+        "/:id/members/:userId/ban",
+        auth.handle.bind(auth),
         rolePerm.check("UNBAN_USERS"),
         controller.unbanMember.bind(controller)
     );
 
     router.get(
-        "/:id/chats", 
-        auth.handle.bind(auth), 
-        rolePerm.check("VIEW_CHATS"), 
+        "/:id/chats",
+        auth.handle.bind(auth),
+        rolePerm.check("VIEW_CHATS"),
         controller.getServerChats.bind(controller)
     );
     router.post(
-        "/:id/chats", 
-        auth.handle.bind(auth), 
+        "/:id/chats",
+        auth.handle.bind(auth),
         rolePerm.check("MANAGE_CHATS"),
         controller.createChat.bind(controller)
     );
     router.get(
-        "/:id/chats/:chatId", 
-        auth.handle.bind(auth), 
+        "/:id/chats/:chatId",
+        auth.handle.bind(auth),
         rolePerm.check("VIEW_CHATS"),
         controller.getChatInfo.bind(controller)
     );
     router.delete(
-        "/:id/chats/:chatId", 
-        auth.handle.bind(auth), 
+        "/:id/chats/:chatId",
+        auth.handle.bind(auth),
         rolePerm.check("MANAGE_CHATS"),
         controller.deleteChat.bind(controller)
     );

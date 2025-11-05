@@ -21,24 +21,26 @@ export class ChatService {
             },
         });
 
-    const chatInfo = new Chat({userChat: chats})
+        const chatInfo = new Chat({ userChat: chats });
 
         return chatInfo;
     }
 
     async getServerChat(serverId: number) {
         const chats = await this.prisma.chats.findMany({
-            where: {server_chats: {
-                some: {id_server: serverId}
-            } },
+            where: {
+                server_chats: {
+                    some: { id_server: serverId },
+                },
+            },
             include: {
-                server_chats: true
-            }
-        })
-        
-        const chatInfo = new Chat({serverChat: chats})
+                server_chats: true,
+            },
+        });
 
-        return chatInfo
+        const chatInfo = new Chat({ serverChat: chats });
+
+        return chatInfo;
     }
 
     async updateChat(id: number, chatId: number, name: string) {

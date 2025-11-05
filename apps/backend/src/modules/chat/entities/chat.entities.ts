@@ -7,12 +7,15 @@ export class Chat {
     private userChat: usersChatsWithRelations[] = [];
     private serverChat: serverChatWithRelations[] = [];
 
-    constructor({userChat, serverChat}: {
-        userChat?: usersChatsWithRelations[],
-        serverChat?: serverChatWithRelations[]
+    constructor({
+        userChat,
+        serverChat,
+    }: {
+        userChat?: usersChatsWithRelations[];
+        serverChat?: serverChatWithRelations[];
     }) {
-        this.serverChat = serverChat ?? []
-        this.userChat = userChat ?? []
+        this.serverChat = serverChat ?? [];
+        this.userChat = userChat ?? [];
     }
 
     toJSONU() {
@@ -22,7 +25,7 @@ export class Chat {
             name: val.name,
             creatorId: val.creator_id,
             createdAt: val.created_at,
-            chatUsers: val.chat_users
+            chatUsers: val.chat_users,
         }));
     }
 
@@ -32,7 +35,7 @@ export class Chat {
             id: val.id,
             title: val.name,
             creatorId: val.creator_id,
-            createdAt: val.created_at
+            createdAt: val.created_at,
         }));
     }
 }
