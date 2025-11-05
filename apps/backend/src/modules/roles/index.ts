@@ -1,2 +1,2 @@
-export * from "./routes/roles.routes";
-export * from "./middleware/roles.middleware";
+export * from "./services/roles.service";
+export * from "./module"

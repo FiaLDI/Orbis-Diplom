@@ -1,1 +1,1 @@
-export * from "./routes/moderation.router";
+export * from "./services/moderation.services";

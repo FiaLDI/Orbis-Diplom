@@ -45,7 +45,7 @@ export const rolesModule = () => {
     );
 
     router.get(
-        "/roles/:roleId/permissions",
+        "/:id/roles/:roleId/permissions",
         auth.handle.bind(auth),
         controller.getRolePermissions.bind(controller)
     );
@@ -55,7 +55,7 @@ export const rolesModule = () => {
         controller.getAllPermissions.bind(controller)
     );
     router.patch(
-        "/roles/:roleId/permissions",
+        "/:id/roles/:roleId/permissions",
         auth.handle.bind(auth),
         rolePerm.check("MANAGE_ROLES"),
         controller.updateRolePermissions.bind(controller)

@@ -1,3 +1,4 @@
+
 export const TYPES = {
     Prisma: Symbol.for("Prisma"),
     Redis: Symbol.for("Redis"),
@@ -26,6 +27,12 @@ export const TYPES = {
 
     RolesService: Symbol.for("RolesService"),
     RolesController: Symbol.for("RolesController"),
+
+    PlanningService: Symbol.for("PlanningService"),
+    PlanningController: Symbol.for("PlanningController"),
+
+    ModerationService: Symbol.for("ModerationService"),
+    ModerationController: Symbol.for("ModerationController"),
 
     AuthMiddleware: Symbol.for("AuthMiddleware"),
 };

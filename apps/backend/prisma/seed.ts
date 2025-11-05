@@ -17,7 +17,10 @@ async function main() {
         "MANAGE_INVITES",
         "VIEW_CHATS",
         "MANAGE_PROJECT",
+        "VIEW_PROJECTS",
         "MANAGE_ISSUE",
+        "VIEW_ISSUES",
+        "MANAGE_ASSIGNEES"
     ];
 
     for (const perm of permissions) {

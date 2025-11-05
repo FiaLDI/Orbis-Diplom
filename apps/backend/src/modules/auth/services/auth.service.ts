@@ -9,7 +9,7 @@ import { UserEntity } from "../entities/auth.entities";
 import { TokenEntity } from "../entities/token.entity";
 import { CodeEntity } from "../entities/code.entity";
 import { Errors } from "@/common/errors";
-import { UserService } from "@/modules/users";
+import { UserService } from "@/modules/users/services/user.service";
 
 @injectable()
 export class AuthService {
