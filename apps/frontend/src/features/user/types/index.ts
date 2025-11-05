@@ -14,17 +14,14 @@ export interface permission {
 export interface fastUserInfo {
     id: number;
     username: string;
-    user_profile: {
-        avatar_url: string | null;
-        is_online: boolean;
-    };
-    user_server: {
-        roles: {
-            id: string;
-            name: string;
-            color?: string;
-            permissions: permission[];
-        }[];
+    avatar_url: string | null;
+    is_online: boolean;
+
+    roles: {
+        id: string;
+        name: string;
+        color?: string;
+        permissions: permission[];
     }[];
 }
 

@@ -6,6 +6,11 @@ import { ServerJoinDto } from "../dtos/server.join.dto";
 import { ServerInfoDto } from "../dtos/server.info.dto";
 import { ChatService } from "@/modules/chat";
 import { ServerInfo } from "../entities/server.info.entities";
+import { ServerUpdateDto } from "../entities/server.update.dto";
+import { Errors } from "@/common/errors";
+import { ServerChatIdDto, ServerIdOnlyDto } from "../entities/server.chats.dto";
+import { ServerMemberDto } from "../entities/server.member.dto";
+import { UserService } from "@/modules/users";
 
 @injectable()
 export class ServerService {
@@ -13,7 +18,9 @@ export class ServerService {
         @inject(TYPES.Prisma) private prisma: PrismaClient,
         @inject(new LazyServiceIdentifier(() => TYPES.RolesService))
         private rolesService: RolesService,
-        @inject(TYPES.ChatService) private chatService: ChatService
+        @inject(TYPES.ChatService) private chatService: ChatService,
+        @inject(new LazyServiceIdentifier(() => TYPES.UserService))
+        private userService: UserService,
     ) {}
 
     async check(serverId: number, userId: number) {
@@ -90,9 +97,7 @@ export class ServerService {
             where: { id: serverId },
         });
 
-        const chats = await this.chatService.getServerChat(serverId)
-
-        const serverInfo = new ServerInfo({chats, servers: server})
+        const serverInfo = new ServerInfo({servers: server})
 
         return serverInfo;
     }
@@ -121,4 +126,125 @@ export class ServerService {
 
         return server
     }
+
+    async updateServer(dto: ServerUpdateDto) {
+        const server = await this.prisma.servers.findUnique({ where: { id: dto.serverId } });
+        if (!server) return Errors.notFound("Server not found");
+
+        if (server.creator_id !== dto.id) return Errors.conflict("Forbidden");
+
+        const updated = await this.prisma.servers.update({
+        where: { id: dto.serverId },
+        data: {
+            name: dto.name ?? server.name,
+            avatar_url: dto.avatar_url ?? server.avatar_url ?? null,
+            updated_at: new Date(),
+        },
+        });
+        return { id: updated.id, name: updated.name, avatar_url: updated.avatar_url };
+    }
+
+    async deleteServer(dto: ServerIdOnlyDto) {
+        const server = await this.prisma.servers.findUnique({ where: { id: dto.serverId } });
+        if (!server) return Errors.notFound("Server not found");
+        if (server.creator_id !== dto.id) return Errors.conflict("Forbidden");
+
+        await this.prisma.$transaction(async (tx) => {
+        await this.rolesService.cleanServerRoles(tx, dto.serverId);
+        await tx.user_server.deleteMany({ where: { server_id: dto.serverId } });
+        await this.chatService.cleanServerChats(tx, dto.serverId);
+        await tx.server_bans.deleteMany({ where: { server_id: dto.serverId } });
+        await tx.invites?.deleteMany?.({ where: { server_id: dto.serverId } }).catch(() => {});
+        await tx.audit_logs?.deleteMany?.({ where: { server_id: dto.serverId } }).catch(() => {});
+        await tx.reports?.deleteMany?.({ where: { server_id: dto.serverId } }).catch(() => {});
+        await tx.servers.delete({ where: { id: dto.serverId } });
+        });
+
+        return { message: "Server and related data deleted" };
+    }
+
+    async kickMember(dto: ServerMemberDto) {
+        await this.prisma.user_server.delete({
+        where: { user_id_server_id: { user_id: dto.userId, server_id: dto.serverId } },
+        });
+        return { message: "Member kicked" };
+    }
+
+    async banMember(dto: ServerMemberDto) {
+        const server = await this.prisma.servers.findUnique({ where: { id: dto.serverId } });
+        if (!server) return Errors.notFound("Server not found");
+
+        await this.prisma.server_bans.create({
+        data: {
+            server_id: dto.serverId,
+            user_id: dto.userId,
+            banned_by: dto.id,
+            created_at: new Date(),
+        },
+        });
+
+        await this.prisma.user_server.deleteMany({
+        where: { server_id: dto.serverId, user_id: dto.userId },
+        });
+
+        return { message: "User banned" };
+    }
+
+    async unbanMember(dto: ServerMemberDto) {
+        await this.prisma.server_bans.delete({
+        where: { server_id_user_id: { server_id: dto.serverId, user_id: dto.userId } },
+        });
+        return { message: "User unbanned" };
+    }
+
+  async getServerMembers({ serverId }: { serverId: number }) {
+        const members = await this.prisma.user_server.findMany({
+            where: { server_id: serverId },
+            select: { user_id: true },
+        });
+
+        const rolesData = await this.rolesService.getServerMembers(serverId);
+        const rolesMap = new Map<number, any>(
+            rolesData.map((r) => [r.user_id, r.roles])
+        );
+
+        const result = [];
+        for (const member of members) {
+            const profile = await this.userService.getProfileById(member.user_id);
+
+            result.push({
+                id: member.user_id,
+                username: profile?.toPublicJSON().username ?? "Unknown",
+                avatar_url: profile?.toPublicJSON().avatar_url ?? null,
+                about: profile?.toPublicJSON().about ?? "",
+                roles: rolesMap.get(member.user_id) ?? [],
+            });
+        }
+
+        return result;
+    }
+
+  async getServerChats(dto: ServerIdOnlyDto) {
+    return this.chatService.listServerChats(dto.serverId);
+  }
+
+  async createChat(dto: ServerIdOnlyDto) {
+    return this.chatService.createServerChat(dto.serverId, dto.id, "default chat");
+  }
+
+  async getChatInfo(dto: ServerChatIdDto) {
+    return this.chatService.getChatInfo({
+        id: dto.id,
+        serverId: dto.serverId,
+        chatId: dto.chatId,
+    });
+  }
+
+  async deleteChat(dto: ServerChatIdDto) {
+    return await this.chatService.deleteServerChat({
+        id: dto.id,
+        serverId: dto.serverId,
+        chatId: dto.chatId,
+    });;
+  }
 }

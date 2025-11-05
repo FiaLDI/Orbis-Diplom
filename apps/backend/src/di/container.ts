@@ -7,6 +7,7 @@ import { TYPES } from "./types";
 import { AuthService } from "@/modules/auth/services/auth.service";
 import { AuthController } from "@/modules/auth/controllers/auth.controller";
 import { AuthMiddleware } from "@/middleware/auth.middleware";
+import { RolePermissionMiddleware } from "@/middleware/role.permission.middleware";
 
 import { FriendService } from "@/modules/friends/services/friend.service";
 import { FriendController } from "@/modules/friends/controllers/friend.controller";
@@ -59,5 +60,6 @@ container.bind<RolesService>(TYPES.RolesService).to(RolesService);
 container.bind<RolesController>(TYPES.RolesController).to(RolesController);
 
 container.bind<AuthMiddleware>(TYPES.AuthMiddleware).to(AuthMiddleware);
+container.bind<RolePermissionMiddleware>(TYPES.RolePermissionMiddleware).to(RolePermissionMiddleware);
 
 export { container };

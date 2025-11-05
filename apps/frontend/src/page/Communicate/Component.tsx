@@ -6,6 +6,7 @@ import {
     setSettingsActive,
     SettingsServer,
     useLazyGetPermissionsQuery,
+    useLazyGetServersChatsQuery,
     useLazyGetServersInsideQuery,
     useLazyGetServersMembersQuery,
     useLazyGetServersRolesQuery,
@@ -61,6 +62,7 @@ export const Component: React.FC = () => {
     const [getPriority] = useLazyGetPriorityQuery();
     const [getServerInside] = useLazyGetServersInsideQuery();
     const [getPersonalChats] = useLazyGetChatsUsersQuery();
+    const [getServerChats] = useLazyGetServersChatsQuery();
 
     const { socket } = useServerJournalSocket();
     const { isConnected } = useNotificationSocket();
@@ -88,6 +90,7 @@ export const Component: React.FC = () => {
             getServer(activeServerId),
             getServerRoles(activeServerId),
             getProject(activeServerId),
+            getServerChats(activeServerId),
             getPermission({}),
             getStatuses({}),
             getPriority({}),

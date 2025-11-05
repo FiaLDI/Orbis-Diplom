@@ -139,7 +139,7 @@ export const Component: React.FC = () => {
                             >
                                 <div className="shrink-0">
                                     <img
-                                        src={val.user_profile?.avatar_url || "/img/icon.png"}
+                                        src={val?.avatar_url || "/img/icon.png"}
                                         alt=""
                                         className="w-6 h-6 rounded-2xl"
                                     />

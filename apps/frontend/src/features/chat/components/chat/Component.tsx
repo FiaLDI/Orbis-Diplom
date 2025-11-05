@@ -24,7 +24,7 @@ export const Component: React.FC = () => {
                         className="flex bg-background text-white text-1xl justify-between items-center flex-wrap shrink-0"
                         onContextMenu={onContextMenu}
                     >
-                        <div className="text-5xl lg:text-base pl-5 p-2">{activeChat.title}</div>
+                        <div className="text-5xl lg:text-base pl-5 p-2">{activeChat.name}</div>
 
                         <div
                             className="w-full lg:w-auto 

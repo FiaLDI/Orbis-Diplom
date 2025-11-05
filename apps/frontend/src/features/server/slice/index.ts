@@ -37,7 +37,7 @@ const serverSlice = createSlice({
                 if (!state.activeserver) return;
                 state.activeserver = {
                     ...state.activeserver,
-                    users: action.payload,
+                    users: action.payload.data,
                 };
             })
             .addMatcher(serverApi.endpoints.GetServersInside.matchFulfilled, (state, action) => {
@@ -47,8 +47,15 @@ const serverSlice = createSlice({
                     ...action.payload.data,
                 };
             })
+            .addMatcher(serverApi.endpoints.GetServersChats.matchFulfilled, (state, action) => {
+                if (!state.activeserver) return;
+                state.activeserver = {
+                    ...state.activeserver,
+                    chats: action.payload,
+                };
+            })
             .addMatcher(serverApi.endpoints.GetPermissions.matchFulfilled, (state, action) => {
-                state.allPermission = action.payload;
+                state.allPermission = action.payload.data;
             })
             .addMatcher(serverApi.endpoints.GetServersRoles.matchFulfilled, (state, action) => {
                 if (!state.activeserver) return;

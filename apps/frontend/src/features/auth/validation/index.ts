@@ -12,7 +12,7 @@ export type EmailFormData = z.infer<typeof emailSchema>;
 export const codeSchema = z.object({
     code: z
         .string()
-        .length(10, "Код должен содержать 10 символов")
+        .length(6, "Код должен содержать 6 символов")
         .regex(/^\d+$/, "Код должен состоять только из цифр"),
 });
 export type CodeFormData = z.infer<typeof codeSchema>;

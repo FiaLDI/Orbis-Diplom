@@ -7,6 +7,7 @@ import { RolesUpdateSchema } from "../dtos/roles.update.dto";
 import { Errors } from "@/common/errors";
 import { RolesDeleteSchema } from "../dtos/roles.delete.dto";
 import { RolesAssignSchema } from "../dtos/roles.assign.dto";
+import { RolesPermissionSchema } from "../dtos/role.permission.dto";
 
 @injectable()
 export class RolesController {
@@ -64,6 +65,7 @@ export class RolesController {
             const dto = RolesUpdateSchema.parse({
                 ...(req as any).user,
                 ...req.body,
+                roleId: parseInt(req.params.roleId, 10),
                 serverId: parseInt(req.params.id, 10)
             });
             const check = await this.RolesService.checkRole(dto.roleId, dto.serverId);
@@ -200,7 +202,14 @@ export class RolesController {
 
     getRolePermissions = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const entity = await this.RolesService.getAllPermission();
+            const dto = RolesPermissionSchema.parse({
+                ...(req as any).user,
+                roleId: parseInt(req.params.roleId, 10),
+            });
+
+            const entity = await this.RolesService.getRolePermissions(dto.roleId);
+
+            if (!entity) return res.status(404).json({ message: "Role not found" });
 
             return res.json({
                 message: "Permission list",
@@ -213,14 +222,23 @@ export class RolesController {
 
     updateRolePermissions = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const entity = await this.RolesService.getAllPermission();
+            const roleId = parseInt(req.params.roleId, 10);
+
+            const { permissions } = req.body;
+
+            if (!Array.isArray(permissions)) {
+            throw Errors.validation("permissions must be an array");
+            }
+
+            const updated = await this.RolesService.updateRolePermissions(roleId, permissions);
 
             return res.json({
-                message: "Permission list",
-                data: entity,
+            message: "Permissions updated successfully",
+            data: updated,
             });
         } catch (err) {
             next(err);
         }
-    };
+        };
+
 }

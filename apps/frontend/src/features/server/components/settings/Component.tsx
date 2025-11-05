@@ -7,7 +7,6 @@ import {
     useCreateRoleMutation,
     useDeleteRoleMutation,
     useEmitServerUpdate,
-    useGetServersRolesQuery,
 } from "../..";
 import { Plus, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -24,10 +23,6 @@ export const Component: React.FC = () => {
     const [createRole] = useCreateRoleMutation();
     const [deleteRole] = useDeleteRoleMutation();
     const emitUpdate = useEmitServerUpdate();
-
-    const { data: roles = [], refetch } = useGetServersRolesQuery(activeserver?.id, {
-        skip: !activeserver?.id,
-    });
 
     const handleCreateRole = async () => {
         if (!activeserver?.id) return;
@@ -68,8 +63,8 @@ export const Component: React.FC = () => {
                             <div className="flex w-full gap-5 items-center ">
                                 <img
                                     src={
-                                        user.user_profile.avatar_url
-                                            ? user.user_profile.avatar_url
+                                        user.avatar_url
+                                            ? user.avatar_url
                                             : "/img/icon.png"
                                     }
                                     alt=""
@@ -77,8 +72,7 @@ export const Component: React.FC = () => {
                                 />
                                 <div className=" ">{user.username}</div>
                                 <div className="flex gap-2">
-                                    {user?.user_server?.flatMap((us) =>
-                                        us?.roles?.map((role, index) => (
+                                        {user?.roles?.map((role, index) => (
                                             <span
                                                 key={`role-${index}-${role.id}`}
                                                 className="px-2 py-0.5 rounded text-xs"
@@ -88,21 +82,19 @@ export const Component: React.FC = () => {
                                             >
                                                 {role.name}
                                             </span>
-                                        ))
-                                    )}
+                                        ))}
                                 </div>
                             </div>
 
                             <AssignRolesButton
                                 userId={user.id}
                                 serverId={activeserver.id}
-                                availableRoles={roles.map((r: any) => ({
+                                availableRoles={activeserver?.roles?.map((r: any) => ({
                                     id: Number(r.id),
                                     name: r.name,
                                     color: r.color,
-                                }))}
-                                userRoles={user.user_server
-                                    .flatMap((us) => us.roles)
+                                })) ?? []}
+                                userRoles={user.roles
                                     .map((r) => ({
                                         id: Number(r.id),
                                         name: r.name,
@@ -123,7 +115,7 @@ export const Component: React.FC = () => {
                         </button>
                     </div>
                     <div className="w-full flex flex-col">
-                        {roles.map((role: any, index: number) => (
+                        {activeserver?.roles ? activeserver?.roles?.map((role: any, index: number) => (
                             <div
                                 key={`roles-${index}`}
                                 className="flex w-full items-center justify-between border-b border-white/30 p-2"
@@ -153,7 +145,7 @@ export const Component: React.FC = () => {
                                     </button>
                                 </div>
                             </div>
-                        ))}
+                        )) : null}
                     </div>
                 </div>
             </div>

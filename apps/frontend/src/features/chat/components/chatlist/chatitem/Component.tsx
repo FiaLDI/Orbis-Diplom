@@ -34,7 +34,7 @@ export const Component: React.FC<Props> = ({ chat, isServer }) => {
                             </div>
                         )}
                         <div className="text-3xl lg:text-base truncate w-full shrink-10 lg:max-w-50">
-                            {chat.title}
+                            {chat.name}
                         </div>
                     </div>
                 </li>

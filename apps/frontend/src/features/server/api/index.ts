@@ -70,6 +70,7 @@ export const serverApi = createApi({
                 url: `/servers/${id}/roles`,
                 method: "GET",
             }),
+            transformResponse: (response: any) => response.data,
             providesTags: (result, error, id) =>
                 result
                     ? [
@@ -83,12 +84,14 @@ export const serverApi = createApi({
                 url: `/servers/roles/permissions`,
                 method: "GET",
             }),
+            transformResponse: (response: any) => response.data,
         }),
         GetRolePermissions: builder.query({
             query: (roleId: number) => ({
                 url: `/servers/roles/${roleId}/permissions`,
                 method: "GET",
             }),
+            transformResponse: (response: any) => response.data,
         }),
         UpdateRolePermissions: builder.mutation({
             query: ({ roleId, permissions }: { roleId: number; permissions: number[] }) => ({
@@ -146,6 +149,14 @@ export const serverApi = createApi({
                 { type: "ServerMembers", id: serverId },
             ],
         }),
+
+        GetServersChats: builder.query({
+            query: (id) => ({
+                url: `/servers/${id}/chats`,
+                method: "GET",
+            }),
+            transformResponse: (response: any) => response.data,
+        }),
     }),
 });
 
@@ -169,5 +180,5 @@ export const {
     useAssignRoleToMemberMutation,
     useRemoveRoleFromMemberMutation,
     useDeleteRoleMutation,
-    useGetServersRolesQuery,
+    useLazyGetServersChatsQuery
 } = serverApi;

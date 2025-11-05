@@ -28,7 +28,7 @@ export const Component: React.FC<ChatListProps> = ({ isServer, search }) => {
     const filteredServer = useMemo(() => {
         if (!serverChats) return [];
         return serverChats.filter((c) =>
-            c.title?.toLowerCase().includes(normalizedSearch.toLowerCase())
+            c.name?.toLowerCase().includes(normalizedSearch.toLowerCase())
         );
     }, [serverChats, normalizedSearch]);
 

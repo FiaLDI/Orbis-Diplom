@@ -37,6 +37,58 @@ export class RolesService {
         return permissions
     }
 
+    async cleanServerRoles(tx: Prisma.TransactionClient, serverId: number) {
+        await tx.user_server_roles.deleteMany({ where: { server_id: serverId } });
+        await tx.role_permission.deleteMany({ where: { role: { server_id: serverId } } });
+        await tx.role_server.deleteMany({ where: { server_id: serverId } });
+    }
+
+    async getServerMembers(serverId: number) {
+        const userRoles = await this.prisma.user_server_roles.findMany({
+            where: { server_id: serverId },
+            select: {
+                user_id: true,
+                role: {
+                    select: {
+                        id: true,
+                        name: true,
+                        color: true,
+                        role_permission: {
+                            select: {
+                                permission: {
+                                    select: { id: true, name: true },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        const grouped = userRoles.reduce((acc, curr) => {
+            if (!acc[curr.user_id]) {
+                acc[curr.user_id] = {
+                    user_id: curr.user_id,
+                    roles: [],
+                };
+            }
+
+            acc[curr.user_id].roles.push({
+                id: curr.role.id,
+                name: curr.role.name,
+                color: curr.role.color,
+                permissions: curr.role.role_permission.map((rp) => ({
+                    id: rp.permission.id,
+                    name: rp.permission.name,
+                })),
+            });
+
+            return acc;
+        }, {} as Record<number, { user_id: number; roles: any[] }>);
+
+        return Object.values(grouped);
+    }
+
     async getServerRoles(id: number, serverId: number) {
         const roles = await this.prisma.role_server.findMany({
             where: { server_id: serverId },
@@ -69,7 +121,7 @@ export class RolesService {
     }
 
     async createCreatorServerRole(tx: Prisma.TransactionClient ,serverId: number, userId: number) {
-        const creatorRole = await this.prisma.role_server.create({
+        const creatorRole = await tx.role_server.create({
             data: {
                 name: "creator",
                 server_id: serverId,
@@ -82,13 +134,13 @@ export class RolesService {
         });
 
         await this.assignCreator({tx, userId, serverId, roleId: creatorRole.id})
-        await this.assignRoleToMember({userId, serverId, roleId: creatorRole.id})
+        await this.assignDefaultRoleUser(tx, userId, serverId, creatorRole.id)
 
         return { message: "Success" }
     }
     
     async createDefaultServerRole(tx: Prisma.TransactionClient, serverId: number, userId: number) {
-        const creatorRole = await this.prisma.role_server.create({
+        const defaultRole = await tx.role_server.create({
             data: {
                 name: "default",
                 server_id: serverId,
@@ -100,8 +152,8 @@ export class RolesService {
             },
         });
 
-        await this.assignDefault({tx, userId, serverId, roleId: creatorRole.id})
-        await this.assignRoleToMember({userId, serverId, roleId: creatorRole.id})
+        await this.assignDefault({tx, userId, serverId, roleId: defaultRole.id})
+        await this.assignDefaultRoleUser(tx, userId, serverId, defaultRole.id);
 
         return { message: "Success" }
     }
@@ -141,17 +193,22 @@ export class RolesService {
         return { message: "Success"}
     }
 
-    async assignDefaultRoleUser(tx: Prisma.TransactionClient, userId: number, serverId: number) {
-        const defaultRole = await tx.role_server.findFirst({
-            where: { server_id: serverId, name: "default" },
-        });
+    async assignDefaultRoleUser(tx: Prisma.TransactionClient, userId: number, serverId: number, roleId: number | undefined = undefined) {
+        let roleIds: number | undefined = roleId
+        if (!roleIds) {
+            const defaultRole = await tx.role_server.findFirst({
+                where: { server_id: serverId, name: "default" },
+            });
 
-        if (defaultRole) {
+            roleIds = defaultRole?.id
+        }
+        
+        if (roleIds) {
             await tx.user_server_roles.create({
                 data: {
                     user_id: userId,
                     server_id: serverId,
-                    role_id: defaultRole.id,
+                    role_id: roleIds,
                 },
             });
         } else {
@@ -177,25 +234,66 @@ export class RolesService {
         return { message: "Success" }
     }
 
-    async updateServerRole({roleId, name, color, permissions}: RolesUpdateDto) {
-        await this.prisma.role_server.update({
-            where: { id: roleId },
-            data: {
-                name: name === "creator" || name === "default" ? name : name,
-                color,
-                role_permission: permissions
-                    ? {
-                            deleteMany: {},
-                            create: permissions.map((val: any) => ({
-                                permission_id: val.id,
-                            })),
-                        }
-                    : undefined,
-            },
+    async updateServerRole({ roleId, name, color, permissions }: RolesUpdateDto) {
+    return await this.prisma.$transaction(async (tx) => {
+        await tx.role_server.update({
+        where: { id: roleId },
+        data: {
+            name,
+            color,
+        },
         });
 
-        return { message: "Success" }
+        if (permissions && Array.isArray(permissions)) {
+        await tx.role_permission.deleteMany({
+            where: { role_id: roleId },
+        });
+
+        await tx.role_permission.createMany({
+            data: permissions.map((p) => ({
+            role_id: roleId,
+            permission_id: p.id,
+            })),
+        });
+        }
+
+        const updated = await tx.role_server.findUnique({
+        where: { id: roleId },
+        include: {
+            role_permission: {
+            include: { permission: true },
+            },
+        },
+        });
+
+        return {
+        message: "Role updated successfully",
+        data: updated,
+        };
+    });
     }
+
+    async updateRolePermissions(roleId: number, permissions: number[]) {
+        return await this.prisma.$transaction(async (tx) => {
+            await tx.role_permission.deleteMany({
+            where: { role_id: roleId },
+            });
+
+            await tx.role_permission.createMany({
+            data: permissions.map((permId) => ({
+                role_id: roleId,
+                permission_id: permId,
+            })),
+            });
+
+            return await tx.role_server.findUnique({
+            where: { id: roleId },
+            include: {
+                role_permission: { include: { permission: true } },
+            },
+            });
+        });
+        }
 
     async deleteServerRole({serverId, roleId}: RolesDeleteDto) {
         await this.prisma.$transaction(async (tx) => {
@@ -256,5 +354,16 @@ export class RolesService {
         }
 
         return { message: "Success" }
+    }
+
+    async getRolePermissions(roleId: number) {
+        const role = await this.prisma.role_server.findUnique({
+            where: { id: Number(roleId) },
+            include: {
+                role_permission: { include: { permission: true } },
+            },
+        });
+
+        return role?.role_permission.map((rp) => rp.permission) ?? [];
     }
 }

@@ -12,9 +12,11 @@ import { X } from "lucide-react";
 
 export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleColor }) => {
     const { t } = useTranslation("server");
-    const { data: allPermissions = [] } = useGetPermissionsQuery({});
-    const { data: rolePermissionsData = [] } = useGetRolePermissionsQuery(roleId);
+    const roleIdNum = Number(roleId);
 
+    const { data: allPermissions = [] } = useGetPermissionsQuery({});
+    const { data: rolePermissionsData = [], refetch, isFetching } =
+  useGetRolePermissionsQuery(roleIdNum, { skip: !roleIdNum });
     const [updateRolePermissions, { isLoading }] = useUpdateRolePermissionsMutation();
     const [updateServerRole, { isLoading: isUpdatingRole }] = useUpdateServerRoleMutation();
 
@@ -24,13 +26,19 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
     const [color, setColor] = useState(roleColor || "#5865F2");
 
     useEffect(() => {
-        if (rolePermissionsData.length > 0) {
-            const newIds = rolePermissionsData.map((p: any) => p.id);
+        const perms = rolePermissionsData;
+        if (Array.isArray(perms) && perms.length > 0) {
+            const newIds = perms.map((p: any) => p.id);
             if (JSON.stringify(newIds) !== JSON.stringify(rolePermissions)) {
                 setRolePermissions(newIds);
             }
         }
     }, [rolePermissionsData]);
+
+    useEffect(() => {
+        if (open && roleId) refetch();
+    }, [open, roleId]);
+
 
     const togglePermission = (pid: number) => {
         setRolePermissions((prev) =>
@@ -92,7 +100,7 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
                             {roleName.toLowerCase() === "creator" ? (
                                 <div className="text-sm text-gray-400">{t("settings.error")}</div>
                             ) : (
-                                allPermissions.map((perm: any) => (
+                                allPermissions ? allPermissions.map((perm: any) => (
                                     <div
                                         key={perm.id}
                                         className="flex justify-between items-center"
@@ -104,7 +112,7 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
                                             onChange={() => togglePermission(perm.id)}
                                         />
                                     </div>
-                                ))
+                                )) : null
                             )}
                         </div>
                         <button

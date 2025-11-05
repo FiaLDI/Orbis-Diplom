@@ -2,17 +2,14 @@ import { Chat } from "@/modules/chat/entities/chat.entities";
 import { serverType } from "../types/server.type";
 
 export class ServerInfo {
-    private chats: Chat;
     private servers: serverType | null;
 
-    constructor(props: { chats: Chat, servers: serverType | null }) {
-        this.chats = props.chats;
+    constructor(props: { servers: serverType | null }) {
         this.servers = props.servers;
     }
 
     toJSON() {
         const s = this.servers;
-        const c = this.chats;
 
         if (!s) return;
 
@@ -23,7 +20,6 @@ export class ServerInfo {
             avatar_url: s.avatar_url,
             createdAt: s.created_at,
             updatedAt: s.updated_at,
-            chats: c.toJSONS()
         };
     }
 }
