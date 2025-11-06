@@ -11,12 +11,12 @@ import { useContextMenu } from "@/features/shared";
 import { config } from "@/config";
 
 interface Props {
-    serverid?: number;
+    serverId?: number;
     name?: string;
     projectId?: number;
 }
 
-export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
+export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
     const issue = useAppSelector((s) => s.issue);
     const [deleteIssueApi] = useDeleteIssueMutation();
     const [editingIssue, setEditingIssue] = useState<any | null>(null);
@@ -31,7 +31,7 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
 
     const { contextMenu, handleContextMenu, closeMenu, menuRef } = useContextMenu<any>();
 
-    if (!serverid || !name || !projectId) return null;
+    if (!serverId || !name || !projectId) return null;
 
     const statusIcon: Record<Statuses, string> = {
         Open: "⚪",
@@ -80,13 +80,12 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
                 <div className="flex items-center gap-1 mt-1 ml-1">
                     {task.assignees && task.assignees.length > 0 ? (
                         task.assignees.slice(0, 5).map((a: any, idx: number) => {
-                            const member = membersServer.find((m: any) => m.id === a.user_id);
-
+                            const member = membersServer.find((m: any) => m.id === a.id);
                             const avatar =
-                                member?.user_profile?.avatar_url &&
-                                (member.user_profile.avatar_url.startsWith("http")
-                                    ? member.user_profile.avatar_url
-                                    : `${config.cdnServiceUrl}/${member.user_profile.avatar_url}`);
+                                member?.avatar_url &&
+                                (member.avatar_url.startsWith("http")
+                                    ? member.avatar_url
+                                    : `${config.cdnServiceUrl}/${member.avatar_url}`);
 
                             const username = member?.username || "Unknown";
 
@@ -158,13 +157,13 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
                     <div className="flex gap-1 mt-1">
                         {task.assignees && task.assignees.length > 0 ? (
                             task.assignees.slice(0, 3).map((a: any) => {
-                                const member = membersServer.find((m: any) => m.id === a.user_id);
+                                const member = membersServer.find((m: any) => m.id === a.id);
 
                                 const avatar =
-                                    member?.user_profile?.avatar_url &&
-                                    (member.user_profile.avatar_url.startsWith("http")
-                                        ? member.user_profile.avatar_url
-                                        : `${config.cdnServiceUrl}/${member.user_profile.avatar_url}`);
+                                    member?.avatar_url &&
+                                    (member.avatar_url.startsWith("http")
+                                        ? member.avatar_url
+                                        : `${config.cdnServiceUrl}/${member.avatar_url}`);
 
                                 const username = member?.username || "Unknown";
 
@@ -255,7 +254,7 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
                         </button>
                         <CreateIssue
                             projectId={projectId}
-                            serverId={serverid}
+                            serverId={serverId}
                             statuses={issue.statuses}
                             priorities={issue.priorities}
                             onClose={() => setEditingIssue(null)}
@@ -266,7 +265,7 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
                 {editingIssue && (
                     <CreateIssue
                         projectId={projectId}
-                        serverId={serverid}
+                        serverId={serverId}
                         statuses={issue.statuses}
                         priorities={issue.priorities}
                         initialData={editingIssue}
@@ -291,7 +290,7 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
                 {issue.openIssue !== null && (
                     <OpenIssue
                         projectId={projectId}
-                        serverId={serverid}
+                        serverId={serverId}
                         issueId={issue.openIssue}
                         issues={issue.issues}
                         activeIssueChat={issue.issueChat}
@@ -313,6 +312,7 @@ export const Component: React.FC<Props> = ({ serverid, name, projectId }) => {
                     issue={assignModal.issue}
                     onClose={() => setAssignModal({ open: false, issue: null })}
                     projectId={projectId}
+                    serverId={serverId}
                 />
             )}
         </div>

@@ -12,10 +12,11 @@ import { config } from "@/config";
 interface Props {
     issue: any;
     projectId: number;
+    serverId: number;
     onClose: () => void;
 }
 
-export const Component: React.FC<Props> = ({ issue, onClose, projectId }) => {
+export const Component: React.FC<Props> = ({ serverId, issue, onClose, projectId }) => {
     const [assignUser] = useAssignUserToIssueMutation();
     const [unassignUser] = useUnassignUserFromIssueMutation();
     const [getIssues] = useLazyGetIssuesQuery();
@@ -37,7 +38,7 @@ export const Component: React.FC<Props> = ({ issue, onClose, projectId }) => {
         setLoadingId(userId);
 
         try {
-            await assignUser({ issueId: issue.id, userId }).unwrap();
+            await assignUser({ serverId, issueId: issue.id, userId }).unwrap();
         } catch (err) {
             setLocalAssigned((prev) => prev.filter((id) => id !== userId));
         } finally {
@@ -50,7 +51,7 @@ export const Component: React.FC<Props> = ({ issue, onClose, projectId }) => {
         setLoadingId(userId);
 
         try {
-            await unassignUser({ issueId: issue.id, userId }).unwrap();
+            await unassignUser({ serverId, issueId: issue.id, userId }).unwrap();
         } catch (err) {
             console.error("unassign error:", err);
             setLocalAssigned((prev) => [...prev, userId]);
@@ -64,7 +65,7 @@ export const Component: React.FC<Props> = ({ issue, onClose, projectId }) => {
             open={!!issue}
             onClose={() => {
                 onClose();
-                getIssues(projectId);
+                getIssues({ serverId, projectId });
             }}
         >
             <div className="w-[500px] text-white">
@@ -80,7 +81,6 @@ export const Component: React.FC<Props> = ({ issue, onClose, projectId }) => {
                     </button>
                 </div>
                 <div className="p-5 flex flex-col gap-5 w-full">
-                    {/* 🔍 Поиск */}
                     <input
                         type="text"
                         placeholder="Search member..."
@@ -95,11 +95,12 @@ export const Component: React.FC<Props> = ({ issue, onClose, projectId }) => {
                         ) : (
                             filteredMembers.map((member: any) => {
                                 const isAssigned = localAssigned.includes(member.id);
+                                console.log(member);
                                 const avatar =
-                                    member.user_profile?.avatar_url &&
-                                    (member.user_profile.avatar_url.startsWith("http")
-                                        ? member.user_profile.avatar_url
-                                        : `${config.cdnServiceUrl}/${member.user_profile.avatar_url}`);
+                                    member.avatar_url &&
+                                    (member.avatar_url.startsWith("http")
+                                        ? member.avatar_url
+                                        : `${config.cdnServiceUrl}/${member.avatar_url}`);
 
                                 return (
                                     <div
@@ -142,11 +143,10 @@ export const Component: React.FC<Props> = ({ issue, onClose, projectId }) => {
                         )}
                     </div>
 
-                    {/* 🔘 Кнопка закрытия */}
                     <button
                         onClick={() => {
                             onClose();
-                            getIssues(projectId);
+                            getIssues({ serverId, projectId });
                         }}
                         className="mt-3 w-full py-2 rounded bg-gray-700 hover:bg-gray-600 text-white"
                     >

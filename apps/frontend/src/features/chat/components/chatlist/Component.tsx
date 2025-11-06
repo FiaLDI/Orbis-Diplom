@@ -7,17 +7,21 @@ import { ChatListProps } from "./inteface";
 export const Component: React.FC<ChatListProps> = ({ isServer, search }) => {
     const personalChats = useAppSelector((state) => state.user.chats);
     const serverChats = useAppSelector((state) => state.server.activeserver?.chats);
+    const server = useAppSelector((state) => state.server);
 
     const normalizedSearch = (search ?? "").toLowerCase();
 
     const filteredPersonal = useMemo(() => {
         if (!personalChats) return [];
 
-        return personalChats.filter(
-            (c) =>
-                c.name?.toLowerCase().includes(normalizedSearch.toLowerCase()) ||
-                c.username?.toLowerCase().includes(normalizedSearch.toLowerCase())
-        );
+        return personalChats.filter((c) => {
+            const matchTitle = c.title?.toLowerCase().includes(normalizedSearch);
+            const matchMember = c.members?.some((m: any) =>
+                m.username?.toLowerCase().includes(normalizedSearch)
+            );
+
+            return matchTitle || matchMember;
+        });
     }, [personalChats, normalizedSearch]);
 
     const filteredServer = useMemo(() => {

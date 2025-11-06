@@ -1,5 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { config } from "@/config";
+import { serversQueries } from "./queries/servers";
+import { chatsQueries } from "./queries/chats";
+import { membersQueries } from "./queries/members";
+import { rolesQueries } from "./queries/roles";
+import { permissionsQueries } from "./queries/permissions";
 
 export const serverApi = createApi({
     reducerPath: "serverApi",
@@ -21,55 +26,43 @@ export const serverApi = createApi({
     tagTypes: ["Servers", "ServerMembers", "Roles"],
     endpoints: (builder) => ({
         GetServers: builder.query({
-            query: () => ({
-                url: `/servers`,
-                method: "GET",
-            }),
+            query: serversQueries.GetServers,
         }),
         CreateSever: builder.mutation({
-            query: (data) => ({
-                url: `/servers`,
-                method: "POST",
-                body: data,
-            }),
+            query: serversQueries.CreateServer,
+        }),
+        DeleteServer: builder.mutation({
+            query: serversQueries.DeleteServer,
         }),
         GetServersInside: builder.query({
-            query: (id) => ({
-                url: `/servers/${id}/`,
-                method: "GET",
-            }),
-        }),
-        CreateChat: builder.mutation({
-            query: ({ id, data }) => ({
-                url: `/servers/${id}/chats`,
-                method: "POST",
-                body: data,
-            }),
-        }),
-        DeleteChat: builder.mutation({
-            query: ({ id, chatId }) => ({
-                url: `/servers/${id}/chats/${chatId}`,
-                method: "DELETE",
-            }),
+            query: serversQueries.GetServersInside,
         }),
         JoinServer: builder.mutation({
-            query: (id) => ({
-                url: `/servers/${id}/join`,
-                method: "POST",
-            }),
+            query: serversQueries.JoinServer,
         }),
+        UpdateServer: builder.mutation({
+            query: serversQueries.UpdateServer,
+        }),
+
         GetServersMembers: builder.query({
-            query: (id) => ({
-                url: `/servers/${id}/members`,
-                method: "GET",
-            }),
+            query: membersQueries.GetServersMembers,
             providesTags: (result, error, id) => [{ type: "ServerMembers", id }],
         }),
+        AssignRoleToMember: builder.mutation({
+            query: membersQueries.AssignRoleToMember,
+            invalidatesTags: (result, error, { serverId }) => [
+                { type: "ServerMembers", id: serverId },
+            ],
+        }),
+        RemoveRoleFromMember: builder.mutation({
+            query: membersQueries.RemoveRoleFromMember,
+            invalidatesTags: (result, error, { serverId }) => [
+                { type: "ServerMembers", id: serverId },
+            ],
+        }),
         GetServersRoles: builder.query({
-            query: (id) => ({
-                url: `/servers/${id}/roles`,
-                method: "GET",
-            }),
+            query: rolesQueries.GetServersRoles,
+            transformResponse: (r: any) => r.data,
             providesTags: (result, error, id) =>
                 result
                     ? [
@@ -78,73 +71,46 @@ export const serverApi = createApi({
                       ]
                     : [{ type: "Roles", id: "LIST" }],
         }),
-        GetPermissions: builder.query({
-            query: () => ({
-                url: `/servers/roles/permissions`,
-                method: "GET",
-            }),
-        }),
-        GetRolePermissions: builder.query({
-            query: (roleId: number) => ({
-                url: `/servers/roles/${roleId}/permissions`,
-                method: "GET",
-            }),
-        }),
-        UpdateRolePermissions: builder.mutation({
-            query: ({ roleId, permissions }: { roleId: number; permissions: number[] }) => ({
-                url: `/servers/roles/${roleId}/permissions`,
-                method: "PATCH",
-                body: { permissions },
-            }),
-        }),
         CreateRole: builder.mutation({
-            query: ({ id, data }) => ({
-                url: `/servers/${id}/roles`,
-                method: "POST",
-                body: data,
-            }),
+            query: rolesQueries.CreateRole,
             invalidatesTags: [{ type: "Roles", id: "LIST" }],
         }),
         UpdateServerRole: builder.mutation({
-            query: ({ serverId, roleId, data }) => ({
-                url: `/servers/${serverId}/roles/${roleId}`,
-                method: "PATCH",
-                body: data,
-            }),
+            query: rolesQueries.UpdateServerRole,
             invalidatesTags: (result, error, { serverId }) => [
                 { type: "Roles", id: "LIST" },
                 { type: "ServerMembers", id: serverId },
             ],
         }),
-        deleteRole: builder.mutation<void, { serverId: number; roleId: number }>({
-            query: ({ serverId, roleId }) => ({
-                url: `/servers/${serverId}/roles/${roleId}`,
-                method: "DELETE",
-            }),
+        DeleteRole: builder.mutation({
+            query: rolesQueries.DeleteRole,
             invalidatesTags: (result, error, { serverId }) => [
                 { type: "Roles", id: "LIST" },
                 { type: "ServerMembers", id: serverId },
             ],
         }),
 
-        AssignRoleToMember: builder.mutation({
-            query: ({ serverId, userId, roleId }) => ({
-                url: `/servers/${serverId}/members/${userId}/roles/${roleId}`,
-                method: "POST",
-            }),
-            invalidatesTags: (result, error, { serverId }) => [
-                { type: "ServerMembers", id: serverId },
-            ],
+        GetRolePermissions: builder.query({
+            query: rolesQueries.GetRolePermissions,
+            transformResponse: (r: any) => r.data,
+        }),
+        UpdateRolePermissions: builder.mutation({
+            query: rolesQueries.UpdateRolePermissions,
+        }),
+        GetPermissions: builder.query({
+            query: permissionsQueries.GetPermissions,
+            transformResponse: (r: any) => r.data,
         }),
 
-        RemoveRoleFromMember: builder.mutation({
-            query: ({ serverId, userId, roleId }) => ({
-                url: `/servers/${serverId}/members/${userId}/roles/${roleId}`,
-                method: "DELETE",
-            }),
-            invalidatesTags: (result, error, { serverId }) => [
-                { type: "ServerMembers", id: serverId },
-            ],
+        CreateChat: builder.mutation({
+            query: chatsQueries.CreateChat,
+        }),
+        DeleteChat: builder.mutation({
+            query: chatsQueries.DeleteChat,
+        }),
+        GetServersChats: builder.query({
+            query: chatsQueries.GetServersChats,
+            transformResponse: (r: any) => r.data,
         }),
     }),
 });
@@ -169,5 +135,7 @@ export const {
     useAssignRoleToMemberMutation,
     useRemoveRoleFromMemberMutation,
     useDeleteRoleMutation,
-    useGetServersRolesQuery,
+    useLazyGetServersChatsQuery,
+    useUpdateServerMutation,
+    useDeleteServerMutation,
 } = serverApi;

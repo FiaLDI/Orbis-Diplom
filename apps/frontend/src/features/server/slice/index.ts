@@ -31,24 +31,31 @@ const serverSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addMatcher(serverApi.endpoints.GetServers.matchFulfilled, (state, action) => {
-                state.servers = action.payload;
+                state.servers = action.payload.data;
             })
             .addMatcher(serverApi.endpoints.GetServersMembers.matchFulfilled, (state, action) => {
                 if (!state.activeserver) return;
                 state.activeserver = {
                     ...state.activeserver,
-                    users: action.payload,
+                    users: action.payload.data,
                 };
             })
             .addMatcher(serverApi.endpoints.GetServersInside.matchFulfilled, (state, action) => {
                 if (!state.activeserver) return;
                 state.activeserver = {
                     ...state.activeserver,
-                    ...action.payload,
+                    ...action.payload.data,
+                };
+            })
+            .addMatcher(serverApi.endpoints.GetServersChats.matchFulfilled, (state, action) => {
+                if (!state.activeserver) return;
+                state.activeserver = {
+                    ...state.activeserver,
+                    chats: action.payload,
                 };
             })
             .addMatcher(serverApi.endpoints.GetPermissions.matchFulfilled, (state, action) => {
-                state.allPermission = action.payload;
+                state.allPermission = action.payload.data;
             })
             .addMatcher(serverApi.endpoints.GetServersRoles.matchFulfilled, (state, action) => {
                 if (!state.activeserver) return;

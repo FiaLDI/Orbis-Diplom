@@ -8,7 +8,7 @@ import {
     useGetBannedUsersQuery,
 } from "../../api";
 import { useLazyGetServersMembersQuery } from "@/features/server";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export const Component: React.FC = () => {
@@ -21,7 +21,7 @@ export const Component: React.FC = () => {
         data: logs = [],
         isFetching,
         refetch,
-    } = useGetAuditLogsQuery({ serverId: activeserver?.id! }, { skip: !activeserver?.id });
+    } = useGetAuditLogsQuery(activeserver?.id!, { skip: !activeserver?.id });
 
     const {
         data: bannedUsers = [],
@@ -38,10 +38,7 @@ export const Component: React.FC = () => {
 
     const refreshData = async () => {
         if (!activeserver?.id) return;
-        await Promise.all([
-            refetch(), // обновить аудит-лог
-            triggerMembers(activeserver.id), // обновить участников
-        ]);
+        await Promise.all([refetch(), triggerMembers(activeserver.id)]);
     };
 
     const handleBan = async (userId: number) => {
@@ -49,7 +46,7 @@ export const Component: React.FC = () => {
         const reason = reasonMap[userId]?.trim() || undefined;
         try {
             await banUser({ serverId: activeserver.id, userId, reason }).unwrap();
-            await refreshData(); // ✅ обновить данные
+            await refreshData();
         } catch (err: any) {
             console.error("Ban error:", err);
         }
@@ -59,7 +56,7 @@ export const Component: React.FC = () => {
         if (!activeserver?.id || userId === Number(meId)) return;
         try {
             await unbanUser({ serverId: activeserver.id, userId }).unwrap();
-            await refreshData(); // ✅ обновить данные
+            await refreshData();
         } catch (err: any) {
             console.error("Unban error:", err);
         }
@@ -69,7 +66,7 @@ export const Component: React.FC = () => {
         if (!activeserver?.id || userId === Number(meId)) return;
         try {
             await kickUser({ serverId: activeserver.id, userId }).unwrap();
-            await refreshData(); // ✅ обновить данные
+            await refreshData();
         } catch (err: any) {
             console.error("Kick error:", err);
         }
@@ -83,7 +80,7 @@ export const Component: React.FC = () => {
     if (!activeserver) return null;
 
     return (
-        <div className="flex flex-col h-full w-full p-0 rounded-[5px] text-white">
+        <div className="flex flex-col w-full p-0 rounded-[5px] text-white">
             <div className="w-full h-full bg-background/50">
                 {/* header */}
                 <div className="bg-foreground w-full rounded flex items-center justify-between p-5">
@@ -91,7 +88,7 @@ export const Component: React.FC = () => {
                         {t("audit.title")} — {activeserver?.name}
                     </div>
                     <button onClick={() => setOpen((prev) => !prev)}>
-                        <ChevronDown />
+                        {open ? <ChevronDown /> : <ChevronUp />}
                     </button>
                 </div>
                 {open ? (
@@ -109,10 +106,7 @@ export const Component: React.FC = () => {
                                         <div className="flex gap-3 items-center justify-between">
                                             <div className="flex gap-3 items-center">
                                                 <img
-                                                    src={
-                                                        user.user_profile.avatar_url ||
-                                                        "/img/icon.png"
-                                                    }
+                                                    src={user.avatar_url || "/img/icon.png"}
                                                     alt=""
                                                     className="w-10 h-10 rounded"
                                                 />
@@ -219,7 +213,7 @@ export const Component: React.FC = () => {
                                 <div className="opacity-60">{t("audit.banned.loading")}</div>
                             )}
                             {!bannedUsers?.length && !isBannedFetching && (
-                                <div className="opacity-60">{t("audit.banned.nobaning")}</div>
+                                <div className="opacity-60">{t("audit.banned.nobanned")}</div>
                             )}
 
                             <div className="max-h-[300px] overflow-y-auto scroll-hidden">
@@ -230,20 +224,15 @@ export const Component: React.FC = () => {
                                     >
                                         <div className="flex gap-3 items-center">
                                             <img
-                                                src={
-                                                    ban.user.user_profile?.avatar_url ||
-                                                    "/img/icon.png"
-                                                }
+                                                src={ban.avatar_url || "/img/icon.png"}
                                                 alt=""
                                                 className="w-10 h-10 rounded"
                                             />
                                             <div>
-                                                <div className="font-medium">
-                                                    {ban.user.username}
-                                                </div>
+                                                <div className="font-medium">{ban.targetName}</div>
                                                 <div className="text-xs opacity-70">
                                                     {t("audit.banned.time")}{" "}
-                                                    {new Date(ban.created_at).toLocaleString(
+                                                    {new Date(ban.createdAt).toLocaleString(
                                                         "ru-RU"
                                                     )}
                                                 </div>
@@ -258,7 +247,7 @@ export const Component: React.FC = () => {
 
                                         <button
                                             className="px-3 py-1 bg-green-600/40 hover:bg-green-600/60 rounded text-sm"
-                                            onClick={() => handleUnban(ban.user.id)}
+                                            onClick={() => handleUnban(ban.targetId)}
                                         >
                                             {t("audit.action.unban.submit")}
                                         </button>
@@ -292,17 +281,17 @@ export const Component: React.FC = () => {
                                         className="rounded bg-white/5 p-3 border border-white/10"
                                     >
                                         <div className="text-sm opacity-70">
-                                            {new Date(log.created_at).toLocaleString("ru-RU")}
+                                            {new Date(log.createdAt).toLocaleString("ru-RU")}
                                         </div>
                                         <div className="text-sm mt-1">
-                                            <b>{log.actor?.username ?? `User#${log.actor_id}`}</b>{" "}
+                                            <b>{log.actorName ?? `User#${log.actorId}`}</b>{" "}
                                             {log.action === "BAN_ADD" &&
                                                 t("audit.logs.action.BAN_ADD")}
                                             {log.action === "BAN_REMOVE" &&
                                                 t("audit.logs.action.BAN_REMOVE")}
                                             {log.action === "KICK" && t("audit.logs.action.KICK")}
                                             {` ${t("audit.logs.user")} `}
-                                            <b>{log.target_id ? `User#${log.target_id}` : "-"}</b>
+                                            <b>{log.targetName ?? `User#${log.targetId}`}</b>
                                         </div>
                                         {log.metadata &&
                                             (() => {

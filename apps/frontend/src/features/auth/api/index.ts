@@ -53,14 +53,14 @@ export const authApi = createApi({
         }),
         sendVerificationCode: builder.mutation<void, string>({
             query: (email) => ({
-                url: "/send_code",
+                url: "/send-code",
                 method: "POST",
                 body: { email },
             }),
         }),
         verifyCode: builder.mutation<void, { email: string; code: string }>({
             query: (body) => ({
-                url: "/verify",
+                url: "/verify-code",
                 method: "POST",
                 body,
             }),

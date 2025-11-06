@@ -1,2 +1,2 @@
-export * from "./routes/auth.routes";
-export * from "./middleware/auth.middleware"
+export * from "./controllers/auth.controller";
+export { authModule } from "./module";

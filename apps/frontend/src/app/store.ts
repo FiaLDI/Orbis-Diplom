@@ -9,6 +9,7 @@ import notificationReducer from "@/features/notification/slice";
 import settingsReducer from "@/features/settings";
 import friendsReducer from "@/features/friends/slice";
 import issueReducer from "@/features/issue/slice";
+import toastReducer from "@/features/toast/slice";
 import { serverApi } from "@/features/server";
 import { authApi } from "@/features/auth";
 import { userApi } from "@/features/user";
@@ -19,6 +20,8 @@ import { issueApi } from "@/features/issue";
 import { settingsApi } from "@/features/settings";
 import { notificationApi } from "@/features/notification";
 import { moderationApi } from "@/features/moderation";
+
+import { toastMiddleware } from "@/features/toast";
 
 export const store = configureStore({
     reducer: {
@@ -32,6 +35,7 @@ export const store = configureStore({
         settings: settingsReducer,
         friends: friendsReducer,
         issue: issueReducer,
+        toast: toastReducer,
         [authApi.reducerPath]: authApi.reducer,
         [messageApi.reducerPath]: messageApi.reducer,
         [chatApi.reducerPath]: chatApi.reducer,
@@ -45,6 +49,7 @@ export const store = configureStore({
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(
+            toastMiddleware,
             authApi.middleware,
             messageApi.middleware,
             chatApi.middleware,

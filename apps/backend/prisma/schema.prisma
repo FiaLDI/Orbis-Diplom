@@ -49,7 +49,8 @@ model users {
   user_server          user_server[]
   chats                chats[]       @relation("UserCreatedChats")
   chat_users           chat_users[]
-  users_blocks         users_blocks[]
+  blocks_initiated users_blocks[] @relation("BlockerRelation") // кого я заблокировал
+  blocks_received  users_blocks[] @relation("BlockedRelation")
   messages             messages[]
   friend_requests_from friend_requests[] @relation("RequestFrom")
   friend_requests_to   friend_requests[] @relation("RequestTo")
@@ -94,15 +95,19 @@ model user_profile {
 }
 
 model users_blocks {
-  id_users       Int
-  reason_type_id Int
-  created_at     DateTime?
-  end_at         DateTime?
+  id               Int       @id @default(autoincrement())
+  id_users         Int       // кто блокирует
+  blocked_user_id  Int       // кого блокируют
+  reason_type_id   Int
+  created_at       DateTime? @default(now())
+  end_at           DateTime?
 
-  users             users             @relation(fields: [id_users], references: [id])
+  // 🔹 связи
+  blocker          users             @relation("BlockerRelation", fields: [id_users], references: [id])
+  blocked          users             @relation("BlockedRelation", fields: [blocked_user_id], references: [id])
   block_reason_type block_reason_type @relation(fields: [reason_type_id], references: [id])
 
-  @@id([id_users, reason_type_id])
+  @@unique([id_users, blocked_user_id])
 }
 
 /* =========================

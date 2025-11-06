@@ -35,7 +35,7 @@ const issueSlice = createSlice({
             })
             .addMatcher(issueApi.endpoints.getIssues.matchFulfilled, (state, action) => {
                 const projectId = action.meta.arg.originalArgs;
-                if (state.openProjectId === projectId) {
+                if (state.openProjectId === projectId.projectId) {
                     state.issues = action.payload;
                 }
             })

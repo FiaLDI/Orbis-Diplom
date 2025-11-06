@@ -43,7 +43,18 @@
             "MANAGE_INVITES": "Управление приглашениями",
             "VIEW_CHATS": "Просмотр чатов",
             "MANAGE_PROJECT": "Управление проектами",
-            "MANAGE_ISSUE": "Управление задачами"
+            "MANAGE_ISSUE": "Управление задачами",
+            "VIEW_PROJECTS": "Просмотр проектов",
+            "VIEW_ISSUES": "Просмотр задач",
+            "MANAGE_ASSIGNEES": "Управление назначением задач"
+        },
+        "server_settings": "Настройки сервера",
+        "server_name": "Имя сервера",
+        "server_avatar": "Изображение сервера",
+        "save": "Сохранить",
+        "delete_critical": {
+            "title": "Удалить сервер",
+            "submit": "Удалить"
         }
     }
 }

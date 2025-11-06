@@ -4,7 +4,9 @@ import {
     selectIssueById,
     setOpenIssue,
     useCreateChatIssueMutation,
+    useDeleteChatIssueMutation,
     useLazyGetChatIssueQuery,
+    useUpdateChatIssueMutation,
 } from "@/features/issue";
 import { Plus, X } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
@@ -14,12 +16,15 @@ export const Component: React.FC<Props> = ({ projectId, serverId, issueId, issue
     const issue = useAppSelector((s) => selectIssueById(s, issueId));
     const [getChats] = useLazyGetChatIssueQuery();
     const [createChat] = useCreateChatIssueMutation();
+
+    const [updateChat] = useUpdateChatIssueMutation();
+    const [deleteChat] = useDeleteChatIssueMutation();
     const [chats, setChats] = useState<any[]>([]);
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (issue) {
-            getChats(issue.id).then((res: any) => {
+            getChats({ serverId, issueId: issue.id }).then((res: any) => {
                 if (res.data) {
                     setChats(res.data);
                 }
@@ -55,10 +60,11 @@ export const Component: React.FC<Props> = ({ projectId, serverId, issueId, issue
                     <button
                         onClick={() =>
                             createChat({
+                                serverId,
                                 issueId: issue.id,
                                 data: { name: `Chat for issue #${issue.id}` },
                             }).then(() => {
-                                getChats(issue.id).then((res: any) => {
+                                getChats({ serverId, issueId: issue.id }).then((res: any) => {
                                     if (res.data) setChats(res.data);
                                 });
                             })
@@ -71,7 +77,13 @@ export const Component: React.FC<Props> = ({ projectId, serverId, issueId, issue
 
                 <div className="flex flex-col gap-1 [&>li]:bg-foreground/50 [&>li]:rounded">
                     {chats.map((val: any, idx: number) => (
-                        <ChatItem key={`${idx}-chat-issue-${val.id}`} chat={val} isServer={true} />
+                        <ChatItem
+                            key={`${idx}-chat-issue-${val.id}`}
+                            chat={val}
+                            isServer={true}
+                            editQuery={updateChat}
+                            deleteQuery={deleteChat}
+                        />
                     ))}
                 </div>
             </div>

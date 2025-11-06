@@ -1,13 +1,10 @@
-
-
-export { authRoutes } from "./auth";
-export { chatRouter } from "./chat";
-export { friendRouter } from "./friends";
-export { messagesRouter } from "./messages";
-export { moderationRouter } from "./moderation";
-export { notificationRouter } from "./notifications";
-export { rolesRouter } from "./roles";
-export { searchRouter } from "./search";
-export { serverRouter } from "./servers";
-export { userRouter } from "./users";
-export { planningRouter } from "./planning";
+export { authModule } from "./auth";
+export { chatModule } from "./chat";
+export { friendModule } from "./friends";
+export { messageModule } from "./messages";
+// export { moderationRouter } from "./moderation";
+export { notificationModule } from "./notifications";
+export { rolesModule } from "./roles";
+export { serverModule } from "./servers";
+export { userModule } from "./users";
+// export { planningRouter } from "./planning";

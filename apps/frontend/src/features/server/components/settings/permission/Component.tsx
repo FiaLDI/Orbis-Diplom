@@ -12,9 +12,14 @@ import { X } from "lucide-react";
 
 export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleColor }) => {
     const { t } = useTranslation("server");
-    const { data: allPermissions = [] } = useGetPermissionsQuery({});
-    const { data: rolePermissionsData = [] } = useGetRolePermissionsQuery(roleId);
+    const roleIdNum = { roleId, serverId };
 
+    const { data: allPermissions = [] } = useGetPermissionsQuery({});
+    const {
+        data: rolePermissionsData = [],
+        refetch,
+        isFetching,
+    } = useGetRolePermissionsQuery(roleIdNum, { skip: !roleIdNum });
     const [updateRolePermissions, { isLoading }] = useUpdateRolePermissionsMutation();
     const [updateServerRole, { isLoading: isUpdatingRole }] = useUpdateServerRoleMutation();
 
@@ -24,13 +29,18 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
     const [color, setColor] = useState(roleColor || "#5865F2");
 
     useEffect(() => {
-        if (rolePermissionsData.length > 0) {
-            const newIds = rolePermissionsData.map((p: any) => p.id);
+        const perms = rolePermissionsData;
+        if (Array.isArray(perms) && perms.length > 0) {
+            const newIds = perms.map((p: any) => p.id);
             if (JSON.stringify(newIds) !== JSON.stringify(rolePermissions)) {
                 setRolePermissions(newIds);
             }
         }
     }, [rolePermissionsData]);
+
+    useEffect(() => {
+        if (open && roleId) refetch();
+    }, [open, roleId]);
 
     const togglePermission = (pid: number) => {
         setRolePermissions((prev) =>
@@ -45,7 +55,11 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
 
         await updateServerRole({ roleId, serverId, data: { name, color } });
         if (roleName.toLowerCase() !== "creator") {
-            await updateRolePermissions({ roleId, permissions: rolePermissions });
+            await updateRolePermissions({
+                serverId: serverId,
+                roleId,
+                permissions: rolePermissions,
+            });
         }
         setOpen(false);
     };
@@ -91,7 +105,7 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
                         <div className="">
                             {roleName.toLowerCase() === "creator" ? (
                                 <div className="text-sm text-gray-400">{t("settings.error")}</div>
-                            ) : (
+                            ) : allPermissions ? (
                                 allPermissions.map((perm: any) => (
                                     <div
                                         key={perm.id}
@@ -105,7 +119,7 @@ export const Component: React.FC<Props> = ({ roleId, serverId, roleName, roleCol
                                         />
                                     </div>
                                 ))
-                            )}
+                            ) : null}
                         </div>
                         <button
                             onClick={save}

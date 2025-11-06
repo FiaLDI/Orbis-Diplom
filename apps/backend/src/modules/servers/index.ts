@@ -1,1 +1,2 @@
-export * from "./routes/server.routes";
+export * from "./services/server.service";
+export * from "./module";

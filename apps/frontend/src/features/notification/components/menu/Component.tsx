@@ -5,6 +5,8 @@ import {
     useGetNotificationsQuery,
     useMarkNotificationReadMutation,
     useDeleteNotificationMutation,
+    useDeleteAllNotificationMutation,
+    useMarkAllNotificationReadMutation,
 } from "../../api";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setNotifications, markAsRead, removeNotification, clearNotifications } from "../../slice";
@@ -16,17 +18,24 @@ export const Component: React.FC<Props> = ({ connected }) => {
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
 
-    const { data: apiNotifications = [], isFetching } = useGetNotificationsQuery(undefined, {
+    const {
+        data: apiNotifications = [],
+        isFetching,
+        refetch,
+    } = useGetNotificationsQuery(undefined, {
         skip: !open,
     });
     const [markRead] = useMarkNotificationReadMutation();
     const [deleteNotif] = useDeleteNotificationMutation();
 
+    const [allDeleteNotif] = useDeleteAllNotificationMutation();
+    const [allMarkRead] = useMarkAllNotificationReadMutation();
+
     const notifications = useAppSelector((s) => s.notification.list);
 
     useEffect(() => {
         if (open && apiNotifications.length) {
-            dispatch(setNotifications(apiNotifications));
+            refetch();
         }
     }, [open, apiNotifications, dispatch]);
 
@@ -49,16 +58,23 @@ export const Component: React.FC<Props> = ({ connected }) => {
     };
 
     const handleMarkAll = async () => {
-        notifications.forEach((n) => {
-            if (!n.is_read) dispatch(markAsRead(n.id));
-        });
-
-        console.log("✅ Marked all notifications as read (local)");
+        try {
+            await allDeleteNotif({});
+            notifications.forEach((n) => {
+                if (!n.is_read) dispatch(markAsRead(n.id));
+            });
+        } catch (e) {
+            console.error("Marked error", e);
+        }
     };
 
     const handleClearAll = async () => {
-        dispatch(clearNotifications());
-        console.log("🗑️ Cleared all notifications (local)");
+        try {
+            await allMarkRead({});
+            dispatch(clearNotifications());
+        } catch (e) {
+            console.error("Cleared error", e);
+        }
     };
 
     const unreadCount = notifications.filter((n) => !n.is_read).length;
@@ -69,7 +85,7 @@ export const Component: React.FC<Props> = ({ connected }) => {
                 <Bell
                     color="#fff"
                     strokeWidth={1.25}
-                    className="w-6 h-6 transition-transform hover:scale-110"
+                    className="w-8 h-8 transition-transform hover:scale-110"
                 />
                 {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 rounded-full w-3 h-3" />

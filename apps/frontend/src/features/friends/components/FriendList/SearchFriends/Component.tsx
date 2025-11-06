@@ -26,7 +26,7 @@ export const Component: React.FC = () => {
 
         timerRef.current = setTimeout(() => {
             trigger(value);
-        }, 500); // 500ms задержка
+        }, 500);
     }, []);
 
     useEffect(() => {
@@ -81,42 +81,44 @@ export const Component: React.FC = () => {
                             value={find}
                             placeHolder={t("placeholder")}
                         />
-                        <ul className="">
-                            <h3 className="text-5xl lg:text-2xl border-b border-b-[#ffffff3a]">
-                                {t("result")}
-                            </h3>
-                            {data &&
-                                data.map((val: any, idx: number) => {
-                                    if (val.id == myid) return null;
-                                    return (
-                                        <li
-                                            key={`seatch-user-${idx}`}
-                                            className="flex gap-10 bg-[#4a55e9] p-3 justify-between"
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                <img
-                                                    src={
-                                                        val.user_profile.avatar_url ||
-                                                        "/img/icon.png"
-                                                    }
-                                                    alt=""
-                                                    className="w-15 h-15 lg:w-10 lg:h-10"
-                                                />
-                                                <span className="text-3xl lg:text-base">
-                                                    {val.username}
-                                                </span>
-                                            </div>
-                                            <div className="flex gap-5 ">
-                                                <ModalButton handler={() => startChatting(val.id)}>
-                                                    {t("modal.message")}
-                                                </ModalButton>
-                                                <ModalButton handler={() => inviteFriend(val.id)}>
-                                                    {t("modal.addfriend")}
-                                                </ModalButton>
-                                            </div>
-                                        </li>
-                                    );
-                                })}
+                        <ul className="flex flex-col gap-3">
+                            {data && data?.data && data.data.length > 0
+                                ? data.data.map((val: any, idx: number) => {
+                                      if (val.id === myid) return null;
+
+                                      return (
+                                          <li
+                                              key={`search-user-${idx}`}
+                                              className="flex gap-10 bg-[#4a55e9] p-3 justify-between rounded"
+                                          >
+                                              <div className="flex items-center gap-2">
+                                                  <img
+                                                      src={
+                                                          val.user_profile?.avatar_url ||
+                                                          "/img/icon.png"
+                                                      }
+                                                      alt=""
+                                                      className="w-15 h-15 lg:w-10 lg:h-10 rounded-full object-cover"
+                                                  />
+                                                  <span className="text-3xl lg:text-base">
+                                                      {val.username}
+                                                  </span>
+                                              </div>
+
+                                              <div className="flex gap-5">
+                                                  <ModalButton
+                                                      handler={() => startChatting(val.id)}
+                                                  >
+                                                      {t("modal.message")}
+                                                  </ModalButton>
+                                                  <ModalButton handler={() => inviteFriend(val.id)}>
+                                                      {t("modal.addfriend")}
+                                                  </ModalButton>
+                                              </div>
+                                          </li>
+                                      );
+                                  })
+                                : find.trim() && <li className="text-gray-400">{t("notfound")}</li>}
                         </ul>
                     </div>
                 </div>

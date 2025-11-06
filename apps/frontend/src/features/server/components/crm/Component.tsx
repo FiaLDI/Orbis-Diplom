@@ -32,17 +32,21 @@ export const Component: React.FC = () => {
                 name: nameServer,
             };
             await createServer(newServer);
+            setOpen(false);
         } catch (err) {
             console.log(err);
+            setOpen(false);
         }
     };
 
     const joinServerHandler = async () => {
         if (!idServer) return;
         try {
-            await joinServer(idServer);
+            await joinServer(Number(idServer));
+            setOpen(false);
         } catch (err) {
             console.log(err);
+            setOpen(false);
         }
     };
 
@@ -57,7 +61,7 @@ export const Component: React.FC = () => {
                 <CirclePlus
                     color="#fff"
                     strokeWidth={1.25}
-                    className="w-6 h-6 transition-transform hover:scale-110"
+                    className="w-8 h-8 transition-transform hover:scale-110"
                 />
             </button>
             <ModalLayout

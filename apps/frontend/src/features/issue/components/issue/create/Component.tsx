@@ -40,7 +40,6 @@ export const Component: React.FC<FormProps> = ({
 
     const issues = useAppSelector(selectAllIssues);
 
-    // ⚡ Если создаём новую задачу — выставляем дефолтный статус (первый из списка)
     useEffect(() => {
         if (!initialData && statuses.length > 0 && statusId === null) {
             setStatusId(statuses[0].id);
@@ -59,7 +58,7 @@ export const Component: React.FC<FormProps> = ({
         }
         if (onClose) onClose();
 
-        getIssue(projectId);
+        getIssue({ serverId, projectId });
     };
 
     const save = async () => {
@@ -67,9 +66,9 @@ export const Component: React.FC<FormProps> = ({
 
         try {
             if (initialData) {
-                // update
                 await updateIssue({
-                    projectId, // 👈 теперь передаём projectId
+                    serverId,
+                    projectId,
                     issueId: initialData.id,
                     data: {
                         title,
@@ -81,9 +80,9 @@ export const Component: React.FC<FormProps> = ({
                     },
                 }).unwrap();
             } else {
-                // create
                 await createIssue({
-                    projectId, // 👈 у тебя раньше было id, но лучше единообразно projectId
+                    serverId,
+                    projectId,
                     data: {
                         title,
                         description,

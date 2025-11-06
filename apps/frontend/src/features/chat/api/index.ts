@@ -36,7 +36,15 @@ export const chatApi = createApi({
             }),
             invalidatesTags: (result, error, { id }) => [{ type: "Chat", id }], // 👈 триггерит обновление getChatInfo
         }),
+
+        deletePersonalChat: builder.mutation({
+            query: (id) => ({
+                url: `/chats/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (result, error, { id }) => [{ type: "Chat", id }],
+        }),
     }),
 });
 
-export const { useLazyGetChatInfoQuery, useGetChatInfoQuery, useUpdateChatMutation } = chatApi;
+export const { useUpdateChatMutation, useDeletePersonalChatMutation } = chatApi;

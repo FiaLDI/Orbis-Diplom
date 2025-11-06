@@ -4,13 +4,15 @@ import { setActiveChat } from "@/features/chat";
 import { ChatContextMenu } from "@/features/shared";
 import { Props } from "./inteface";
 
-export const Component: React.FC<Props> = ({ chat, isServer }) => {
+export const Component: React.FC<Props> = ({ chat, isServer, editQuery, deleteQuery }) => {
     const dispatch = useAppDispatch();
     const activeChat = useAppSelector((s) => s.chat.activeChat);
 
     return (
         <ChatContextMenu
             chat={chat}
+            deleteQuery={deleteQuery}
+            editQuery={editQuery}
             triggerElement={({ onContextMenu }) => (
                 <li
                     className="cursor-pointer hover:brightness-90 select-none"

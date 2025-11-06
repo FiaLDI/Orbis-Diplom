@@ -11,48 +11,53 @@ export const moderationApi = createApi({
                 auth: { user: { access_token?: string } };
             };
             const token = state.auth.user?.access_token;
-
-            if (token) {
-                headers.set("authorization", `Bearer ${token}`);
-            }
+            if (token) headers.set("authorization", `Bearer ${token}`);
             return headers;
         },
     }),
-    tagTypes: ["AuditLogs"],
+    tagTypes: ["AuditLogs", "BannedUsers"],
     endpoints: (builder) => ({
-        getAuditLogs: builder.query<any[], { serverId?: number }>({
-            query: ({ serverId }) =>
-                serverId ? `/moderation/${serverId}/logs` : `/moderation/logs`,
-            providesTags: (r) => (r ? [{ type: "AuditLogs", id: "LIST" }] : []),
+        getAuditLogs: builder.query<any[], number>({
+            query: (serverId) => `/servers/${serverId}/moderation/logs`,
+            providesTags: [{ type: "AuditLogs", id: "LIST" }],
+            transformResponse: (response: any) => response.data,
         }),
 
-        // Модерация
+        getBannedUsers: builder.query<any[], number>({
+            query: (serverId) => `/servers/${serverId}/moderation/bans`,
+            providesTags: [{ type: "BannedUsers", id: "LIST" }],
+            transformResponse: (response: any) => response.data,
+        }),
+
         banUser: builder.mutation<void, { serverId: number; userId: number; reason?: string }>({
             query: ({ serverId, userId, reason }) => ({
-                url: `/moderation/servers/${serverId}/ban/${userId}`,
+                url: `/servers/${serverId}/moderation/bans/${userId}`,
                 method: "POST",
                 body: { reason },
             }),
-            invalidatesTags: [{ type: "AuditLogs", id: "LIST" }],
+            invalidatesTags: [
+                { type: "AuditLogs", id: "LIST" },
+                { type: "BannedUsers", id: "LIST" },
+            ],
         }),
 
         unbanUser: builder.mutation<void, { serverId: number; userId: number }>({
             query: ({ serverId, userId }) => ({
-                url: `/moderation/servers/${serverId}/ban/${userId}`,
+                url: `/servers/${serverId}/moderation/bans/${userId}`,
                 method: "DELETE",
             }),
-            invalidatesTags: [{ type: "AuditLogs", id: "LIST" }],
+            invalidatesTags: [
+                { type: "AuditLogs", id: "LIST" },
+                { type: "BannedUsers", id: "LIST" },
+            ],
         }),
 
         kickUser: builder.mutation<void, { serverId: number; userId: number }>({
             query: ({ serverId, userId }) => ({
-                url: `/moderation/servers/${serverId}/kick/${userId}`,
+                url: `/servers/${serverId}/moderation/kicks/${userId}`,
                 method: "DELETE",
             }),
             invalidatesTags: [{ type: "AuditLogs", id: "LIST" }],
-        }),
-        getBannedUsers: builder.query<any[], number>({
-            query: (serverId) => `/moderation/servers/${serverId}/banned`,
         }),
     }),
 });

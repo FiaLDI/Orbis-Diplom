@@ -1,13 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useChatSocket } from "./useChatSocket";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
-import {
-    Message,
-    clearActiveHistory,
-    setActiveHistory,
-    addMessage,
-    useLazyGetMessagesQuery,
-} from "@/features/messages";
+import { Message, addMessage, setActiveHistory } from "@/features/messages";
 
 export const useChatMessages = () => {
     const [typingUsers, setTypingUsers] = useState<string[]>([]);
@@ -16,16 +10,16 @@ export const useChatMessages = () => {
     const dispatch = useAppDispatch();
     const activeChat = useAppSelector((s) => s.chat.activeChat);
     const activeHistory = useAppSelector((s) => s.message.activeHistory);
-    const [getMessages] = useLazyGetMessagesQuery();
 
+    // ================================
+    // 🔗 Подключение к сокету и join/leave чата
+    // ================================
     useEffect(() => {
         if (!socket || !activeChat?.id) return;
 
         const chatId = activeChat.id;
 
-        if ((socket as any)._joinedChatId === chatId) {
-            return;
-        }
+        if ((socket as any)._joinedChatId === chatId) return;
 
         socket.emit("join-chat", chatId);
         (socket as any)._joinedChatId = chatId;
@@ -36,28 +30,23 @@ export const useChatMessages = () => {
         };
     }, [socket, activeChat?.id]);
 
-    useEffect(() => {
-        if (!activeChat?.id) return;
-
-        dispatch(clearActiveHistory());
-        getMessages({ id: activeChat.id, offset: 0 })
-            .unwrap()
-            .then((data) => {
-                dispatch(setActiveHistory(data));
-            })
-            .catch((err) => console.error("Ошибка загрузки истории:", err));
-    }, [activeChat?.id, dispatch, getMessages]);
-
+    // ================================
+    // 💬 Реакции на события сокета (новое, редактирование, удаление)
+    // ================================
     useEffect(() => {
         if (!socket) return;
 
         const handleNewMessage = (message: Message) => {
-            if (message.chat_id !== activeChat?.id) return;
+            console.log(message);
+            console.log(activeChat?.id);
+            console.log(activeChat?.chat_id);
+            console.log(activeChat?.id == message.chatId);
+            if (message.chatId !== activeChat?.id) return;
             dispatch(addMessage(message));
         };
 
         const handleEditMessage = (payload: { message_id: number; newContent: string }) => {
-            if (!activeHistory) return;
+            if (!Array.isArray(activeHistory)) return;
             const updated = activeHistory.map((m) =>
                 m.id === payload.message_id
                     ? {
@@ -72,9 +61,9 @@ export const useChatMessages = () => {
             dispatch(setActiveHistory(updated));
         };
 
-        const handleDeleteMessage = (payload: { message_id: number }) => {
-            if (!activeHistory) return;
-            const updated = activeHistory.filter((m) => m.id !== payload.message_id);
+        const handleDeleteMessage = (payload: { messageId: number }) => {
+            if (!Array.isArray(activeHistory)) return;
+            const updated = activeHistory.filter((m) => m.id !== payload.messageId);
             dispatch(setActiveHistory(updated));
         };
 
@@ -89,20 +78,34 @@ export const useChatMessages = () => {
         };
     }, [socket, activeChat?.id, activeHistory, dispatch]);
 
+    // ================================
+    // ⌨️ События "печатает"
+    // ================================
     useEffect(() => {
         if (!socket || !activeChat?.id) return;
 
         const handleTypingStart = (data: { chatId: number; username?: string }) => {
-            if (data.chatId !== activeChat.id || !data.username) return;
-            if (!data.username) return;
-            setTypingUsers((prev) =>
-                prev.includes(data.username as string) ? prev : [...prev, data.username as string]
-            );
+            // защита по чатам
+            if (data.chatId !== activeChat.id) return;
+
+            // ранний выход, чтобы дальше username точно стал string
+            const uname = data.username;
+            if (!uname) return;
+
+            setTypingUsers((prev) => {
+                // prev: string[]
+                if (prev.includes(uname)) return prev;
+                return [...prev, uname]; // string[]
+            });
         };
 
         const handleTypingStop = (data: { chatId: number; username?: string }) => {
-            if (data.chatId !== activeChat.id || !data.username) return;
-            setTypingUsers((prev) => prev.filter((u) => u !== data.username));
+            if (data.chatId !== activeChat.id) return;
+
+            const uname = data.username;
+            if (!uname) return;
+
+            setTypingUsers((prev) => prev.filter((u) => u !== uname));
         };
 
         socket.on("user-typing-start", handleTypingStart);
@@ -114,45 +117,53 @@ export const useChatMessages = () => {
         };
     }, [socket, activeChat?.id]);
 
+    // ================================
+    // 🧩 Группировка сообщений по пользователю и минуте
+    // ================================
     const groupedMessages = useMemo(() => {
-        if (!activeHistory?.length) return [];
+        if (!Array.isArray(activeHistory) || !activeHistory.length) return [];
         return groupMessagesByMinuteAndUserId(activeHistory);
     }, [activeHistory]);
 
     return { groupedMessages, isSocketConnected, typingUsers };
 };
 
+// ================================
+// 🔧 Утилита для группировки сообщений
+// ================================
 const groupMessagesByMinuteAndUserId = (
     messages: Message[]
 ): {
     messages: Message[];
-    user_id: number;
+    userId: number;
     username: string;
     minute: string;
 }[] => {
     const groupedMessages: {
-        user_id: number;
+        userId: number;
         messages: Message[];
         username: string;
         minute: string;
     }[] = [];
 
     let currentGroup: {
-        user_id: number;
+        userId: number;
         messages: Message[];
         username: string;
         minute: string;
     } | null = null;
 
     messages.forEach((message) => {
-        const minuteKey = message.timestamp.substring(0, 5);
+        const rawTime = message.createdAt ?? "";
+        const minuteKey = rawTime.substring(0, 16);
+
         if (
             !currentGroup ||
-            currentGroup.user_id !== message.user_id ||
+            currentGroup.userId !== message.userId ||
             currentGroup.minute !== minuteKey
         ) {
             currentGroup = {
-                user_id: message.user_id,
+                userId: message.userId,
                 messages: [],
                 minute: minuteKey,
                 username: message.username,

@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { NotificationState, Notification } from "../types";
+import { notificationApi } from "../api";
 
 const initialState: NotificationState = {
     list: [],
@@ -38,6 +39,16 @@ const notificationSlice = createSlice({
         setOnlineUsers(state, action: PayloadAction<number[]>) {
             state.onlineUsers = action.payload;
         },
+    },
+
+    extraReducers: (builder) => {
+        builder.addMatcher(
+            notificationApi.endpoints.getNotifications.matchFulfilled,
+            (state, action) => {
+                console.log(action);
+                state.list = (action.payload as any).data;
+            }
+        );
     },
 });
 

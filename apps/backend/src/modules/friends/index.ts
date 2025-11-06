@@ -1,1 +1,2 @@
-export * from "./routes/friend.routes";
+export * from "./module";
+export * from "./services/friend.service";

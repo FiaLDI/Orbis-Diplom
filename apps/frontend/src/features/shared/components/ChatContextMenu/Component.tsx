@@ -1,29 +1,64 @@
 import React, { useState } from "react";
-import { chat } from "@/features/chat";
-import { useAppSelector } from "@/app/hooks";
+import { chat, setActiveChat } from "@/features/chat";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useDeleteChatMutation, useEmitServerUpdate } from "@/features/server";
-import { ChatEditForm } from "@/features/chat";
+import { ChatEditForm, useDeletePersonalChatMutation } from "@/features/chat";
 import { useContextMenu } from "@/features/shared";
 import { AnimatedContextMenu } from "../AnimatedContextMenu";
 import { Pencil, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import {
+    BaseQueryFn,
+    FetchArgs,
+    FetchBaseQueryError,
+    FetchBaseQueryMeta,
+    MutationDefinition,
+} from "@reduxjs/toolkit/query";
+import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
 
 interface ChatContextMenuProps {
     triggerElement: (handlers: { onContextMenu: (e: React.MouseEvent) => void }) => React.ReactNode;
     chat: chat;
+    editQuery?: MutationTrigger<
+        MutationDefinition<
+            any,
+            BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>,
+            "Projects" | "Issues" | "Statuses" | "Priorities",
+            any,
+            "issueApi"
+        >
+    >;
+    deleteQuery?: MutationTrigger<
+        MutationDefinition<
+            any,
+            BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>,
+            "Projects" | "Issues" | "Statuses" | "Priorities",
+            any,
+            "issueApi"
+        >
+    >;
 }
 
-export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({ triggerElement, chat }) => {
+export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({
+    triggerElement,
+    chat,
+    editQuery,
+    deleteQuery,
+}) => {
     const activeServer = useAppSelector((s) => s.server.activeserver);
-    const [deleteChat] = useDeleteChatMutation();
+    const activeChat = useAppSelector((s) => s.chat.activeChat);
+    const issue = useAppSelector((s) => s.issue.openIssue);
+    const [deleteServerChat] = useDeleteChatMutation();
+    const [deleteChat] = useDeletePersonalChatMutation();
     const emitServerUpdate = useEmitServerUpdate();
     const [editingChat, setEditingChat] = useState<chat | null>(null);
     const { t } = useTranslation("chat");
+    const dispatch = useAppDispatch();
 
     const { contextMenu, handleContextMenu, menuRef, closeMenu } = useContextMenu<
         chat,
         HTMLUListElement
-    >(); // ✅ тип UL для AnimatedContextMenu
+    >();
 
     const menuItems = [
         {
@@ -34,9 +69,27 @@ export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({ triggerElement
         {
             label: t("chat.edit.delete"),
             action: () => {
+                if (!activeServer?.id) {
+                    if (!confirm(`${t("chat.edit.delete")}?`)) return;
+                    if (contextMenu?.data.id == activeChat?.id) {
+                        dispatch(setActiveChat(undefined));
+                    }
+                    deleteChat(contextMenu?.data.id);
+                }
+
                 if (!activeServer?.id || !contextMenu?.data) return;
                 if (!confirm(`${t("chat.edit.delete")}?`)) return;
-                deleteChat({ id: activeServer.id, chatId: contextMenu.data.id });
+
+                if (deleteQuery) {
+                    deleteQuery({
+                        serverId: activeServer.id,
+                        issueId: issue,
+                        chatId: contextMenu.data.id,
+                    });
+                } else {
+                    deleteServerChat({ id: activeServer.id, chatId: contextMenu.data.id });
+                }
+
                 emitServerUpdate(activeServer.id);
             },
             icon: <Trash2 size={16} />,
@@ -65,6 +118,9 @@ export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({ triggerElement
                         emitServerUpdate(activeServer?.id);
                         setEditingChat(null);
                     }}
+                    editQuery={editQuery}
+                    activeServerId={activeServer?.id}
+                    issueId={issue}
                 />
             )}
         </>

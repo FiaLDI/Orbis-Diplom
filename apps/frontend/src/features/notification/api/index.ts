@@ -38,18 +38,19 @@ export const notificationApi = createApi({
             }),
             invalidatesTags: ["Notification"],
         }),
-        subscribePush: builder.mutation<void, any>({
-            query: (data) => ({
-                url: `/notifications/subscribe`,
-                method: "POST",
-                body: data,
+        markAllNotificationRead: builder.mutation({
+            query: () => ({
+                url: `/notifications/read`,
+                method: "PUT",
             }),
+            invalidatesTags: ["Notification"],
         }),
-        unsubscribePush: builder.mutation<void, number>({
-            query: (id) => ({
-                url: `/notifications/unsubscribe/${id}`,
+        deleteAllNotification: builder.mutation({
+            query: () => ({
+                url: `/notifications/`,
                 method: "DELETE",
             }),
+            invalidatesTags: ["Notification"],
         }),
     }),
 });
@@ -58,6 +59,6 @@ export const {
     useGetNotificationsQuery,
     useMarkNotificationReadMutation,
     useDeleteNotificationMutation,
-    useSubscribePushMutation,
-    useUnsubscribePushMutation,
+    useMarkAllNotificationReadMutation,
+    useDeleteAllNotificationMutation,
 } = notificationApi;
