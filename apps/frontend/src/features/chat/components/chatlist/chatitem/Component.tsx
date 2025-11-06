@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setActiveChat } from "@/features/chat";
-import { ChatContextMenu } from "@/features/shared";
+import { ChatContextMenu } from "@/shared/ui";
 import { Props } from "./inteface";
 
 export const Component: React.FC<Props> = ({ chat, isServer, editQuery, deleteQuery }) => {

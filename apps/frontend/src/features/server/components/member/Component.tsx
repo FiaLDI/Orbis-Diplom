@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useLazyGetInfoUserQuery } from "@/features/user";
-import { AnimatedContextMenu } from "@/features/shared";
-import { useContextMenu } from "@/features/shared";
+import { AnimatedContextMenu } from "@/shared/ui";
+import { useContextMenu } from "@/shared/hooks";
 import {
     useBanUserMutation,
     useKickUserMutation,

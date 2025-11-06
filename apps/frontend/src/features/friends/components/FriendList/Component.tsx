@@ -25,9 +25,10 @@ import {
 } from "../..";
 import { setFriendMode } from "../../slice";
 import { Component as SearchFriends } from "./SearchFriends";
-import { AnimatedContextMenu, useContextMenu } from "@/features/shared";
+import { AnimatedContextMenu } from "@/shared/ui";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+import { useContextMenu } from "@/shared/hooks";
 
 export const Component: React.FC = () => {
     const { t } = useTranslation("friends");

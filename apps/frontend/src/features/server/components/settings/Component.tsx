@@ -248,7 +248,7 @@ export const Component: React.FC = () => {
                                 className="bg-red-500 px-5 py-3 rounded"
                                 onClick={() => {
                                     deleteServer(activeserver.id);
-                                    //navigator("/app")
+                                    navigator("/app")
                                 }}
                             >
                                 {t("settings.delete_critical.submit")}

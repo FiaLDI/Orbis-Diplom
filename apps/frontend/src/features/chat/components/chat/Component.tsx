@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { HistoryChatComponent, InputChatComponent } from "@/features/messages";
 import { X } from "lucide-react";
 import { setActiveChat } from "../..";
-import { ChatContextMenu } from "@/features/shared";
+import { ChatContextMenu } from "@/shared/ui";
 
 export const Component: React.FC = () => {
     const activeChat = useAppSelector((state) => state.chat.activeChat);

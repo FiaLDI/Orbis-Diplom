@@ -1,15 +1,6 @@
-// ContextMenu.tsx
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-interface ContextMenuProps {
-    visible: boolean;
-    x: number;
-    y: number;
-    onClose: () => void;
-    items: { label: string; action: () => void; danger?: boolean }[];
-    menuRef: React.RefObject<HTMLUListElement>; // строго UL
-}
+import { ContextMenuProps } from "./interface";
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({
     visible,
@@ -23,7 +14,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
         <AnimatePresence>
             {visible && (
                 <motion.ul
-                    ref={menuRef} // <-- тип теперь совпадает
+                    ref={menuRef}
                     initial={{ opacity: 0, scale: 0.9, y: -5 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
