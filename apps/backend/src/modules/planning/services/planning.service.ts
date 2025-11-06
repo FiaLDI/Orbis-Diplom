@@ -3,12 +3,20 @@ import { TYPES } from "@/di/types";
 import type { PrismaClient } from "@prisma/client";
 import { Errors } from "@/common/errors";
 import { NotificationService } from "@/modules/notifications";
+import { ICreateProjectDto, IDeleteProjectDto, IUpdateProjectDto } from "../dtos/project.dto";
+import { ICreateIssueDto, IUpdateIssueDto } from "../dtos/issue.dto";
+import { IssueListEntity } from "../entities/issue.list.entity";
+import { UserProfile } from "@/modules/users/entity/user.profile";
+import { UserService } from "@/modules/users";
+import { ChatService } from "@/modules/chat";
 
 @injectable()
 export class PlanningService {
     constructor(
         @inject(TYPES.Prisma) private prisma: PrismaClient,
-        @inject(TYPES.NotificationService) private notificationService: NotificationService
+        @inject(TYPES.NotificationService) private notificationService: NotificationService,
+        @inject(TYPES.UserService) private userService: UserService,
+        @inject(TYPES.ChatService) private chatService: ChatService
     ) {}
 
     /* =======================
@@ -22,13 +30,13 @@ export class PlanningService {
         });
     }
 
-    async createProject(serverId: number, name: string, description?: string) {
+    async createProject({serverId, name, description}: ICreateProjectDto) {
         return await this.prisma.project.create({
             data: { server_id: serverId, name, description },
         });
     }
 
-    async updateProject(serverId: number, projectId: number, name?: string, description?: string) {
+    async updateProject({serverId, projectId, name, description}: IUpdateProjectDto) {
         const project = await this.prisma.project.findUnique({ where: { id: projectId } });
         if (!project || project.server_id !== serverId) throw Errors.notFound("Project not found");
         return await this.prisma.project.update({
@@ -37,70 +45,64 @@ export class PlanningService {
         });
     }
 
-    async deleteProject(serverId: number, projectId: number) {
+    async deleteProject({serverId, projectId} : IDeleteProjectDto) {
         const project = await this.prisma.project.findUnique({ where: { id: projectId } });
         if (!project || project.server_id !== serverId) throw Errors.notFound("Project not found");
         await this.prisma.project.delete({ where: { id: projectId } });
     }
 
-    /* =======================
-       ISSUES
-    ======================= */
-
     async getProjectIssues(projectId: number) {
-        const projectIssues = await this.prisma.project_issues.findMany({
-            where: { project_id: projectId },
-            include: {
-                issue: {
-                    include: {
-                        status: true,
-                        assignees: { include: { user: true } },
-                        chat_issues: { include: { chat: true } },
-                    },
+    const projectIssues = await this.prisma.project_issues.findMany({
+        where: { project_id: projectId },
+        include: {
+            issue: {
+                include: {
+                    status: true,
+                    assignees: true,
+                    chat_issues: true,
                 },
             },
-        });
+        },
+    });
 
-        const allIssues = projectIssues.map((pi) => pi.issue);
+    const issues = projectIssues.map((pi) => pi.issue);
 
-        type IssueWithSubs = {
-            id: number;
-            title: string;
-            description?: string | null;
-            priority?: string | null;
-            status?: any;
-            parent_id?: number | null;
-            subtasks?: IssueWithSubs[];
-            [key: string]: any;
-        };
+    const list = new IssueListEntity(issues);
 
-        const buildTree = (
-            issues: IssueWithSubs[],
-            parentId: number | null = null
-        ): IssueWithSubs[] => {
-            return issues
-                .filter((i) => i.parent_id === parentId)
-                .map((i) => ({
-                    ...i,
-                    subtasks: buildTree(issues, i.id),
-                }));
-        };
+    const assigneeIds = list.getAssigneeUserIds();
 
-        const tree = buildTree(allIssues);
+    const profiles = assigneeIds.length
+        ? await Promise.all(
+              assigneeIds.map((id: number) =>
+                  this.userService.getProfileById(id)
+              )
+          )
+        : [];
 
-        return tree;
-    }
+    const profilesMap = new Map(profiles.map((p: any) => [p.toJSON().id, p]));
 
-    async createIssue(projectId: number, dto: any) {
-        const { title, description, priority, statusId, due_date, parent_id } = dto;
+    const chatIds = list.getChatIds();
+
+    const chats = chatIds.length
+        ? await this.chatService.getChatsByIds(chatIds)
+        : [];
+
+    const chatsMap = new Map(chats.map((c: any) => [c.id, c]));
+
+    return list.toTreeJSON(profilesMap, chatsMap);
+}
+
+
+
+    async createIssue({projectId, title, description, priority, statusId, dueDate, parentId}: ICreateIssueDto) {
         return await this.prisma.issue.create({
             data: {
                 title,
                 description,
                 priority,
                 status_id: statusId,
-                due_date,
-                parent_id,
+                due_date: dueDate,
+                parent_id: parentId,
                 project_issues: { create: { project_id: projectId } },
             },
             include: { status: true },
@@ -116,11 +118,17 @@ export class PlanningService {
         return issue;
     }
 
-    async updateIssue(issueId: number, dto: any) {
-        const { title, description, priority, statusId, due_date } = dto;
+    async updateIssue({issueId, title, description, priority, statusId, dueDate, parentId}: IUpdateIssueDto) {
         return await this.prisma.issue.update({
             where: { id: issueId },
-            data: { title, description, priority, status_id: statusId, due_date },
+            data: { 
+                title, 
+                description, 
+                priority, 
+                status_id: statusId, 
+                due_date: dueDate, 
+                parent_id: parentId 
+            },
         });
     }
 
@@ -132,10 +140,6 @@ export class PlanningService {
             await tx.issue.delete({ where: { id: issueId } });
         });
     }
-
-    /* =======================
-       ASSIGNEES
-    ======================= */
 
     async assignUserToIssue(issueId: number, userId: number) {
         const exists = await this.prisma.issue_assignee.findUnique({
@@ -181,29 +185,76 @@ export class PlanningService {
         });
     }
 
-    /* =======================
-       CHATS
-    ======================= */
-
     async addChatToIssue(issueId: number, name: string) {
-        const chat = await this.prisma.chats.create({
-            data: { name, created_at: new Date() },
+        const chat = await this.chatService.createIssueChat(name);
+
+        return await this.prisma.chat_issues.create({
+            data: {
+                chat_id: chat.id,
+                issue_id: issueId,
+            },
         });
-        await this.prisma.chat_issues.create({ data: { issue_id: issueId, chat_id: chat.id } });
-        return chat;
+    }
+
+    async deleteChatFromIssue(issueId: number, chatId: number) {
+        const relation = await this.prisma.chat_issues.findUnique({
+            where: {
+                chat_id_issue_id: {
+                    chat_id: chatId,
+                    issue_id: issueId,
+                },
+            },
+        });
+
+        if (!relation) {
+            throw Errors.notFound("Chat is not attached to this issue");
+        }
+
+        await this.prisma.chat_issues.delete({
+            where: {
+                chat_id_issue_id: {
+                    chat_id: chatId,
+                    issue_id: issueId,
+                },
+            },
+        });
+
+        const remaining = await this.prisma.chat_issues.findMany({
+            where: { chat_id: chatId },
+            select: { issue_id: true },
+        });
+
+        if (remaining.length === 0) {
+            await this.chatService.deleteChat(chatId);
+        }
+
+        return { message: "Chat detached from issue" };
+    }
+
+    async editChatFromIssue(issueId: number, chatId: number, name: string) {
+        const relation = await this.prisma.chat_issues.findUnique({
+            where: {
+                chat_id_issue_id: {
+                    chat_id: chatId,
+                    issue_id: issueId,
+                },
+            },
+        });
+
+        if (!relation) {
+            throw Errors.notFound("Chat does not belong to this issue");
+        }
+        const updated = await this.chatService.updateChat(chatId, name);
+        return { message: "Chat updated", chat: updated };
     }
 
     async getIssueChats(issueId: number) {
-        const chats = await this.prisma.chat_issues.findMany({
+        const links = await this.prisma.chat_issues.findMany({
             where: { issue_id: issueId },
-            include: { chat: true },
         });
-        return chats.map((c) => c.chat);
-    }
 
-    /* =======================
-       STATUSES
-    ======================= */
+        return this.chatService.getChatsByIds(links.map((l) => l.chat_id));
+    }
 
     async getIssueStatuses() {
         return await this.prisma.issue_status.findMany();

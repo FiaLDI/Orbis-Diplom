@@ -17,18 +17,12 @@ export const moderationApi = createApi({
     }),
     tagTypes: ["AuditLogs", "BannedUsers"],
     endpoints: (builder) => ({
-        /* =======================
-           AUDIT LOGS
-        ======================= */
         getAuditLogs: builder.query<any[], number>({
             query: (serverId) => `/servers/${serverId}/moderation/logs`,
             providesTags: [{ type: "AuditLogs", id: "LIST" }],
             transformResponse: (response: any) => response.data,
         }),
 
-        /* =======================
-           BANS
-        ======================= */
         getBannedUsers: builder.query<any[], number>({
             query: (serverId) => `/servers/${serverId}/moderation/bans`,
             providesTags: [{ type: "BannedUsers", id: "LIST" }],
@@ -58,9 +52,6 @@ export const moderationApi = createApi({
             ],
         }),
 
-        /* =======================
-           KICKS
-        ======================= */
         kickUser: builder.mutation<void, { serverId: number; userId: number }>({
             query: ({ serverId, userId }) => ({
                 url: `/servers/${serverId}/moderation/kicks/${userId}`,

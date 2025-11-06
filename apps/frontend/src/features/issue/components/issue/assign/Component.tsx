@@ -81,7 +81,6 @@ export const Component: React.FC<Props> = ({ serverId, issue, onClose, projectId
                     </button>
                 </div>
                 <div className="p-5 flex flex-col gap-5 w-full">
-                    {/* 🔍 Поиск */}
                     <input
                         type="text"
                         placeholder="Search member..."
@@ -96,11 +95,12 @@ export const Component: React.FC<Props> = ({ serverId, issue, onClose, projectId
                         ) : (
                             filteredMembers.map((member: any) => {
                                 const isAssigned = localAssigned.includes(member.id);
+                                console.log(member)
                                 const avatar =
-                                    member.user_profile?.avatar_url &&
-                                    (member.user_profile.avatar_url.startsWith("http")
-                                        ? member.user_profile.avatar_url
-                                        : `${config.cdnServiceUrl}/${member.user_profile.avatar_url}`);
+                                    member.avatar_url &&
+                                    (member.avatar_url.startsWith("http")
+                                        ? member.avatar_url
+                                        : `${config.cdnServiceUrl}/${member.avatar_url}`);
 
                                 return (
                                     <div
@@ -143,7 +143,6 @@ export const Component: React.FC<Props> = ({ serverId, issue, onClose, projectId
                         )}
                     </div>
 
-                    {/* 🔘 Кнопка закрытия */}
                     <button
                         onClick={() => {
                             onClose();

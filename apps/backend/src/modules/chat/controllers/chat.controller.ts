@@ -17,7 +17,7 @@ export class ChatController {
                 chatId: parseInt(req.params.id),
                 name: req.body.name,
             });
-            const entity = await this.chatService.updateChat(dto.id, dto.chatId, dto.name);
+            const entity = await this.chatService.updateChat(dto.chatId, dto.name);
 
             return res.json({
                 message: "Updated chat",
@@ -34,7 +34,7 @@ export class ChatController {
                 ...(req as any).user,
                 chatId: parseInt(req.params.id),
             });
-            const entity = await this.chatService.deleteChat(dto.id, dto.chatId);
+            const entity = await this.chatService.deleteChat(dto.chatId);
 
             return res.json({
                 message: "Chat deleted",

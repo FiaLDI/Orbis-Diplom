@@ -57,7 +57,7 @@ export class UserService {
 
                 return {
                     id: chat.id,
-                    title: chat.name,
+                    name: chat.name,
                     created_at: chat.createdAt,
                     members,
                 };

@@ -1,7 +1,10 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/di/types";
 import { ModerationService } from "../services/moderation.services";
+import { AuditModerationSchema } from "../dtos/audit.moderation.dto";
+import { Errors } from "@/common/errors";
+import { ActionModerationSchema } from "../dtos/action.moderation.dto";
 
 @injectable()
 export class ModerationController {
@@ -10,89 +13,92 @@ export class ModerationController {
         private moderationService: ModerationService
     ) {}
 
-    /* =======================
-       AUDIT LOGS
-    ======================= */
-    async getAuditLogs(req: Request, res: Response) {
+    async getAuditLogs(req: Request, res: Response, next: NextFunction) {
         try {
-            const serverId = parseInt(req.params.serverId, 10);
-            const logs = await this.moderationService.getAuditLogs(serverId);
+            const dto = AuditModerationSchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.serverId),
+            })
+
+            const logs = await this.moderationService.getAuditLogs(dto.serverId);
+
             res.json({ data: logs });
         } catch (err) {
-            console.error("getAuditLogs error:", err);
-            res.status(500).json({ message: "Internal server error" });
+            next(err);
         }
     }
 
-    /* =======================
-       BANS
-    ======================= */
-    async getBannedUsers(req: Request, res: Response) {
+    async getBannedUsers(req: Request, res: Response, next: NextFunction) {
         try {
-            const serverId = parseInt(req.params.serverId, 10);
-            const bans = await this.moderationService.getBannedUsers(serverId);
+            const dto = AuditModerationSchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.serverId),
+            })
+            const bans = await this.moderationService.getBannedUsers(dto.serverId);
             res.json({ data: bans });
         } catch (err) {
-            console.error("getBannedUsers error:", err);
-            res.status(500).json({ message: "Internal server error" });
+            next(err);
         }
     }
 
-    async banUser(req: any, res: Response) {
-        const serverId = parseInt(req.params.serverId, 10);
-        const userId = parseInt(req.params.userId, 10);
-        const { reason } = req.body;
-
-        if (req.user.id === userId) {
-            return res.status(403).json({ message: "You cannot ban yourself" });
-        }
-
+    async banUser(req: any, res: Response, next: NextFunction) {
         try {
-            const ban = await this.moderationService.banUser(serverId, userId, req.user.id, reason);
+            const dto = ActionModerationSchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.serverId),
+                userId: parseInt(req.params.userId),
+                reason: req.body.reason
+            })
+
+            if ((req as any).user.id === dto.userId) {
+                throw Errors.conflict( "You cannot ban yourself")
+            }
+
+            const ban = await this.moderationService.banUser(dto);
             res.status(201).json({ message: "User banned successfully", data: ban });
         } catch (err: any) {
-            console.error("banUser error:", err);
-            res.status(500).json({ message: err.message || "Internal server error" });
+            next(err);
         }
     }
 
-    async unbanUser(req: any, res: Response) {
-        const serverId = parseInt(req.params.serverId, 10);
-        const userId = parseInt(req.params.userId, 10);
-
-        if (req.user.id === userId) {
-            return res.status(403).json({ message: "You cannot unban yourself" });
-        }
-
+    async unbanUser(req: any, res: Response, next: NextFunction) {
         try {
-            const result = await this.moderationService.unbanUser(serverId, userId, req.user.id);
+            const dto = ActionModerationSchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.serverId),
+                userId: parseInt(req.params.userId),
+                reason: req.body.reason
+            })
+
+            if ((req as any).user.id === dto.userId) {
+                throw Errors.conflict( "You cannot unban yourself")
+            }
+            
+            const result = await this.moderationService.unbanUser(dto);
             res.json({ message: result.message });
         } catch (err: any) {
-            console.error("unbanUser error:", err);
-            res.status(500).json({ message: err.message || "Internal server error" });
+            next(err);
         }
     }
 
-    /* =======================
-       KICKS
-    ======================= */
-    async kickUser(req: any, res: Response) {
-        const serverId = parseInt(req.params.serverId, 10);
-        const userId = parseInt(req.params.userId, 10);
-
-        if (req.user.id === userId) {
-            return res.status(403).json({ message: "You cannot kick yourself" });
-        }
-
+    async kickUser(req: any, res: Response, next: NextFunction) {
         try {
-            const result = await this.moderationService.kickUser(serverId, userId, req.user.id);
+            const dto = ActionModerationSchema.parse({
+                ...(req as any).user,
+                serverId: parseInt(req.params.serverId),
+                userId: parseInt(req.params.userId),
+                reason: req.body.reason
+            })
+
+            if ((req as any).user.id === dto.userId) {
+                throw Errors.conflict( "You cannot kick yourself")
+            }
+
+            const result = await this.moderationService.kickUser(dto);
+
             res.json({ message: result.message });
         } catch (err: any) {
-            console.error("kickUser error:", err);
-            res.status(500).json({
-                message: err.message || "Internal server error",
-                detail: err?.meta?.constraint || undefined,
-            });
+            next(err);
         }
     }
 }

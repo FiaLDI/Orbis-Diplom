@@ -47,7 +47,7 @@ export const Component: React.FC = () => {
     const issueMode = issues.issueMode;
     const activeServerId = activeserver?.id;
 
-    const hasActiveServer = Boolean(activeserver);
+    const hasActiveServer = Boolean(activeserver) && activeServerId;
     const hasActiveChat = Boolean(activeChat);
     const isPersonalChat = activeChat && activeChat.id && !hasActiveServer;
 

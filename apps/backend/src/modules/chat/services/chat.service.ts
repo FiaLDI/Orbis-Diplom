@@ -43,7 +43,7 @@ export class ChatService {
         return chatInfo;
     }
 
-    async updateChat(id: number, chatId: number, name: string) {
+    async updateChat(chatId: number, name: string) {
         const chat = await this.prisma.chats.update({
             where: { id: chatId },
             data: { name },
@@ -51,7 +51,7 @@ export class ChatService {
         return chat;
     }
 
-    async deleteChat(id: number, chatId: number) {
+    async deleteChat(chatId: number) {
         await this.prisma.chat_users.deleteMany({
             where: { chat_id: chatId },
         });
@@ -173,5 +173,21 @@ export class ChatService {
         });
 
         return { message: "Chat deleted" };
+    }
+
+    async getChatsByIds(ids: number[]) {
+        return await this.prisma.chats.findMany({
+            where: { id: { in: ids } },
+            select: { id: true, name: true, created_at: true }
+        });
+    }
+
+    async createIssueChat(name: string) {
+        return await this.prisma.chats.create({
+            data: {
+                name,
+                created_at: new Date()
+            }
+        });
     }
 }

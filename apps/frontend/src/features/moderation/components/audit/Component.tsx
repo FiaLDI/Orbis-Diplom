@@ -225,7 +225,7 @@ export const Component: React.FC = () => {
                                         <div className="flex gap-3 items-center">
                                             <img
                                                 src={
-                                                    ban.user.user_profile?.avatar_url ||
+                                                    ban.avatar_url ||
                                                     "/img/icon.png"
                                                 }
                                                 alt=""
@@ -233,11 +233,11 @@ export const Component: React.FC = () => {
                                             />
                                             <div>
                                                 <div className="font-medium">
-                                                    {ban.user.username}
+                                                    {ban.targetName}
                                                 </div>
                                                 <div className="text-xs opacity-70">
                                                     {t("audit.banned.time")}{" "}
-                                                    {new Date(ban.created_at).toLocaleString(
+                                                    {new Date(ban.createdAt).toLocaleString(
                                                         "ru-RU"
                                                     )}
                                                 </div>
@@ -252,7 +252,7 @@ export const Component: React.FC = () => {
 
                                         <button
                                             className="px-3 py-1 bg-green-600/40 hover:bg-green-600/60 rounded text-sm"
-                                            onClick={() => handleUnban(ban.user.id)}
+                                            onClick={() => handleUnban(ban.targetId)}
                                         >
                                             {t("audit.action.unban.submit")}
                                         </button>
@@ -286,17 +286,17 @@ export const Component: React.FC = () => {
                                         className="rounded bg-white/5 p-3 border border-white/10"
                                     >
                                         <div className="text-sm opacity-70">
-                                            {new Date(log.created_at).toLocaleString("ru-RU")}
+                                            {new Date(log.createdAt).toLocaleString("ru-RU")}
                                         </div>
                                         <div className="text-sm mt-1">
-                                            <b>{log.actor?.username ?? `User#${log.actor_id}`}</b>{" "}
+                                            <b>{log.actorName ?? `User#${log.actorId}`}</b>{" "}
                                             {log.action === "BAN_ADD" &&
                                                 t("audit.logs.action.BAN_ADD")}
                                             {log.action === "BAN_REMOVE" &&
                                                 t("audit.logs.action.BAN_REMOVE")}
                                             {log.action === "KICK" && t("audit.logs.action.KICK")}
                                             {` ${t("audit.logs.user")} `}
-                                            <b>{log.target_id ? `User#${log.target_id}` : "-"}</b>
+                                            <b>{log.targetName ?? `User#${log.targetId}`}</b>
                                         </div>
                                         {log.metadata &&
                                             (() => {

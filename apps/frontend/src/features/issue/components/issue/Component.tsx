@@ -18,7 +18,6 @@ interface Props {
 
 export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
     const issue = useAppSelector((s) => s.issue);
-    console.log(issue);
     const [deleteIssueApi] = useDeleteIssueMutation();
     const [editingIssue, setEditingIssue] = useState<any | null>(null);
     const [viewMode, setViewMode] = useState<"tree" | "cluster">("tree");
@@ -81,8 +80,7 @@ export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
                 <div className="flex items-center gap-1 mt-1 ml-1">
                     {task.assignees && task.assignees.length > 0 ? (
                         task.assignees.slice(0, 5).map((a: any, idx: number) => {
-                            const member = membersServer.find((m: any) => m.id === a.user_id);
-
+                            const member = membersServer.find((m: any) => m.id === a.id);
                             const avatar =
                                 member?.avatar_url &&
                                 (member.avatar_url.startsWith("http")
@@ -159,7 +157,7 @@ export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
                     <div className="flex gap-1 mt-1">
                         {task.assignees && task.assignees.length > 0 ? (
                             task.assignees.slice(0, 3).map((a: any) => {
-                                const member = membersServer.find((m: any) => m.id === a.user_id);
+                                const member = membersServer.find((m: any) => m.id === a.id);
 
                                 const avatar =
                                     member?.avatar_url &&

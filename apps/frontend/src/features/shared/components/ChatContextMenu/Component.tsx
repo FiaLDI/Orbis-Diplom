@@ -7,15 +7,20 @@ import { useContextMenu } from "@/features/shared";
 import { AnimatedContextMenu } from "../AnimatedContextMenu";
 import { Pencil, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { BaseQueryFn, FetchArgs, FetchBaseQueryError, FetchBaseQueryMeta, MutationDefinition } from "@reduxjs/toolkit/query";
+import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
 
 interface ChatContextMenuProps {
     triggerElement: (handlers: { onContextMenu: (e: React.MouseEvent) => void }) => React.ReactNode;
     chat: chat;
+    editQuery?:  MutationTrigger<MutationDefinition<any, BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>, "Projects" | "Issues" | "Statuses" | "Priorities", any, "issueApi">>;
+    deleteQuery?:  MutationTrigger<MutationDefinition<any, BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>, "Projects" | "Issues" | "Statuses" | "Priorities", any, "issueApi">>;
 }
 
-export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({ triggerElement, chat }) => {
+export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({ triggerElement, chat, editQuery, deleteQuery }) => {
     const activeServer = useAppSelector((s) => s.server.activeserver);
     const activeChat = useAppSelector((s) => s.chat.activeChat);
+    const issue = useAppSelector((s) => s.issue.openIssue);
     const [deleteServerChat] = useDeleteChatMutation();
     const [deleteChat] = useDeletePersonalChatMutation();
     const emitServerUpdate = useEmitServerUpdate();
@@ -47,7 +52,14 @@ export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({ triggerElement
 
                 if (!activeServer?.id || !contextMenu?.data) return;
                 if (!confirm(`${t("chat.edit.delete")}?`)) return;
-                deleteServerChat({ id: activeServer.id, chatId: contextMenu.data.id });
+
+                
+                if (deleteQuery) {
+                    deleteQuery({serverId: activeServer.id, issueId: issue, chatId: contextMenu.data.id })
+                } else {
+                    deleteServerChat({ id: activeServer.id, chatId: contextMenu.data.id });
+                }
+                
                 emitServerUpdate(activeServer.id);
             },
             icon: <Trash2 size={16} />,
@@ -76,6 +88,9 @@ export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({ triggerElement
                         emitServerUpdate(activeServer?.id);
                         setEditingChat(null);
                     }}
+                    editQuery={editQuery}
+                    activeServerId={activeServer?.id}
+                    issueId={issue}
                 />
             )}
         </>

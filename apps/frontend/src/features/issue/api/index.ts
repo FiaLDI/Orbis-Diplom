@@ -143,6 +143,21 @@ export const issueApi = createApi({
                 body: data,
             }),
         }),
+
+        updateChatIssue: builder.mutation({
+            query: ({ serverId, issueId, chatId, data }) => ({
+                url: `/servers/${serverId}/issues/${issueId}/chats/${chatId}`,
+                method: "PATCH",
+                body: data,
+            }),
+        }),
+
+        deleteChatIssue: builder.mutation({
+            query: ({ serverId, issueId, chatId }) => ({
+                url: `/servers/${serverId}/issues/${issueId}/chats/${chatId}`,
+                method: "DELETE",
+            }),
+        }),
     }),
 });
 
@@ -165,4 +180,6 @@ export const {
 
     useLazyGetChatIssueQuery,
     useCreateChatIssueMutation,
+    useUpdateChatIssueMutation,
+    useDeleteChatIssueMutation
 } = issueApi;

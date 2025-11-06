@@ -19,7 +19,7 @@ export const Component: React.FC<Props> = ({ serverId, name }) => {
         if (!serverId) return;
         try {
             await createProject({
-                id: serverId,
+                serverId: serverId,
                 data: { name: "default", description: "default" },
             }).unwrap();
 

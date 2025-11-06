@@ -33,7 +33,7 @@ export class Chat {
         const s = this.serverChat;
         return s.map((val) => ({
             id: val.id,
-            title: val.name,
+            name: val.name,
             creatorId: val.creator_id,
             createdAt: val.created_at,
         }));
