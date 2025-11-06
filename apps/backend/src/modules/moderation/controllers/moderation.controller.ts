@@ -18,7 +18,7 @@ export class ModerationController {
             const dto = AuditModerationSchema.parse({
                 ...(req as any).user,
                 serverId: parseInt(req.params.serverId),
-            })
+            });
 
             const logs = await this.moderationService.getAuditLogs(dto.serverId);
 
@@ -33,7 +33,7 @@ export class ModerationController {
             const dto = AuditModerationSchema.parse({
                 ...(req as any).user,
                 serverId: parseInt(req.params.serverId),
-            })
+            });
             const bans = await this.moderationService.getBannedUsers(dto.serverId);
             res.json({ data: bans });
         } catch (err) {
@@ -47,11 +47,11 @@ export class ModerationController {
                 ...(req as any).user,
                 serverId: parseInt(req.params.serverId),
                 userId: parseInt(req.params.userId),
-                reason: req.body.reason
-            })
+                reason: req.body.reason,
+            });
 
             if ((req as any).user.id === dto.userId) {
-                throw Errors.conflict( "You cannot ban yourself")
+                throw Errors.conflict("You cannot ban yourself");
             }
 
             const ban = await this.moderationService.banUser(dto);
@@ -67,13 +67,13 @@ export class ModerationController {
                 ...(req as any).user,
                 serverId: parseInt(req.params.serverId),
                 userId: parseInt(req.params.userId),
-                reason: req.body.reason
-            })
+                reason: req.body.reason,
+            });
 
             if ((req as any).user.id === dto.userId) {
-                throw Errors.conflict( "You cannot unban yourself")
+                throw Errors.conflict("You cannot unban yourself");
             }
-            
+
             const result = await this.moderationService.unbanUser(dto);
             res.json({ message: result.message });
         } catch (err: any) {
@@ -87,11 +87,11 @@ export class ModerationController {
                 ...(req as any).user,
                 serverId: parseInt(req.params.serverId),
                 userId: parseInt(req.params.userId),
-                reason: req.body.reason
-            })
+                reason: req.body.reason,
+            });
 
             if ((req as any).user.id === dto.userId) {
-                throw Errors.conflict( "You cannot kick yourself")
+                throw Errors.conflict("You cannot kick yourself");
             }
 
             const result = await this.moderationService.kickUser(dto);

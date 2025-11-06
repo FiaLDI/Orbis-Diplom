@@ -10,14 +10,12 @@ export const CreateProjectSchema = z.object({
     description: z.string().max(500).optional(),
 });
 
-
 export const UpdateProjectSchema = z.object({
     serverId: z.number().int().positive("ServerID is required"),
     projectId: z.number().int().positive("ProjectID is required"),
     name: z.string().min(1).max(100).optional(),
     description: z.string().max(500).optional(),
 });
-
 
 export const DeleteProjectSchema = z.object({
     serverId: z.number().int(),

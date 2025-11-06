@@ -31,10 +31,7 @@ export class IssueListEntity {
     }
 
     /** flat representation */
-    toFlatJSON(
-        profilesMap: Map<number, any>,
-        chatsMap: Map<number, any>
-    ) {
+    toFlatJSON(profilesMap: Map<number, any>, chatsMap: Map<number, any>) {
         return this.issues.map((issue: any) => ({
             id: issue.id,
             title: issue.title,
@@ -43,13 +40,9 @@ export class IssueListEntity {
             status: issue.status,
             parentId: issue.parent_id,
 
-            assignees: issue.assignees
-                .map((a: any) => profilesMap.get(a.user_id))
-                .filter(Boolean),
+            assignees: issue.assignees.map((a: any) => profilesMap.get(a.user_id)).filter(Boolean),
 
-            chats: issue.chat_issues
-                .map((ci: any) => chatsMap.get(ci.chat_id))
-                .filter(Boolean),
+            chats: issue.chat_issues.map((ci: any) => chatsMap.get(ci.chat_id)).filter(Boolean),
         }));
     }
 
@@ -62,10 +55,7 @@ export class IssueListEntity {
             }));
     }
 
-    toTreeJSON(
-        profilesMap: Map<number, any>,
-        chatsMap: Map<number, any>
-    ) {
+    toTreeJSON(profilesMap: Map<number, any>, chatsMap: Map<number, any>) {
         const flat = this.toFlatJSON(profilesMap, chatsMap);
         return this.buildTree(flat);
     }

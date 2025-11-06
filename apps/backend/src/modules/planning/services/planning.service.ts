@@ -30,13 +30,13 @@ export class PlanningService {
         });
     }
 
-    async createProject({serverId, name, description}: ICreateProjectDto) {
+    async createProject({ serverId, name, description }: ICreateProjectDto) {
         return await this.prisma.project.create({
             data: { server_id: serverId, name, description },
         });
     }
 
-    async updateProject({serverId, projectId, name, description}: IUpdateProjectDto) {
+    async updateProject({ serverId, projectId, name, description }: IUpdateProjectDto) {
         const project = await this.prisma.project.findUnique({ where: { id: projectId } });
         if (!project || project.server_id !== serverId) throw Errors.notFound("Project not found");
         return await this.prisma.project.update({
@@ -45,56 +45,58 @@ export class PlanningService {
         });
     }
 
-    async deleteProject({serverId, projectId} : IDeleteProjectDto) {
+    async deleteProject({ serverId, projectId }: IDeleteProjectDto) {
         const project = await this.prisma.project.findUnique({ where: { id: projectId } });
         if (!project || project.server_id !== serverId) throw Errors.notFound("Project not found");
         await this.prisma.project.delete({ where: { id: projectId } });
     }
 
     async getProjectIssues(projectId: number) {
-    const projectIssues = await this.prisma.project_issues.findMany({
-        where: { project_id: projectId },
-        include: {
-            issue: {
-                include: {
-                    status: true,
-                    assignees: true,
-                    chat_issues: true,
+        const projectIssues = await this.prisma.project_issues.findMany({
+            where: { project_id: projectId },
+            include: {
+                issue: {
+                    include: {
+                        status: true,
+                        assignees: true,
+                        chat_issues: true,
+                    },
                 },
             },
-        },
-    });
+        });
 
-    const issues = projectIssues.map((pi) => pi.issue);
+        const issues = projectIssues.map((pi) => pi.issue);
 
-    const list = new IssueListEntity(issues);
+        const list = new IssueListEntity(issues);
 
-    const assigneeIds = list.getAssigneeUserIds();
+        const assigneeIds = list.getAssigneeUserIds();
 
-    const profiles = assigneeIds.length
-        ? await Promise.all(
-              assigneeIds.map((id: number) =>
-                  this.userService.getProfileById(id)
+        const profiles = assigneeIds.length
+            ? await Promise.all(
+                  assigneeIds.map((id: number) => this.userService.getProfileById(id))
               )
-          )
-        : [];
+            : [];
 
-    const profilesMap = new Map(profiles.map((p: any) => [p.toJSON().id, p]));
+        const profilesMap = new Map(profiles.map((p: any) => [p.toJSON().id, p]));
 
-    const chatIds = list.getChatIds();
+        const chatIds = list.getChatIds();
 
-    const chats = chatIds.length
-        ? await this.chatService.getChatsByIds(chatIds)
-        : [];
+        const chats = chatIds.length ? await this.chatService.getChatsByIds(chatIds) : [];
 
-    const chatsMap = new Map(chats.map((c: any) => [c.id, c]));
+        const chatsMap = new Map(chats.map((c: any) => [c.id, c]));
 
-    return list.toTreeJSON(profilesMap, chatsMap);
-}
+        return list.toTreeJSON(profilesMap, chatsMap);
+    }
 
-
-
-    async createIssue({projectId, title, description, priority, statusId, dueDate, parentId}: ICreateIssueDto) {
+    async createIssue({
+        projectId,
+        title,
+        description,
+        priority,
+        statusId,
+        dueDate,
+        parentId,
+    }: ICreateIssueDto) {
         return await this.prisma.issue.create({
             data: {
                 title,
@@ -118,16 +120,24 @@ export class PlanningService {
         return issue;
     }
 
-    async updateIssue({issueId, title, description, priority, statusId, dueDate, parentId}: IUpdateIssueDto) {
+    async updateIssue({
+        issueId,
+        title,
+        description,
+        priority,
+        statusId,
+        dueDate,
+        parentId,
+    }: IUpdateIssueDto) {
         return await this.prisma.issue.update({
             where: { id: issueId },
-            data: { 
-                title, 
-                description, 
-                priority, 
-                status_id: statusId, 
-                due_date: dueDate, 
-                parent_id: parentId 
+            data: {
+                title,
+                description,
+                priority,
+                status_id: statusId,
+                due_date: dueDate,
+                parent_id: parentId,
             },
         });
     }

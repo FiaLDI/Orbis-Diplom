@@ -136,7 +136,7 @@ export const planningModule = () => {
         rolePerm.check("MANAGE_ISSUES"),
         controller.addChatToIssue.bind(controller)
     );
-    
+
     router.delete(
         "/:serverId/issues/:issueId/chats/:chatId",
         auth.handle.bind(auth),

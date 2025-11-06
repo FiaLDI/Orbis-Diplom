@@ -73,7 +73,7 @@ export class ModerationService {
         });
     }
 
-    async banUser({serverId, userId, id, reason}: ActionModerationDto) {
+    async banUser({ serverId, userId, id, reason }: ActionModerationDto) {
         const existingBan = await this.prisma.server_bans.findUnique({
             where: { server_id_user_id: { server_id: serverId, user_id: userId } },
         });
@@ -119,7 +119,7 @@ export class ModerationService {
         return ban;
     }
 
-    async unbanUser({serverId, userId, id, reason}: ActionModerationDto) {
+    async unbanUser({ serverId, userId, id, reason }: ActionModerationDto) {
         await this.prisma.$transaction(async (tx) => {
             await tx.server_bans.delete({
                 where: { server_id_user_id: { server_id: serverId, user_id: userId } },
@@ -193,7 +193,7 @@ export class ModerationService {
         return entity.toJSON(ActorProfilesMap, TargetProfilesMap);
     }
 
-    async kickUser({serverId, userId, id, reason}: ActionModerationDto) {
+    async kickUser({ serverId, userId, id, reason }: ActionModerationDto) {
         await this.prisma.$transaction(async (tx) => {
             await tx.user_server_roles.deleteMany({
                 where: { user_id: userId, server_id: serverId },

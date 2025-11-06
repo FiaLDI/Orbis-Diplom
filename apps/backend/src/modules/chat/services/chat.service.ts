@@ -178,7 +178,7 @@ export class ChatService {
     async getChatsByIds(ids: number[]) {
         return await this.prisma.chats.findMany({
             where: { id: { in: ids } },
-            select: { id: true, name: true, created_at: true }
+            select: { id: true, name: true, created_at: true },
         });
     }
 
@@ -186,8 +186,8 @@ export class ChatService {
         return await this.prisma.chats.create({
             data: {
                 name,
-                created_at: new Date()
-            }
+                created_at: new Date(),
+            },
         });
     }
 }

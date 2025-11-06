@@ -22,16 +22,11 @@ export const CreateIssueSchema = z.object({
     priority: z.nativeEnum(IssuePriority).default("MEDIUM"),
     statusId: z.number().int(),
 
-    dueDate: z
-        .string()
-        .datetime()
-        .or(z.date())
-        .optional(),
+    dueDate: z.string().datetime().or(z.date()).optional(),
     assignees: z.array(z.number().int()).default([]),
 
     parentId: z.number().int().nullable().optional(),
 });
-
 
 export const UpdateIssueSchema = z.object({
     issueId: z.number().int().positive("IssueID is required"),

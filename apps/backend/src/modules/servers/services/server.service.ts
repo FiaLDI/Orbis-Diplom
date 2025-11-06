@@ -196,13 +196,11 @@ export class ServerService {
                 where: { server_id: dto.serverId },
             });
 
-
             await tx.servers.delete({ where: { id: dto.serverId } });
         });
 
         return { message: "Server and related data deleted" };
     }
-
 
     async kickMember(dto: ServerMemberDto) {
         await this.prisma.user_server.delete({

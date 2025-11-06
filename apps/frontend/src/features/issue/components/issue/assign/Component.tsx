@@ -95,7 +95,7 @@ export const Component: React.FC<Props> = ({ serverId, issue, onClose, projectId
                         ) : (
                             filteredMembers.map((member: any) => {
                                 const isAssigned = localAssigned.includes(member.id);
-                                console.log(member)
+                                console.log(member);
                                 const avatar =
                                     member.avatar_url &&
                                     (member.avatar_url.startsWith("http")

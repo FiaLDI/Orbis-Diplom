@@ -29,9 +29,9 @@ export const serversQueries = {
         method: "POST",
     }),
 
-    UpdateServer: ({id, data}: {id: number, data: {name: string, avatar_url: string}}) => ({
+    UpdateServer: ({ id, data }: { id: number; data: { name: string; avatar_url: string } }) => ({
         url: `/servers/${id}`,
         method: "PATCH",
-        body: data
+        body: data,
     }),
 };

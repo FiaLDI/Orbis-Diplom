@@ -25,7 +25,6 @@ export const serverApi = createApi({
     }),
     tagTypes: ["Servers", "ServerMembers", "Roles"],
     endpoints: (builder) => ({
-
         GetServers: builder.query({
             query: serversQueries.GetServers,
         }),
@@ -138,5 +137,5 @@ export const {
     useDeleteRoleMutation,
     useLazyGetServersChatsQuery,
     useUpdateServerMutation,
-    useDeleteServerMutation
+    useDeleteServerMutation,
 } = serverApi;

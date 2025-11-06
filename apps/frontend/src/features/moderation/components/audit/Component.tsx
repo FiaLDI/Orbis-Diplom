@@ -88,7 +88,7 @@ export const Component: React.FC = () => {
                         {t("audit.title")} — {activeserver?.name}
                     </div>
                     <button onClick={() => setOpen((prev) => !prev)}>
-                        {open ? <ChevronDown /> : <ChevronUp /> }
+                        {open ? <ChevronDown /> : <ChevronUp />}
                     </button>
                 </div>
                 {open ? (
@@ -224,17 +224,12 @@ export const Component: React.FC = () => {
                                     >
                                         <div className="flex gap-3 items-center">
                                             <img
-                                                src={
-                                                    ban.avatar_url ||
-                                                    "/img/icon.png"
-                                                }
+                                                src={ban.avatar_url || "/img/icon.png"}
                                                 alt=""
                                                 className="w-10 h-10 rounded"
                                             />
                                             <div>
-                                                <div className="font-medium">
-                                                    {ban.targetName}
-                                                </div>
+                                                <div className="font-medium">{ban.targetName}</div>
                                                 <div className="text-xs opacity-70">
                                                     {t("audit.banned.time")}{" "}
                                                     {new Date(ban.createdAt).toLocaleString(

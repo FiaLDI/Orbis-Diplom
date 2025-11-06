@@ -3,10 +3,25 @@ import { Request, Response, NextFunction } from "express";
 import { TYPES } from "@/di/types";
 import { IssuePriority } from "@prisma/client";
 import { PlanningService } from "../services/planning.service";
-import { CreateProjectSchema, DeleteProjectSchema, GetProjectSchema, UpdateProjectSchema } from "../dtos/project.dto";
-import { CreateIssueSchema, GetIssueSchema, GetIssuesProjectSchema, UpdateIssueSchema } from "../dtos/issue.dto";
+import {
+    CreateProjectSchema,
+    DeleteProjectSchema,
+    GetProjectSchema,
+    UpdateProjectSchema,
+} from "../dtos/project.dto";
+import {
+    CreateIssueSchema,
+    GetIssueSchema,
+    GetIssuesProjectSchema,
+    UpdateIssueSchema,
+} from "../dtos/issue.dto";
 import { AssignUserToIssueSchema, UnassignUserFromIssueSchema } from "../dtos/assignee.dto";
-import { AddChatToIssueSchema, DeleteChatToIssueSchema, EditChatToIssueSchema, GetChatToIssueSchema } from "../dtos/chat.dto";
+import {
+    AddChatToIssueSchema,
+    DeleteChatToIssueSchema,
+    EditChatToIssueSchema,
+    GetChatToIssueSchema,
+} from "../dtos/chat.dto";
 
 @injectable()
 export class PlanningController {
@@ -19,7 +34,7 @@ export class PlanningController {
     getProjects = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = GetProjectSchema.parse({
-                serverId: Number(req.params.serverId)
+                serverId: Number(req.params.serverId),
             });
             const data = await this.planningService.getProjects(dto.serverId);
             return res.json({ message: "Project list", data });
@@ -76,8 +91,8 @@ export class PlanningController {
     getProjectIssues = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = GetIssuesProjectSchema.parse({
-                projectId: Number(req.params.projectId)
-            })
+                projectId: Number(req.params.projectId),
+            });
             const data = await this.planningService.getProjectIssues(dto.projectId);
             return res.json({ message: "Project issues", data });
         } catch (err) {
@@ -140,8 +155,8 @@ export class PlanningController {
         try {
             const dto = AssignUserToIssueSchema.parse({
                 issueId: parseInt(req.params.issueId),
-                userId: parseInt(req.params.userId)
-            })
+                userId: parseInt(req.params.userId),
+            });
             const data = await this.planningService.assignUserToIssue(dto.issueId, dto.userId);
             return res.json({ message: "User assigned", data });
         } catch (err) {
@@ -153,8 +168,8 @@ export class PlanningController {
         try {
             const dto = UnassignUserFromIssueSchema.parse({
                 issueId: parseInt(req.params.issueId),
-                userId: parseInt(req.params.userId)
-            })
+                userId: parseInt(req.params.userId),
+            });
             await this.planningService.unassignUserFromIssue(dto.issueId, dto.userId);
             return res.json({ message: "User unassigned" });
         } catch (err) {
@@ -166,8 +181,8 @@ export class PlanningController {
         try {
             const dto = AddChatToIssueSchema.parse({
                 issueId: parseInt(req.params.issueId),
-                name: req.body.name
-            })
+                name: req.body.name,
+            });
             const data = await this.planningService.addChatToIssue(dto.issueId, dto.name);
             return res.json({ message: "Chat added", data });
         } catch (err) {
@@ -180,9 +195,13 @@ export class PlanningController {
             const dto = EditChatToIssueSchema.parse({
                 chatId: parseInt(req.params.chatId),
                 issueId: parseInt(req.params.issueId),
-                name: req.body.name
-            })
-            const data = await this.planningService.editChatFromIssue(dto.issueId, dto.chatId, dto.name);
+                name: req.body.name,
+            });
+            const data = await this.planningService.editChatFromIssue(
+                dto.issueId,
+                dto.chatId,
+                dto.name
+            );
             return res.json({ message: "Chat added", data });
         } catch (err) {
             next(err);
@@ -195,7 +214,7 @@ export class PlanningController {
                 issueId: parseInt(req.params.issueId),
                 serverId: parseInt(req.params.serverId),
                 chatId: parseInt(req.params.chatId),
-            })
+            });
             const data = await this.planningService.deleteChatFromIssue(dto.issueId, dto.chatId);
             return res.json({ message: "Chat added", data });
         } catch (err) {
@@ -206,8 +225,8 @@ export class PlanningController {
     getIssueChats = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = GetChatToIssueSchema.parse({
-                issueId: Number(req.params.issueId)
-            })
+                issueId: Number(req.params.issueId),
+            });
             const data = await this.planningService.getIssueChats(dto.issueId);
             return res.json({ message: "Issue chats", data });
         } catch (err) {

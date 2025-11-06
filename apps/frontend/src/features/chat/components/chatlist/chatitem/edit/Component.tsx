@@ -5,12 +5,19 @@ import { ChatEditFormProps } from "./interface";
 import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 
-export const Component: React.FC<ChatEditFormProps> = ({ initialData, onClose, onSave, editQuery, activeServerId, issueId }) => {
+export const Component: React.FC<ChatEditFormProps> = ({
+    initialData,
+    onClose,
+    onSave,
+    editQuery,
+    activeServerId,
+    issueId,
+}) => {
     const [name, setName] = useState(initialData?.name ?? "");
 
     const [updateChat] = useUpdateChatMutation();
 
-    console.log(editQuery)
+    console.log(editQuery);
 
     const { t } = useTranslation("chat");
 
@@ -27,10 +34,15 @@ export const Component: React.FC<ChatEditFormProps> = ({ initialData, onClose, o
             if (editQuery) {
                 if (!activeServerId) return;
                 if (!issueId) return;
-                editQuery({serverId: activeServerId, issueId, chatId: initialData.id, data: {
-                    name,
-                }, })
-                
+                editQuery({
+                    serverId: activeServerId,
+                    issueId,
+                    chatId: initialData.id,
+                    data: {
+                        name,
+                    },
+                });
+
                 onSave?.();
                 return;
             }

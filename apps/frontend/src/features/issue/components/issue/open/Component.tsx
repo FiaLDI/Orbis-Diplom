@@ -16,7 +16,7 @@ export const Component: React.FC<Props> = ({ projectId, serverId, issueId, issue
     const issue = useAppSelector((s) => selectIssueById(s, issueId));
     const [getChats] = useLazyGetChatIssueQuery();
     const [createChat] = useCreateChatIssueMutation();
-    
+
     const [updateChat] = useUpdateChatIssueMutation();
     const [deleteChat] = useDeleteChatIssueMutation();
     const [chats, setChats] = useState<any[]>([]);
@@ -64,7 +64,7 @@ export const Component: React.FC<Props> = ({ projectId, serverId, issueId, issue
                                 issueId: issue.id,
                                 data: { name: `Chat for issue #${issue.id}` },
                             }).then(() => {
-                                getChats({serverId, issueId: issue.id}).then((res: any) => {
+                                getChats({ serverId, issueId: issue.id }).then((res: any) => {
                                     if (res.data) setChats(res.data);
                                 });
                             })
@@ -77,11 +77,11 @@ export const Component: React.FC<Props> = ({ projectId, serverId, issueId, issue
 
                 <div className="flex flex-col gap-1 [&>li]:bg-foreground/50 [&>li]:rounded">
                     {chats.map((val: any, idx: number) => (
-                        <ChatItem 
-                            key={`${idx}-chat-issue-${val.id}`} 
-                            chat={val} 
-                            isServer={true} 
-                            editQuery={updateChat} 
+                        <ChatItem
+                            key={`${idx}-chat-issue-${val.id}`}
+                            chat={val}
+                            isServer={true}
+                            editQuery={updateChat}
                             deleteQuery={deleteChat}
                         />
                     ))}

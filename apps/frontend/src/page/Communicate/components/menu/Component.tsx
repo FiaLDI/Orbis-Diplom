@@ -58,7 +58,6 @@ export const Component: React.FC<Props> = ({ socket, notificationConnect }) => {
                                         ) : (
                                             val.name.slice(0, 1)
                                         )}
-
                                     </button>
                                 </div>
                             ))}

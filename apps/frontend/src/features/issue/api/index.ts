@@ -181,5 +181,5 @@ export const {
     useLazyGetChatIssueQuery,
     useCreateChatIssueMutation,
     useUpdateChatIssueMutation,
-    useDeleteChatIssueMutation
+    useDeleteChatIssueMutation,
 } = issueApi;
