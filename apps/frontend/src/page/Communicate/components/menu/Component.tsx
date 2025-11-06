@@ -28,7 +28,7 @@ export const Component: React.FC<Props> = ({ socket, notificationConnect }) => {
                             <img
                                 src={avatarUrl ? avatarUrl : "/img/icon.png"}
                                 alt=""
-                                className="w-6 h-6 transition-transform hover:scale-110"
+                                className="w-8 h-8 transition-transform hover:scale-110"
                             />
                         </button>
                     </div>
@@ -36,7 +36,7 @@ export const Component: React.FC<Props> = ({ socket, notificationConnect }) => {
                         {server.servers &&
                             server.servers.map((val, index) => (
                                 <div
-                                    className="w-6 h-6 transition-transform hover:scale-110"
+                                    className="w-8 h-8 transition-transform hover:scale-110"
                                     key={`server-${val.id}`}
                                 >
                                     <button
@@ -47,9 +47,18 @@ export const Component: React.FC<Props> = ({ socket, notificationConnect }) => {
 
                                             socket?.emit("join-server", val.id);
                                         }}
-                                        className="flex justify-center items-center cursor-pointer hover:brightness-90 transition  overflow-hidden box-border text-white rounded-full bg-foreground w-full h-full text-center p-3"
+                                        className="flex w-full h-full justify-center items-center cursor-pointer hover:brightness-90 transition  overflow-hidden box-border text-white rounded-full bg-foreground text-center"
                                     >
-                                        {val.name.slice(0, 1)}
+                                        {val.avatar_url ? (
+                                            <img
+                                                src={val.avatar_url}
+                                                alt={val.name.slice(0, 1)}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            val.name.slice(0, 1)
+                                        )}
+
                                     </button>
                                 </div>
                             ))}
@@ -57,7 +66,7 @@ export const Component: React.FC<Props> = ({ socket, notificationConnect }) => {
                         <CreateServerForm />
                     </div>
                 </div>
-                <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-2">
                     <button
                         className=" cursor-pointer"
                         onClick={() => {
@@ -68,7 +77,7 @@ export const Component: React.FC<Props> = ({ socket, notificationConnect }) => {
                         <UserRound
                             color="#fff"
                             strokeWidth={1.25}
-                            className="w-6 h-6 transition-transform hover:scale-110"
+                            className="w-8 h-8 transition-transform hover:scale-110"
                         />
                     </button>
                     <MenuNotification connected={notificationConnect} />
@@ -81,7 +90,7 @@ export const Component: React.FC<Props> = ({ socket, notificationConnect }) => {
                         <Bolt
                             color="#fff"
                             strokeWidth={1.25}
-                            className="w-6 h-6 transition-transform hover:scale-110"
+                            className="w-8 h-8 transition-transform hover:scale-110"
                         />
                     </button>
                 </div>

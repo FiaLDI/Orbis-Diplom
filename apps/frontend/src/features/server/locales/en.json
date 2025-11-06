@@ -43,7 +43,18 @@
             "MANAGE_INVITES": "Manage invites",
             "VIEW_CHATS": "View chats",
             "MANAGE_PROJECT": "Manage projects",
-            "MANAGE_ISSUE": "Manage issues"
+            "MANAGE_ISSUE": "Manage issues",
+            "VIEW_PROJECTS": "View projects",
+            "VIEW_ISSUES": "View issues",
+            "MANAGE_ASSIGNEES": "Manage assignees"
+        },
+        "server_settings": "Server settings",
+        "server_name": "Server name",
+        "server_avatar": "Server avatar",
+        "save": "Save",
+        "delete_critical": {
+            "title": "Delete Server",
+            "submit": "Delete"
         }
     }
 }

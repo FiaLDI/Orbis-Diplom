@@ -11,7 +11,6 @@ async function main() {
         "KICK_USERS",
         "BAN_USERS",
         "UNBAN_USERS",
-        "MUTE_USERS",
         "MANAGE_MESSAGES",
         "SEND_MESSAGES",
         "MANAGE_INVITES",

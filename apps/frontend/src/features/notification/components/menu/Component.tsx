@@ -85,7 +85,7 @@ export const Component: React.FC<Props> = ({ connected }) => {
                 <Bell
                     color="#fff"
                     strokeWidth={1.25}
-                    className="w-6 h-6 transition-transform hover:scale-110"
+                    className="w-8 h-8 transition-transform hover:scale-110"
                 />
                 {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 rounded-full w-3 h-3" />

@@ -8,7 +8,7 @@ import {
     useGetBannedUsersQuery,
 } from "../../api";
 import { useLazyGetServersMembersQuery } from "@/features/server";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export const Component: React.FC = () => {
@@ -80,7 +80,7 @@ export const Component: React.FC = () => {
     if (!activeserver) return null;
 
     return (
-        <div className="flex flex-col h-full w-full p-0 rounded-[5px] text-white">
+        <div className="flex flex-col w-full p-0 rounded-[5px] text-white">
             <div className="w-full h-full bg-background/50">
                 {/* header */}
                 <div className="bg-foreground w-full rounded flex items-center justify-between p-5">
@@ -88,7 +88,7 @@ export const Component: React.FC = () => {
                         {t("audit.title")} — {activeserver?.name}
                     </div>
                     <button onClick={() => setOpen((prev) => !prev)}>
-                        <ChevronDown />
+                        {open ? <ChevronDown /> : <ChevronUp /> }
                     </button>
                 </div>
                 {open ? (

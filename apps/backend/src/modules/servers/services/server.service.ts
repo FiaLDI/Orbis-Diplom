@@ -154,16 +154,55 @@ export class ServerService {
             await tx.user_server.deleteMany({ where: { server_id: dto.serverId } });
             await this.chatService.cleanServerChats(tx, dto.serverId);
             await tx.server_bans.deleteMany({ where: { server_id: dto.serverId } });
-            await tx.invites?.deleteMany?.({ where: { server_id: dto.serverId } }).catch(() => {});
-            await tx.audit_logs
-                ?.deleteMany?.({ where: { server_id: dto.serverId } })
-                .catch(() => {});
-            await tx.reports?.deleteMany?.({ where: { server_id: dto.serverId } }).catch(() => {});
+            await tx.invites.deleteMany({ where: { server_id: dto.serverId } });
+            await tx.audit_logs.deleteMany({ where: { server_id: dto.serverId } });
+            await tx.reports.deleteMany({ where: { server_id: dto.serverId } });
+
+            await tx.project_issues.deleteMany({
+                where: {
+                    project: { server_id: dto.serverId },
+                },
+            });
+
+            await tx.issue_assignee.deleteMany({
+                where: {
+                    issue: {
+                        project_issues: {
+                            some: { project: { server_id: dto.serverId } },
+                        },
+                    },
+                },
+            });
+
+            await tx.chat_issues.deleteMany({
+                where: {
+                    issue: {
+                        project_issues: {
+                            some: { project: { server_id: dto.serverId } },
+                        },
+                    },
+                },
+            });
+
+            await tx.issue.deleteMany({
+                where: {
+                    project_issues: {
+                        some: { project: { server_id: dto.serverId } },
+                    },
+                },
+            });
+
+            await tx.project.deleteMany({
+                where: { server_id: dto.serverId },
+            });
+
+
             await tx.servers.delete({ where: { id: dto.serverId } });
         });
 
         return { message: "Server and related data deleted" };
     }
+
 
     async kickMember(dto: ServerMemberDto) {
         await this.prisma.user_server.delete({
