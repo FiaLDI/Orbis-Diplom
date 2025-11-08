@@ -2,7 +2,6 @@ import { Middleware } from "@reduxjs/toolkit";
 import { addToast } from "@/features/toast/slice";
 
 export const toastMiddleware: Middleware = (store) => (next) => (action) => {
-    // Ошибки
     if (action.type.endsWith("/executeMutation/rejected")) {
         const meta = action.meta?.arg;
         if (!meta) return next(action);
@@ -15,7 +14,6 @@ export const toastMiddleware: Middleware = (store) => (next) => (action) => {
         store.dispatch(addToast(`Ошибка (${meta.endpointName}): ${message}`, "error"));
     }
 
-    // Успешные мутации
     if (
         action.type.endsWith("/executeMutation/fulfilled") &&
         action.meta?.arg?.type === "mutation"

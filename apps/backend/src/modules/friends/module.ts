@@ -14,7 +14,7 @@ export const friendModule = () => {
     router.get("/:id/status", auth.handle.bind(auth), controller.getFriendStatus.bind(controller));
     router.get("/blocked", auth.handle.bind(auth), controller.getUserBlocks.bind(controller));
 
-    router.post("/:id/invite", auth.handle.bind(auth), controller.getUserFriends.bind(controller));
+    router.post("/:id/invite", auth.handle.bind(auth), controller.friendInvite.bind(controller));
     router.post("/:id/confirm", auth.handle.bind(auth), controller.friendConfirm.bind(controller));
     router.post("/:id/reject", auth.handle.bind(auth), controller.friendReject.bind(controller));
     router.post("/:id/block", auth.handle.bind(auth), controller.blockUser.bind(controller));

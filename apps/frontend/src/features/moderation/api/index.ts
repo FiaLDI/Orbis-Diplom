@@ -17,19 +17,19 @@ export const moderationApi = createApi({
     }),
     tagTypes: ["AuditLogs", "BannedUsers"],
     endpoints: (builder) => ({
-        getAuditLogs: builder.query<any[], number>({
+        getAuditLogs: builder.query<any[], string>({
             query: (serverId) => `/servers/${serverId}/moderation/logs`,
             providesTags: [{ type: "AuditLogs", id: "LIST" }],
             transformResponse: (response: any) => response.data,
         }),
 
-        getBannedUsers: builder.query<any[], number>({
+        getBannedUsers: builder.query<any[], string>({
             query: (serverId) => `/servers/${serverId}/moderation/bans`,
             providesTags: [{ type: "BannedUsers", id: "LIST" }],
             transformResponse: (response: any) => response.data,
         }),
 
-        banUser: builder.mutation<void, { serverId: number; userId: number; reason?: string }>({
+        banUser: builder.mutation<void, { serverId: string; userId: string; reason?: string }>({
             query: ({ serverId, userId, reason }) => ({
                 url: `/servers/${serverId}/moderation/bans/${userId}`,
                 method: "POST",
@@ -41,7 +41,7 @@ export const moderationApi = createApi({
             ],
         }),
 
-        unbanUser: builder.mutation<void, { serverId: number; userId: number }>({
+        unbanUser: builder.mutation<void, { serverId: string; userId: string }>({
             query: ({ serverId, userId }) => ({
                 url: `/servers/${serverId}/moderation/bans/${userId}`,
                 method: "DELETE",
@@ -52,7 +52,7 @@ export const moderationApi = createApi({
             ],
         }),
 
-        kickUser: builder.mutation<void, { serverId: number; userId: number }>({
+        kickUser: builder.mutation<void, { serverId: string; userId: string }>({
             query: ({ serverId, userId }) => ({
                 url: `/servers/${serverId}/moderation/kicks/${userId}`,
                 method: "DELETE",

@@ -19,6 +19,6 @@ export interface ChatEditFormProps {
             "issueApi"
         >
     >;
-    activeServerId?: number;
-    issueId?: number | null;
+    activeServerId?: string;
+    issueId?: string | null;
 }

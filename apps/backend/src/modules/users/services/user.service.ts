@@ -16,7 +16,7 @@ export class UserService {
         @inject(TYPES.ChatService) private chatService: ChatService
     ) {}
 
-    async getProfileById(id: number) {
+    async getProfileById(id: string) {
         const user = await this.prisma.users.findUnique({
             where: { id },
             include: {
@@ -33,7 +33,7 @@ export class UserService {
         return entity;
     }
 
-    async getUsernameById(id: number) {
+    async getUsernameById(id: string) {
         const user = await this.prisma.users.findUnique({
             where: { id },
         });
@@ -43,7 +43,7 @@ export class UserService {
         return { id: user.id };
     }
 
-    async getUserChats(id: number) {
+    async getUserChats(id: string) {
         const chats = await this.chatService.getUsersChat(id);
 
         const chatsWithProfiles = await Promise.all(
@@ -55,11 +55,14 @@ export class UserService {
                     })
                 );
 
+                const other = members.find((m) => m.id !== id);
+
                 return {
                     id: chat.id,
                     name: chat.name,
                     created_at: chat.createdAt,
                     members,
+                    avatar_url: other?.avatar_url ?? null,
                 };
             })
         );
@@ -122,7 +125,7 @@ export class UserService {
         return entity;
     }
 
-    async searchUser(id: number, name: string) {
+    async searchUser(name: string) {
         const users = await this.prisma.users.findMany({
             where: name ? { username: { contains: String(name), mode: "insensitive" } } : {},
         });
@@ -130,7 +133,7 @@ export class UserService {
         return users;
     }
 
-    async deleteUser(id: number) {
+    async deleteUser(id: string) {
         await this.prisma.users.delete({ where: { id } });
 
         return { message: "Success delete" };

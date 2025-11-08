@@ -17,8 +17,6 @@ export const Component: React.FC<ChatEditFormProps> = ({
 
     const [updateChat] = useUpdateChatMutation();
 
-    console.log(editQuery);
-
     const { t } = useTranslation("chat");
 
     useEffect(() => {

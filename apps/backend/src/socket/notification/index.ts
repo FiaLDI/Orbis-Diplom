@@ -7,7 +7,7 @@ export const notificationSocket = (ioNotification: Namespace, socket: Socket) =>
     const token = socket.handshake.auth?.token;
     if (!token) return socket.disconnect(true);
 
-    let userId: number;
+    let userId: string;
     try {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as any;
         userId = decoded.id;
@@ -32,7 +32,7 @@ export const notificationSocket = (ioNotification: Namespace, socket: Socket) =>
     });
 };
 
-async function setupPresenceRooms(socket: Socket, userId: number) {
+async function setupPresenceRooms(socket: Socket, userId: string) {
     const friends = await prisma.friend_requests.findMany({
         where: {
             status: "accepted",
@@ -59,7 +59,7 @@ async function setupPresenceRooms(socket: Socket, userId: number) {
     servers.forEach((s) => socket.join(`server_${s.server_id}`));
 }
 
-async function broadcastPresence(ioNotification: Namespace, userId: number, isOnline: boolean) {
+async function broadcastPresence(ioNotification: Namespace, userId: string, isOnline: boolean) {
     const payload = { userId, isOnline };
 
     ioNotification
@@ -87,7 +87,7 @@ async function broadcastPresence(ioNotification: Namespace, userId: number, isOn
     );
 }
 
-export const emitNotification = (userId: number, data: any) => {
+export const emitNotification = (userId: string, data: any) => {
     const ioNotification: Namespace = getNamespace("notification");
     ioNotification.to(`user_${userId}`).emit("notification", data);
 };

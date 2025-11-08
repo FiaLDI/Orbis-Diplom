@@ -9,7 +9,7 @@ export class NotificationService {
     constructor(@inject(TYPES.Prisma) private prisma: PrismaClient) {}
 
     async sendNotification(
-        userId: number,
+        userId: string,
         options: {
             type: NotificationType;
             title: string;
@@ -33,7 +33,7 @@ export class NotificationService {
         }
     }
 
-    async getNotifications(id: number) {
+    async getNotifications(id: string) {
         const notifications = await this.prisma.notifications.findMany({
             where: { user_id: id },
             orderBy: { created_at: "desc" },
@@ -43,7 +43,7 @@ export class NotificationService {
         return notifications;
     }
 
-    async markNotificationRead(id: number, notificationId: number) {
+    async markNotificationRead(id: string, notificationId: string) {
         await this.prisma.notifications.updateMany({
             where: { id: notificationId, user_id: id },
             data: { is_read: true },
@@ -52,7 +52,7 @@ export class NotificationService {
         return { message: `Success mark as read ${notificationId}` };
     }
 
-    async deleteNotification(id: number, notificationId: number) {
+    async deleteNotification(id: string, notificationId: string) {
         await this.prisma.notifications.deleteMany({
             where: { id: notificationId, user_id: id },
         });
@@ -60,7 +60,7 @@ export class NotificationService {
         return { message: `Success delete ${notificationId}` };
     }
 
-    async markAllNotificationRead(id: number) {
+    async markAllNotificationRead(id: string) {
         await this.prisma.notifications.updateMany({
             where: { user_id: id },
             data: { is_read: true },
@@ -69,7 +69,7 @@ export class NotificationService {
         return { message: "Success mark as read all" };
     }
 
-    async deleteAllNotification(id: number) {
+    async deleteAllNotification(id: string) {
         await this.prisma.notifications.deleteMany({
             where: { user_id: id },
         });

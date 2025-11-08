@@ -2,7 +2,7 @@ import { chat } from "@/features/chat";
 import { fastUserInfo, permission } from "@/features/user";
 
 export interface server {
-    id: number;
+    id: string;
     name: string;
     avatar_url?: string;
     chats: chat[];

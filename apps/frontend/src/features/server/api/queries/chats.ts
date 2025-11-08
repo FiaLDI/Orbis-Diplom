@@ -1,11 +1,11 @@
 export interface CreateChatArgs {
-    id: number;
+    id: string;
     data: any;
 }
 
 export interface DeleteChatArgs {
-    id: number;
-    chatId: number;
+    id: string;
+    chatId: string;
 }
 
 export const chatsQueries = {
@@ -20,7 +20,7 @@ export const chatsQueries = {
         method: "DELETE",
     }),
 
-    GetServersChats: (id: number) => ({
+    GetServersChats: (id: string) => ({
         url: `/servers/${id}/chats`,
         method: "GET",
     }),

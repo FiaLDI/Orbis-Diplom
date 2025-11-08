@@ -6,7 +6,6 @@ import { AuthenticatedSocket } from "../types";
 export const authenticateSocket = (socket: Socket, next: (err?: ExtendedError) => void) => {
     const token = socket.handshake.auth?.token;
     if (!token) {
-        console.warn("❌ Socket auth failed: no token");
         return next(new Error("Unauthorized"));
     }
 
@@ -19,10 +18,8 @@ export const authenticateSocket = (socket: Socket, next: (err?: ExtendedError) =
             ...decoded,
         };
 
-        console.log(`✅ Socket authorized: user ${decoded.id}`);
         next();
     } catch (err) {
-        console.warn("❌ Socket auth failed:", (err as Error).message);
         next(new Error("Unauthorized"));
     }
 };

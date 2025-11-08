@@ -106,9 +106,9 @@ export const Component: React.FC = () => {
 
         try {
             await createMessage({
-                chatId: Number(activeChat.id),
+                chatId: activeChat.id,
                 content: content,
-                replyToId: replyTo ? Number(replyTo) : undefined,
+                replyToId: replyTo ? replyTo : undefined,
             }).unwrap();
         } catch (err) {
             console.error("Ошибка при отправке:", err);

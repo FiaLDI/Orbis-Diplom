@@ -6,7 +6,7 @@ import { userApi } from "../api";
 const initialState: userState = {
     loadedProfiles: undefined,
     openProfile: {
-        id: 0,
+        id: "",
         username: "",
         avatar_url: "/img/icon.png",
         about: "",

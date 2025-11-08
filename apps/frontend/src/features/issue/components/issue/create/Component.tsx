@@ -32,7 +32,7 @@ export const Component: React.FC<FormProps> = ({
     const [dueDate, setDueDate] = useState(
         initialData?.due_date ? new Date(initialData.due_date).toISOString().slice(0, 10) : ""
     );
-    const [parentId, setParentId] = useState<number | null>(initialData?.parent_id ?? null);
+    const [parentId, setParentId] = useState<string | null>(initialData?.parent_id ?? null);
 
     const [createIssue] = useCreateIssueMutation();
     const [updateIssue] = useUpdateIssueMutation();
@@ -198,7 +198,7 @@ export const Component: React.FC<FormProps> = ({
                             <select
                                 value={parentId ?? ""}
                                 onChange={(e) =>
-                                    setParentId(e.target.value ? Number(e.target.value) : null)
+                                    setParentId(e.target.value ? e.target.value : null)
                                 }
                                 className="w-full border rounded px-2 py-1 text-black"
                             >

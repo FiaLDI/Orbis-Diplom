@@ -12,9 +12,9 @@ import { config } from "@/config";
 import { ContextMenuItem } from "@/shared/ui/AnimatedContextMenu/interface";
 
 interface Props {
-    serverId?: number;
+    serverId?: string;
     name?: string;
-    projectId?: number;
+    projectId?: string;
 }
 
 export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {

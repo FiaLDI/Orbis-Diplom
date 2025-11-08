@@ -12,7 +12,7 @@ export interface permission {
 }
 
 export interface fastUserInfo {
-    id: number;
+    id: string;
     username: string;
     avatar_url: string | null;
     is_online: boolean;
@@ -26,7 +26,7 @@ export interface fastUserInfo {
 }
 
 export interface UserInfo {
-    id: number;
+    id: string;
     username: string;
     email?: string | null;
     number?: string | null;

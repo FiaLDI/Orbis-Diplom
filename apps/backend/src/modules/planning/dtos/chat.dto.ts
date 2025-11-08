@@ -1,23 +1,23 @@
 import { z } from "zod";
 
 export const GetChatToIssueSchema = z.object({
-    issueId: z.number().int().positive("IssueID is required"),
+    issueId: z.string().min(1, "IssueID is required"),
 });
 
 export const AddChatToIssueSchema = z.object({
-    issueId: z.number().int().positive("IssueID is required"),
+    issueId: z.string().min(1, "IssueID is required"),
     name: z.string().min(1, "Chat name is required").max(100),
 });
 
 export const DeleteChatToIssueSchema = z.object({
-    serverId: z.number().int().positive("ServerID is required"),
-    issueId: z.number().int().positive("IssueID is required"),
-    chatId: z.number().int().min(1, "ChatID is required"),
+    serverId: z.string().min(1, "ServerId is required"),
+    issueId: z.string().min(1, "IssueID is required"),
+    chatId: z.string().min(1, "ChatId is required"),
 });
 
 export const EditChatToIssueSchema = z.object({
-    chatId: z.number().int().positive("СhatId is required"),
-    issueId: z.number().int().positive("IssueID is required"),
+    chatId: z.string().min(1, "ChatId is required"),
+    issueId: z.string().min(1, "IssueID is required"),
     name: z.string().min(1, "Chat name is required").max(100),
 });
 

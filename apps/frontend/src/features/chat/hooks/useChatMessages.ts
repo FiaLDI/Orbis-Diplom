@@ -45,7 +45,7 @@ export const useChatMessages = () => {
             dispatch(addMessage(message));
         };
 
-        const handleEditMessage = (payload: { message_id: number; newContent: string }) => {
+        const handleEditMessage = (payload: { message_id: string; newContent: string }) => {
             if (!Array.isArray(activeHistory)) return;
             const updated = activeHistory.map((m) =>
                 m.id === payload.message_id
@@ -61,7 +61,7 @@ export const useChatMessages = () => {
             dispatch(setActiveHistory(updated));
         };
 
-        const handleDeleteMessage = (payload: { messageId: number }) => {
+        const handleDeleteMessage = (payload: { messageId: string }) => {
             if (!Array.isArray(activeHistory)) return;
             const updated = activeHistory.filter((m) => m.id !== payload.messageId);
             dispatch(setActiveHistory(updated));
@@ -84,7 +84,7 @@ export const useChatMessages = () => {
     useEffect(() => {
         if (!socket || !activeChat?.id) return;
 
-        const handleTypingStart = (data: { chatId: number; username?: string }) => {
+        const handleTypingStart = (data: { chatId: string; username?: string }) => {
             // защита по чатам
             if (data.chatId !== activeChat.id) return;
 
@@ -99,7 +99,7 @@ export const useChatMessages = () => {
             });
         };
 
-        const handleTypingStop = (data: { chatId: number; username?: string }) => {
+        const handleTypingStop = (data: { chatId: string; username?: string }) => {
             if (data.chatId !== activeChat.id) return;
 
             const uname = data.username;
@@ -135,19 +135,19 @@ const groupMessagesByMinuteAndUserId = (
     messages: Message[]
 ): {
     messages: Message[];
-    userId: number;
+    userId: string;
     username: string;
     minute: string;
 }[] => {
     const groupedMessages: {
-        userId: number;
+        userId: string;
         messages: Message[];
         username: string;
         minute: string;
     }[] = [];
 
     let currentGroup: {
-        userId: number;
+        userId: string;
         messages: Message[];
         username: string;
         minute: string;

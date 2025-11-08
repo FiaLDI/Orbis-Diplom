@@ -1,5 +1,5 @@
 export interface issueState {
-    openProjectId: number | null;
+    openProjectId: string | null;
     project: any;
     issues: any;
     statuses: {
@@ -8,7 +8,7 @@ export interface issueState {
     }[];
     priorities: Priorities[];
     issueMode: boolean;
-    openIssue: number | null;
+    openIssue: string | null;
     issueChat: any;
 }
 

@@ -1,7 +1,6 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/di/types";
 import type { PrismaClient } from "@prisma/client";
-import { sendNotification } from "@/utils/sendNotification";
 import { emitServerBan, emitServerKick } from "@/utils/sendBan";
 import { AuditLogsEntity } from "../entities/audit.logs.entity";
 import { UserService } from "@/modules/users";
@@ -9,16 +8,18 @@ import { ServerService } from "@/modules/servers";
 import { UserProfile } from "@/modules/users/entity/user.profile";
 import { BansEntity } from "../entities/bans.moderation.entity";
 import { ActionModerationDto } from "../dtos/action.moderation.dto";
+import { NotificationService } from "@/modules/notifications";
 
 @injectable()
 export class ModerationService {
     constructor(
         @inject(TYPES.Prisma) private prisma: PrismaClient,
         @inject(TYPES.UserService) private userService: UserService,
-        @inject(TYPES.ServerService) private serverService: ServerService
+        @inject(TYPES.ServerService) private serverService: ServerService,
+        @inject(TYPES.NotificationService) private notificationService: NotificationService
     ) {}
 
-    async getAuditLogs(serverId: number) {
+    async getAuditLogs(serverId: string) {
         const whereClause = serverId ? { server_id: serverId } : {};
 
         const auditLogs = await this.prisma.audit_logs.findMany({
@@ -30,8 +31,8 @@ export class ModerationService {
         const serverData = await this.serverService.getServer(serverId);
         const entity = new AuditLogsEntity(auditLogs, serverData);
 
-        const ActorUserIds = entity.getActorIds().filter((id): id is number => id !== null);
-        const TargetUserIds = entity.getTargetIds().filter((id): id is number => id !== null);
+        const ActorUserIds = entity.getActorIds().filter((id): id is string => id !== null);
+        const TargetUserIds = entity.getTargetIds().filter((id): id is string => id !== null);
 
         if (ActorUserIds.length === 0) {
             return [];
@@ -56,8 +57,8 @@ export class ModerationService {
     }
 
     async createAuditLog(
-        serverId: number,
-        actorId: number,
+        serverId: string,
+        actorId: string,
         action: string,
         targetId?: string,
         metadata?: any
@@ -107,7 +108,7 @@ export class ModerationService {
             return banEntry;
         });
 
-        await sendNotification(userId, {
+        await this.notificationService.sendNotification(userId, {
             type: "system",
             title: `Вы были забанены на сервере`,
             body: `Администратор удалил вас с сервера. ${reason ? `Причина: ${reason}` : ""}`,
@@ -147,7 +148,7 @@ export class ModerationService {
             });
         });
 
-        await sendNotification(userId, {
+        await this.notificationService.sendNotification(userId, {
             type: "system",
             title: "Вы были разбанены",
             body: "Вы снова можете присоединиться к серверу.",
@@ -159,7 +160,7 @@ export class ModerationService {
         return { message: "User unbanned and rejoined" };
     }
 
-    async getBannedUsers(serverId: number) {
+    async getBannedUsers(serverId: string) {
         const bans = await this.prisma.server_bans.findMany({
             where: { server_id: serverId },
             orderBy: { created_at: "desc" },
@@ -168,8 +169,8 @@ export class ModerationService {
         const serverData = await this.serverService.getServer(serverId);
         const entity = new BansEntity(bans, serverData);
 
-        const ActorUserIds = entity.getActorIds().filter((id): id is number => id !== null);
-        const TargetUserIds = entity.getTargetIds().filter((id): id is number => id !== null);
+        const ActorUserIds = entity.getActorIds().filter((id): id is string => id !== null);
+        const TargetUserIds = entity.getTargetIds().filter((id): id is string => id !== null);
 
         if (ActorUserIds.length === 0) {
             return [];
@@ -213,7 +214,7 @@ export class ModerationService {
             });
         });
 
-        await sendNotification(userId, {
+        await this.notificationService.sendNotification(userId, {
             type: "server_kick",
             title: "Вы были исключены с сервера",
             body: "Администратор удалил вас с сервера.",

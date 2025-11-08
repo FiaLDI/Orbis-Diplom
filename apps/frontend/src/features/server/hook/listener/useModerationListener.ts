@@ -11,7 +11,7 @@ export const useModerationListener = (socket: any) => {
         if (!socket) return;
 
         const handleKickOrBan = (event: "server_banned" | "server_kicked") => {
-            return (payload: { serverId: number; reason?: string }) => {
+            return (payload: { serverId: string; reason?: string }) => {
                 console.warn(`🚨 Получено событие ${event}:`, payload);
 
                 dispatch(setActiveServer(undefined));

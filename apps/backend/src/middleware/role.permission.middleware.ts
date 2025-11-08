@@ -15,20 +15,19 @@ export class RolePermissionMiddleware {
                 if (!user) return next(Errors.unauthorized("User not authenticated"));
 
                 const serverId =
-                    parseInt(req.params.serverId) ||
-                    parseInt(req.params.id) ||
-                    parseInt(req.body.serverId) ||
-                    parseInt(req.query.serverId as string);
+                    req.params.serverId ||
+                    req.params.id ||
+                    req.body.serverId ||
+                    req.query.serverId;
 
-                if (isNaN(serverId)) {
-                    console.warn(
-                        "⚠️ Missing or invalid serverId in request",
-                        req.params,
-                        req.body,
-                        req.query
-                    );
-                    return next(Errors.notFound("Invalid or missing server id"));
-                }
+                const uuidRegex =
+                    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
+                    if (!serverId || !uuidRegex.test(serverId)) {
+                        console.warn("⚠️ Missing or invalid serverId in request", req.params, req.body, req.query);
+                        return next(Errors.notFound("Invalid or missing server id"));
+                    }
+
 
                 const isCreator = await this.prisma.servers.findFirst({
                     where: { id: serverId, creator_id: user.id },

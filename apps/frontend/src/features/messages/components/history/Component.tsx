@@ -35,7 +35,7 @@ export const Component: React.FC<Props> = ({ bottomRef, topRef }) => {
         HTMLUListElement
     >();
 
-    const prevChatId = useRef<number | undefined>();
+    const prevChatId = useRef<string | undefined>();
 
     useEffect(() => {
         if (activeChat?.id === prevChatId.current) return;

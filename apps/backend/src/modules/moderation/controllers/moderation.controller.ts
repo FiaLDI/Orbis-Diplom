@@ -17,7 +17,7 @@ export class ModerationController {
         try {
             const dto = AuditModerationSchema.parse({
                 ...(req as any).user,
-                serverId: parseInt(req.params.serverId),
+                serverId: req.params.serverId,
             });
 
             const logs = await this.moderationService.getAuditLogs(dto.serverId);
@@ -32,7 +32,7 @@ export class ModerationController {
         try {
             const dto = AuditModerationSchema.parse({
                 ...(req as any).user,
-                serverId: parseInt(req.params.serverId),
+                serverId: req.params.serverId,
             });
             const bans = await this.moderationService.getBannedUsers(dto.serverId);
             res.json({ data: bans });
@@ -45,8 +45,8 @@ export class ModerationController {
         try {
             const dto = ActionModerationSchema.parse({
                 ...(req as any).user,
-                serverId: parseInt(req.params.serverId),
-                userId: parseInt(req.params.userId),
+                serverId: req.params.serverId,
+                userId: req.params.userId,
                 reason: req.body.reason,
             });
 
@@ -65,8 +65,8 @@ export class ModerationController {
         try {
             const dto = ActionModerationSchema.parse({
                 ...(req as any).user,
-                serverId: parseInt(req.params.serverId),
-                userId: parseInt(req.params.userId),
+                serverId: req.params.serverId,
+                userId: req.params.userId,
                 reason: req.body.reason,
             });
 
@@ -85,8 +85,8 @@ export class ModerationController {
         try {
             const dto = ActionModerationSchema.parse({
                 ...(req as any).user,
-                serverId: parseInt(req.params.serverId),
-                userId: parseInt(req.params.userId),
+                serverId: req.params.serverId,
+                userId: req.params.userId,
                 reason: req.body.reason,
             });
 

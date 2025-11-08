@@ -10,7 +10,7 @@ import { Errors } from "@/common/errors";
  */
 export interface AuthRequest extends Request {
     user?: {
-        id: number;
+        id: string;
         email?: string | null;
         username?: string | null;
     };

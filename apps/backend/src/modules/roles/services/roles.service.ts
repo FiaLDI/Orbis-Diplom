@@ -18,7 +18,7 @@ export class RolesService {
         @inject(TYPES.NotificationService) private notificationService: NotificationService
     ) {}
 
-    async checkRole(roleId: number, serverId: number) {
+    async checkRole(roleId: string, serverId: string) {
         const server = await getServer(this.prisma, serverId);
 
         const role = await this.prisma.role_server.findUnique({
@@ -37,13 +37,13 @@ export class RolesService {
         return permissions;
     }
 
-    async cleanServerRoles(tx: Prisma.TransactionClient, serverId: number) {
+    async cleanServerRoles(tx: Prisma.TransactionClient, serverId: string) {
         await tx.user_server_roles.deleteMany({ where: { server_id: serverId } });
         await tx.role_permission.deleteMany({ where: { role: { server_id: serverId } } });
         await tx.role_server.deleteMany({ where: { server_id: serverId } });
     }
 
-    async getServerMembers(serverId: number) {
+    async getServerMembers(serverId: string) {
         const userRoles = await this.prisma.user_server_roles.findMany({
             where: { server_id: serverId },
             select: {
@@ -86,13 +86,13 @@ export class RolesService {
 
                 return acc;
             },
-            {} as Record<number, { user_id: number; roles: any[] }>
+            {} as Record<string, { user_id: string; roles: any[] }>
         );
 
         return Object.values(grouped);
     }
 
-    async getServerRoles(id: number, serverId: number) {
+    async getServerRoles(serverId: string) {
         const roles = await this.prisma.role_server.findMany({
             where: { server_id: serverId },
             include: {
@@ -121,7 +121,7 @@ export class RolesService {
         return entity.toJSON();
     }
 
-    async createCreatorServerRole(tx: Prisma.TransactionClient, serverId: number, userId: number) {
+    async createCreatorServerRole(tx: Prisma.TransactionClient, serverId: string, userId: string) {
         const creatorRole = await tx.role_server.create({
             data: {
                 name: "creator",
@@ -140,7 +140,7 @@ export class RolesService {
         return { message: "Success" };
     }
 
-    async createDefaultServerRole(tx: Prisma.TransactionClient, serverId: number, userId: number) {
+    async createDefaultServerRole(tx: Prisma.TransactionClient, serverId: string, userId: string) {
         const defaultRole = await tx.role_server.create({
             data: {
                 name: "default",
@@ -200,11 +200,11 @@ export class RolesService {
 
     async assignDefaultRoleUser(
         tx: Prisma.TransactionClient,
-        userId: number,
-        serverId: number,
-        roleId: number | undefined = undefined
+        userId: string,
+        serverId: string,
+        roleId: string | undefined = undefined
     ) {
-        let roleIds: number | undefined = roleId;
+        let roleIds: string | undefined = roleId;
         if (!roleIds) {
             const defaultRole = await tx.role_server.findFirst({
                 where: { server_id: serverId, name: "default" },
@@ -228,7 +228,7 @@ export class RolesService {
         return { message: "Success" };
     }
 
-    async createCustomServerRole(serverId: number) {
+    async createCustomServerRole(serverId: string) {
         await this.prisma.role_server.create({
             data: {
                 name: "custom",
@@ -283,7 +283,7 @@ export class RolesService {
         });
     }
 
-    async updateRolePermissions(roleId: number, permissions: number[]) {
+    async updateRolePermissions(roleId: string, permissions: number[]) {
         return await this.prisma.$transaction(async (tx) => {
             await tx.role_permission.deleteMany({
                 where: { role_id: roleId },
@@ -378,9 +378,9 @@ export class RolesService {
         return { message: "Success" };
     }
 
-    async getRolePermissions(roleId: number) {
+    async getRolePermissions(roleId: string) {
         const role = await this.prisma.role_server.findUnique({
-            where: { id: Number(roleId) },
+            where: { id: roleId },
             include: {
                 role_permission: { include: { permission: true } },
             },

@@ -17,26 +17,26 @@ const notificationSlice = createSlice({
         addNotification(state, action: PayloadAction<Notification>) {
             state.list.unshift(action.payload);
         },
-        markAsRead(state, action: PayloadAction<number>) {
+        markAsRead(state, action: PayloadAction<string>) {
             const notif = state.list.find((n) => n.id === action.payload);
             if (notif) notif.is_read = true;
         },
-        removeNotification(state, action: PayloadAction<number>) {
+        removeNotification(state, action: PayloadAction<string>) {
             state.list = state.list.filter((n) => n.id !== action.payload);
         },
         clearNotifications(state) {
             state.list = [];
         },
-        userOnline(state, action: PayloadAction<number>) {
+        userOnline(state, action: PayloadAction<string>) {
             const id = action.payload;
             if (!state.onlineUsers.includes(id)) {
                 state.onlineUsers.push(id);
             }
         },
-        userOffline(state, action: PayloadAction<number>) {
+        userOffline(state, action: PayloadAction<string>) {
             state.onlineUsers = state.onlineUsers.filter((userId) => userId !== action.payload);
         },
-        setOnlineUsers(state, action: PayloadAction<number[]>) {
+        setOnlineUsers(state, action: PayloadAction<string[]>) {
             state.onlineUsers = action.payload;
         },
     },

@@ -1,4 +1,4 @@
-export function findIssueById(issues: any[], id: number): any | null {
+export function findIssueById(issues: any[], id: string): any | null {
     for (const issue of issues) {
         if (issue.id === id) return issue;
         if (issue.subtasks?.length) {

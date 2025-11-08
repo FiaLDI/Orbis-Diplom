@@ -1,15 +1,15 @@
 export interface GetMembersArgs {
-    id: number;
+    id: string;
 }
 
 export interface MemberRoleArgs {
-    serverId: number;
-    userId: number;
-    roleId: number;
+    serverId: string;
+    userId: string;
+    roleId: string;
 }
 
 export const membersQueries = {
-    GetServersMembers: (id: number) => ({
+    GetServersMembers: (id: string) => ({
         url: `/servers/${id}/members`,
         method: "GET",
     }),

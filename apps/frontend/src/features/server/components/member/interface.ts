@@ -1,5 +1,5 @@
 export type Member = {
-    id: number;
+    id: string;
     username: string;
     avatar_url?: string;
 };

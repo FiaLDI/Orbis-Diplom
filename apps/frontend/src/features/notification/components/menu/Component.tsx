@@ -39,7 +39,7 @@ export const Component: React.FC<Props> = ({ connected }) => {
         }
     }, [open, apiNotifications, dispatch]);
 
-    const handleMarkRead = async (id: number) => {
+    const handleMarkRead = async (id: string) => {
         try {
             await markRead(id);
             dispatch(markAsRead(id));
@@ -48,7 +48,7 @@ export const Component: React.FC<Props> = ({ connected }) => {
         }
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string) => {
         try {
             await deleteNotif(id);
             dispatch(removeNotification(id));

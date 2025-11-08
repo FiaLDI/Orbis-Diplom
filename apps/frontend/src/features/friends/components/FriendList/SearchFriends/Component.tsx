@@ -94,7 +94,7 @@ export const Component: React.FC = () => {
                                               <div className="flex items-center gap-2">
                                                   <img
                                                       src={
-                                                          val.user_profile?.avatar_url ||
+                                                          val.avatar_url ||
                                                           "/img/icon.png"
                                                       }
                                                       alt=""

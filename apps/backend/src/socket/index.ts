@@ -20,7 +20,6 @@ export const initSockets = (server: any) => {
     };
 
     for (const [name, ns] of Object.entries(namespaces)) {
-        // 🧠 авторизация перед подключением
         ns.use(authenticateSocket);
 
         ns.on("connection", (socket) => {
@@ -41,7 +40,5 @@ export const initSockets = (server: any) => {
 
         setNamespace(name, ns);
     }
-
-    console.log("🧩 Socket namespaces ready:", Object.keys(namespaces).join(", "));
     return io;
 };

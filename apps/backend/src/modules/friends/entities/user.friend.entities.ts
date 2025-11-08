@@ -8,6 +8,6 @@ export class UserFriend {
     }
 
     toJSON() {
-        return this.friends.map((u) => u.toJSON());
+        return this.friends.map((u) => u.toPublicJSON());
     }
 }

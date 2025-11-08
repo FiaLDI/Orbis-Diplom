@@ -6,7 +6,7 @@ export class BansEntity {
         private bans: Prisma.server_bansGetPayload<{}>[],
         private serverData: {
             name: string;
-            id: number;
+            id: string;
         } | null
     ) {}
 
@@ -15,16 +15,16 @@ export class BansEntity {
     }
 
     getTargetIds() {
-        return [...new Set(this.bans.map((l) => Number(l.user_id)).filter(Boolean))];
+        return [...new Set(this.bans.map((l) => l.user_id).filter(Boolean))];
     }
 
-    toJSON(ActorProfileMap: Map<number, UserProfile>, TargetProfileMap: Map<number, UserProfile>) {
+    toJSON(ActorProfileMap: Map<string, UserProfile>, TargetProfileMap: Map<string, UserProfile>) {
         return this.bans.map((b) => {
             if (!this.serverData) return null;
-            const ActorProfile = ActorProfileMap.get(b.banned_by ?? -1);
+            const ActorProfile = ActorProfileMap.get(b.banned_by ?? "");
             if (!ActorProfile) return null;
 
-            const TargetProfile = TargetProfileMap.get(Number(b.user_id) ?? -1);
+            const TargetProfile = TargetProfileMap.get(b.user_id ?? "");
             if (!TargetProfile) return null;
 
             return {

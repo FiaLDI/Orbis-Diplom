@@ -1,5 +1,5 @@
 export interface Notification {
-    id: number;
+    id: string;
     type: string;
     title: string;
     body?: string | null;
@@ -10,5 +10,5 @@ export interface Notification {
 
 export interface NotificationState {
     list: Notification[];
-    onlineUsers: number[];
+    onlineUsers: string[];
 }

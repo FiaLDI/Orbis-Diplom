@@ -30,7 +30,7 @@ export const Component: React.FC = () => {
 
             const cleaned = Object.fromEntries(Object.entries(data).filter(([_, v]) => v !== ""));
 
-            await updateAccount({ id: Number(user.id), data: cleaned }).unwrap();
+            await updateAccount({ id: user.id, data: cleaned }).unwrap();
         } catch (err) {
             console.error("Update account error:", err);
         }

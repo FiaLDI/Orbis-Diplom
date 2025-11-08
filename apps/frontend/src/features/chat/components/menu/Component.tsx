@@ -83,7 +83,7 @@ export const Component: React.FC = () => {
                         onClose={() => setContextMenu(null)}
                         onCreateChat={() => {
                             if (activeServer?.id) {
-                                createText({ id: activeServer.id });
+                                createText({ id: activeServer?.id, data: "default chat" });
                             }
                             setContextMenu(null);
 

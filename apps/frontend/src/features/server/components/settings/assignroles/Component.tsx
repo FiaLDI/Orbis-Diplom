@@ -22,9 +22,9 @@ export const Component: React.FC<ComponentProps> = ({
 
     const emitUpdate = useEmitServerUpdate();
 
-    const [localRoles, setLocalRoles] = useState<Set<number>>(new Set(userRoles.map((r) => r.id)));
+    const [localRoles, setLocalRoles] = useState<Set<string>>(new Set(userRoles.map((r) => r.id)));
 
-    const toggleRole = async (roleId: number) => {
+    const toggleRole = async (roleId: string) => {
         const isAssigned = localRoles.has(roleId);
 
         setLocalRoles((prev) => {

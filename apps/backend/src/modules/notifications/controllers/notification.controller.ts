@@ -29,7 +29,7 @@ export class NotificationController {
         try {
             const dto = markNotificationSchema.parse({
                 ...(req as any).user,
-                notificationId: parseInt(req.params.id, 10),
+                notificationId: req.params.id,
             });
             const entity = await this.notificationService.markNotificationRead(
                 dto.id,
@@ -49,7 +49,7 @@ export class NotificationController {
         try {
             const dto = markNotificationSchema.parse({
                 ...(req as any).user,
-                notificationId: parseInt(req.params.id, 10),
+                notificationId: req.params.id,
             });
             const entity = await this.notificationService.deleteNotification(
                 dto.id,

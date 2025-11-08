@@ -12,8 +12,8 @@ export class UserProfile {
         }>
     ) {}
 
-    static getUsersMap(profiles: UserProfile[]): Map<number, UserProfile> {
-        const map = new Map<number, UserProfile>();
+    static getUsersMap(profiles: UserProfile[]): Map<string, UserProfile> {
+        const map = new Map<string, UserProfile>();
         for (const p of profiles) map.set(p.user.id, p);
         return map;
     }
@@ -58,11 +58,11 @@ export class UserProfile {
         return this.user;
     }
 
-    isBlockedBy(userId: number) {
+    isBlockedBy(userId: string) {
         return this.user.blocks_received.some((b) => b.id_users === userId);
     }
 
-    hasBlocked(userId: number) {
+    hasBlocked(userId: string) {
         return this.user.blocks_initiated.some((b) => b.blocked_user_id === userId);
     }
 }

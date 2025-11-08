@@ -17,10 +17,10 @@ export class MessageListEntity {
         return [...new Set(this.messages.map((m) => m.user_id).filter(Boolean))];
     }
 
-    toJSON(profilesMap: Map<number, UserProfile>) {
+    toJSON(profilesMap: Map<string, UserProfile>) {
         return this.messages
             .map((m) => {
-                const profile = profilesMap.get(m.user_id ?? -1);
+                const profile = profilesMap.get(m.user_id ?? "");
                 if (!profile) return null;
 
                 const contentRows = m.messages_content.map((mc) => ({

@@ -2,8 +2,8 @@ export class IssueListEntity {
     constructor(private issues: any[]) {}
 
     /** Собрать user_id из assignees */
-    getAssigneeIds(): number[] {
-        const ids = new Set<number>();
+    getAssigneeIds(): string[] {
+        const ids = new Set<string>();
 
         for (const issue of this.issues) {
             issue.assignees?.forEach((a: any) => {
@@ -14,13 +14,13 @@ export class IssueListEntity {
     }
 
     /** Alias чтобы PlanningService не ломался */
-    getAssigneeUserIds(): number[] {
+    getAssigneeUserIds(): string[] {
         return this.getAssigneeIds();
     }
 
     /** Собрать chat_id из chat_issues */
-    getChatIds(): number[] {
-        const ids = new Set<number>();
+    getChatIds(): string[] {
+        const ids = new Set<string>();
 
         for (const issue of this.issues) {
             issue.chat_issues?.forEach((ci: any) => {
@@ -31,7 +31,7 @@ export class IssueListEntity {
     }
 
     /** flat representation */
-    toFlatJSON(profilesMap: Map<number, any>, chatsMap: Map<number, any>) {
+    toFlatJSON(profilesMap: Map<string, any>, chatsMap: Map<string, any>) {
         return this.issues.map((issue: any) => ({
             id: issue.id,
             title: issue.title,
@@ -46,7 +46,7 @@ export class IssueListEntity {
         }));
     }
 
-    private buildTree(list: any[], parentId: number | null = null): any[] {
+    private buildTree(list: any[], parentId: string | null = null): any[] {
         return list
             .filter((i) => i.parentId === parentId)
             .map((i) => ({
@@ -55,7 +55,7 @@ export class IssueListEntity {
             }));
     }
 
-    toTreeJSON(profilesMap: Map<number, any>, chatsMap: Map<number, any>) {
+    toTreeJSON(profilesMap: Map<string, any>, chatsMap: Map<string, any>) {
         const flat = this.toFlatJSON(profilesMap, chatsMap);
         return this.buildTree(flat);
     }

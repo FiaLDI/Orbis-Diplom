@@ -14,22 +14,22 @@ export const serversQueries = {
         body: data,
     }),
 
-    GetServersInside: (id: number) => ({
+    GetServersInside: (id: string) => ({
         url: `/servers/${id}/`,
         method: "GET",
     }),
 
-    DeleteServer: (id: number) => ({
+    DeleteServer: (id: string) => ({
         url: `/servers/${id}/`,
         method: "DELETE",
     }),
 
-    JoinServer: (id: number) => ({
+    JoinServer: (id: string) => ({
         url: `/servers/${id}/join`,
         method: "POST",
     }),
 
-    UpdateServer: ({ id, data }: { id: number; data: { name: string; avatar_url: string } }) => ({
+    UpdateServer: ({ id, data }: { id: string; data: { name: string; avatar_url: string } }) => ({
         url: `/servers/${id}`,
         method: "PATCH",
         body: data,

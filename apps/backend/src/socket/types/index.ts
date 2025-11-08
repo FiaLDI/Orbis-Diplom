@@ -1,7 +1,7 @@
 import { Socket } from "socket.io";
 
 export interface AuthenticatedUser {
-    id: number;
+    id: string;
     username?: string;
     [key: string]: any;
 }

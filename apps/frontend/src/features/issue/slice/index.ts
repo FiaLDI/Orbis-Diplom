@@ -18,10 +18,10 @@ const issueSlice = createSlice({
     name: "issue",
     initialState,
     reducers: {
-        setOpenProject(state, action: PayloadAction<number | null>) {
+        setOpenProject(state, action: PayloadAction<string | null>) {
             state.openProjectId = action.payload;
         },
-        setOpenIssue(state, action: PayloadAction<number | null>) {
+        setOpenIssue(state, action: PayloadAction<string | null>) {
             state.openIssue = action.payload;
         },
         toggleIssueMode(state) {
@@ -51,7 +51,7 @@ const issueSlice = createSlice({
     },
 });
 
-export const selectIssueById = (state: { issue: issueState }, id: number) =>
+export const selectIssueById = (state: { issue: issueState }, id: string) =>
     findIssueById(state.issue.issues, id);
 
 export const selectAllIssues = (state: { issue: issueState }) => flattenIssues(state.issue.issues);

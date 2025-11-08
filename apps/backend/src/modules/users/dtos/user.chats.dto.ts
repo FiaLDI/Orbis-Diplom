@@ -4,7 +4,7 @@ const MIN_AGE = 13;
 const MAX_AGE = 120;
 
 export const GetUserChatsSchema = z.object({
-    id: z.number().min(1, "UserID is required"),
+    id: z.string().min(1, "UserID is required"),
     email: z.string().email("Invalid email format"),
     username: z.string().min(1, "Username is required"),
     number: z.string().optional(),

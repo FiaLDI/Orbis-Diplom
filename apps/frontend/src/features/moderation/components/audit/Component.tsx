@@ -34,15 +34,15 @@ export const Component: React.FC = () => {
     const [kickUser] = useKickUserMutation();
     const [triggerMembers] = useLazyGetServersMembersQuery();
 
-    const [reasonMap, setReasonMap] = useState<Record<number, string>>({});
+    const [reasonMap, setReasonMap] = useState<Record<string, string>>({});
 
     const refreshData = async () => {
         if (!activeserver?.id) return;
         await Promise.all([refetch(), triggerMembers(activeserver.id)]);
     };
 
-    const handleBan = async (userId: number) => {
-        if (!activeserver?.id || userId === Number(meId)) return;
+    const handleBan = async (userId: string) => {
+        if (!activeserver?.id || userId === meId) return;
         const reason = reasonMap[userId]?.trim() || undefined;
         try {
             await banUser({ serverId: activeserver.id, userId, reason }).unwrap();
@@ -52,8 +52,8 @@ export const Component: React.FC = () => {
         }
     };
 
-    const handleUnban = async (userId: number) => {
-        if (!activeserver?.id || userId === Number(meId)) return;
+    const handleUnban = async (userId: string) => {
+        if (!activeserver?.id || userId === meId) return;
         try {
             await unbanUser({ serverId: activeserver.id, userId }).unwrap();
             await refreshData();
@@ -62,8 +62,8 @@ export const Component: React.FC = () => {
         }
     };
 
-    const handleKick = async (userId: number) => {
-        if (!activeserver?.id || userId === Number(meId)) return;
+    const handleKick = async (userId: string) => {
+        if (!activeserver?.id || userId === meId) return;
         try {
             await kickUser({ serverId: activeserver.id, userId }).unwrap();
             await refreshData();
@@ -82,7 +82,6 @@ export const Component: React.FC = () => {
     return (
         <div className="flex flex-col w-full p-0 rounded-[5px] text-white">
             <div className="w-full h-full bg-background/50">
-                {/* header */}
                 <div className="bg-foreground w-full rounded flex items-center justify-between p-5">
                     <div className="text-lg font-semibold">
                         {t("audit.title")} — {activeserver?.name}
@@ -93,11 +92,10 @@ export const Component: React.FC = () => {
                 </div>
                 {open ? (
                     <div className="">
-                        {/* Users list */}
                         <div className="p-5 flex flex-col gap-3">
                             <h4 className="text-2xl">{t("audit.members")}</h4>
                             {activeserver?.users?.map((user, idx) => {
-                                const isSelf = user.id === Number(meId);
+                                const isSelf = user.id === meId;
                                 return (
                                     <div
                                         key={`moderation-user-${idx}`}

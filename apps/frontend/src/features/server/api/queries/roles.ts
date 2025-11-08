@@ -1,27 +1,27 @@
 export interface CreateRoleArgs {
-    id: number;
+    id: string;
     data: any;
 }
 
 export interface UpdateRoleArgs {
-    serverId: number;
-    roleId: number;
+    serverId: string;
+    roleId: string;
     data: any;
 }
 
 export interface RoleIdArgs {
-    serverId: number;
-    roleId: number;
+    serverId: string;
+    roleId: string;
 }
 
 export interface UpdateRolePermissionsArgs {
-    serverId: number;
-    roleId: number;
+    serverId: string;
+    roleId: string;
     permissions: number[];
 }
 
 export const rolesQueries = {
-    GetServersRoles: (id: number) => ({
+    GetServersRoles: (id: string) => ({
         url: `/servers/${id}/roles`,
         method: "GET",
     }),
