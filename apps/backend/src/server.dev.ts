@@ -5,28 +5,23 @@ import { ENVCONFIG, connectRedis } from "@/config";
 import { app } from "./app";
 import { initSockets } from "./socket";
 
-if (!ENVCONFIG.PORT || !ENVCONFIG.FRONTENDADDRES) {
-    console.error(
-        `❌ Need PORT(${ENVCONFIG.PORT}) and FRONTENDADDRES(${ENVCONFIG.FRONTENDADDRES})`
-    );
-    process.exit(1);
-}
-
-connectRedis();
-
 const options = {
     key: fs.readFileSync("./src/certs/selfsigned_key.pem"),
     cert: fs.readFileSync("./src/certs/selfsigned.pem"),
 };
 
+connectRedis();
+
 const server = https.createServer(options, app);
 
 initSockets(server);
 
-const PORT = Number(ENVCONFIG.PORT);
+const PORT = Number(ENVCONFIG.PORT ?? 4000);
 const HOST = "0.0.0.0";
 
+console.log("✅ DEV MODE HTTPS, PID:", process.pid);
+
 server.listen(PORT, HOST, () => {
-    console.log(`✅ Server is running on port ${PORT}`);
+    console.log(`✅ HTTPS Dev server running on https://localhost:${PORT}`);
     console.log(`🌍 Frontend origin: ${ENVCONFIG.FRONTENDADDRES}`);
 });

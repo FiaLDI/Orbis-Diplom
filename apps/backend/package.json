@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register ./src/server.ts",
+    "dev": "ts-node -r tsconfig-paths/register ./src/server.dev.ts",
+    "build": "tsc",
+    "start": "ts-node -r tsconfig-paths/register ./src/server.dev.ts",
     "lint": "eslint --config eslint.config.mjs",
     "lint:fix": "eslint --config eslint.config.mjs --fix",
     "prisma:generate": "npx prisma generate"
