@@ -30,9 +30,9 @@ export class RolesController {
         try {
             const dto = RolesServerSchema.parse({
                 ...(req as any).user,
-                serverId: parseInt(req.params.id, 10),
+                serverId: req.params.id,
             });
-            const entity = await this.RolesService.getServerRoles(dto.id, dto.serverId);
+            const entity = await this.RolesService.getServerRoles(dto.serverId);
 
             return res.json({
                 message: "Roles list",
@@ -47,7 +47,7 @@ export class RolesController {
         try {
             const dto = RolesServerSchema.parse({
                 ...(req as any).user,
-                serverId: parseInt(req.params.id, 10),
+                serverId: req.params.id,
             });
             const entity = await this.RolesService.createCustomServerRole(dto.serverId);
 
@@ -65,8 +65,8 @@ export class RolesController {
             const dto = RolesUpdateSchema.parse({
                 ...(req as any).user,
                 ...req.body,
-                roleId: parseInt(req.params.roleId, 10),
-                serverId: parseInt(req.params.id, 10),
+                roleId: req.params.roleId,
+                serverId: req.params.id,
             });
             const check = await this.RolesService.checkRole(dto.roleId, dto.serverId);
 
@@ -101,8 +101,8 @@ export class RolesController {
         try {
             const dto = RolesDeleteSchema.parse({
                 ...(req as any).user,
-                serverId: parseInt(req.params.id, 10),
-                roleId: parseInt(req.params.roleId, 10),
+                serverId: req.params.id,
+                roleId: req.params.roleId,
             });
 
             const check = await this.RolesService.checkRole(dto.roleId, dto.serverId);
@@ -137,9 +137,9 @@ export class RolesController {
     assignRoleToMember = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = RolesAssignSchema.parse({
-                serverId: parseInt(req.params.id, 10),
-                roleId: parseInt(req.params.roleId, 10),
-                userId: parseInt(req.params.userId, 10),
+                serverId: req.params.id,
+                roleId: req.params.roleId,
+                userId: req.params.userId,
             });
 
             const check = await this.RolesService.checkRole(dto.roleId, dto.serverId);
@@ -174,9 +174,9 @@ export class RolesController {
     unAsignRoleToMember = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = RolesAssignSchema.parse({
-                serverId: parseInt(req.params.id, 10),
-                roleId: parseInt(req.params.roleId, 10),
-                userId: parseInt(req.params.userId, 10),
+                serverId: req.params.id,
+                roleId: req.params.roleId,
+                userId: req.params.userId,
             });
 
             const check = await this.RolesService.checkRole(dto.roleId, dto.serverId);
@@ -212,7 +212,7 @@ export class RolesController {
         try {
             const dto = RolesPermissionSchema.parse({
                 ...(req as any).user,
-                roleId: parseInt(req.params.roleId, 10),
+                roleId: req.params.roleId,
             });
 
             const entity = await this.RolesService.getRolePermissions(dto.roleId);
@@ -230,7 +230,7 @@ export class RolesController {
 
     updateRolePermissions = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const roleId = parseInt(req.params.roleId, 10);
+            const roleId = req.params.roleId;
 
             const { permissions } = req.body;
 

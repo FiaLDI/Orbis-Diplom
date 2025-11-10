@@ -1,6 +1,6 @@
 export interface serverType {
-    id: number;
-    creator_id: number | null;
+    id: string;
+    creator_id: string | null;
     name: string;
     avatar_url: string | null;
     created_at: Date | null;

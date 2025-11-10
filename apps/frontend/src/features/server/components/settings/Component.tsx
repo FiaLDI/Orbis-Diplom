@@ -44,7 +44,7 @@ export const Component: React.FC = () => {
         await emitUpdate(activeserver?.id);
     };
 
-    const handleDeleteRole = async (roleId: number) => {
+    const handleDeleteRole = async (roleId: string) => {
         if (!activeserver?.id) return;
         await deleteRole({ serverId: activeserver.id, roleId });
         await emitUpdate(activeserver?.id);
@@ -177,13 +177,13 @@ export const Component: React.FC = () => {
                                     serverId={activeserver.id}
                                     availableRoles={
                                         activeserver?.roles?.map((r: any) => ({
-                                            id: Number(r.id),
+                                            id: r.id,
                                             name: r.name,
                                             color: r.color,
                                         })) ?? []
                                     }
                                     userRoles={user.roles.map((r) => ({
-                                        id: Number(r.id),
+                                        id: r.id,
                                         name: r.name,
                                     }))}
                                 />
@@ -220,12 +220,12 @@ export const Component: React.FC = () => {
                                           </div>
                                           <div className="flex items-center gap-2">
                                               <PermissionComponent
-                                                  roleId={Number(role.id)}
+                                                  roleId={role.id}
                                                   roleName={role.name}
-                                                  serverId={Number(activeserver.id)}
+                                                  serverId={activeserver.id}
                                               />
                                               <button
-                                                  onClick={() => handleDeleteRole(Number(role.id))}
+                                                  onClick={() => handleDeleteRole(role.id)}
                                                   className="px-3 py-1 bg-foreground/70 cursor-pointer rounded hover:bg-foreground text-sm"
                                                   disabled={
                                                       role.name === "creator" ||
@@ -248,7 +248,7 @@ export const Component: React.FC = () => {
                                 className="bg-red-500 px-5 py-3 rounded"
                                 onClick={() => {
                                     deleteServer(activeserver.id);
-                                    //navigator("/app")
+                                    navigator("/app")
                                 }}
                             >
                                 {t("settings.delete_critical.submit")}

@@ -21,7 +21,7 @@ export class MessageService {
         @inject(TYPES.UserService) private userService: UserService
     ) {}
 
-    async checkMessage(messageId: number) {
+    async checkMessage(messageId: string) {
         const message = await this.prisma.messages.findUnique({
             where: { id: messageId },
             select: { user_id: true, chat_id: true },
@@ -35,7 +35,7 @@ export class MessageService {
         };
     }
 
-    async getMessageById(messageId: number) {
+    async getMessageById(messageId: string) {
         const message = await this.prisma.messages.findUnique({
             where: { id: messageId },
             include: {
@@ -93,7 +93,7 @@ export class MessageService {
         });
 
         const messageList = new MessageListEntity(messages.reverse());
-        const userIds = messageList.getUserIds().filter((id): id is number => id !== null);
+        const userIds = messageList.getUserIds().filter((id): id is string => id !== null);
 
         if (userIds.length === 0) {
             return [];
@@ -109,16 +109,16 @@ export class MessageService {
     }
 
     async createMessage(
-        id: number,
-        chatId: number,
+        id: string,
+        chatId: string,
         contentsRow: MessageSendDto["content"],
-        replyToId?: number | undefined
+        replyToId?: string | undefined
     ) {
         const message = await this.prisma.messages.create({
             data: {
-                chat_id: Number(chatId),
+                chat_id: chatId,
                 user_id: id,
-                reply_to_id: replyToId ? Number(replyToId) : null,
+                reply_to_id: replyToId ?? null,
                 is_edited: false,
                 created_at: new Date(),
                 messages_content: {
@@ -177,7 +177,7 @@ export class MessageService {
         return entity.toJSON();
     }
 
-    async deleteContent(tx: Prisma.TransactionClient, messageId: number) {
+    async deleteContent(tx: Prisma.TransactionClient, messageId: string) {
         const contentLinks = await tx.messages_content.findMany({
             where: { id_messages: messageId },
             select: { id_content: true },
@@ -195,7 +195,7 @@ export class MessageService {
         }
     }
 
-    async deleteMessage(chatId: number, messageId: number) {
+    async deleteMessage(chatId: string, messageId: string) {
         await this.prisma.$transaction(async (tx) => {
             await this.deleteContent(tx, messageId);
             await tx.messages.delete({ where: { id: messageId } });
@@ -206,7 +206,7 @@ export class MessageService {
 
     async editContent(
         tx: Prisma.TransactionClient,
-        messageId: number,
+        messageId: string,
         content: MessageContentDto[]
     ) {
         await this.deleteContent(tx, messageId);
@@ -245,7 +245,7 @@ export class MessageService {
         return { updated, newContent };
     }
 
-    async editMessage({ id, chatId, messageId, content }: MessageEditDto & { chatId: number }) {
+    async editMessage({ id, chatId, messageId, content }: MessageEditDto & { chatId: string }) {
         const profile = await this.userService.getProfileById(id);
 
         const { updated, newContent } = await this.prisma.$transaction(async (tx) => {

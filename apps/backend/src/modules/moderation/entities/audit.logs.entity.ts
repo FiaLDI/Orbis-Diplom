@@ -6,7 +6,7 @@ export class AuditLogsEntity {
         private auditLogs: Prisma.audit_logsGetPayload<{}>[],
         private serverData: {
             name: string;
-            id: number;
+            id: string;
         } | null
     ) {}
 
@@ -15,16 +15,16 @@ export class AuditLogsEntity {
     }
 
     getTargetIds() {
-        return [...new Set(this.auditLogs.map((l) => Number(l.target_id)).filter(Boolean))];
+        return [...new Set(this.auditLogs.map((l) => l.target_id).filter(Boolean))];
     }
 
-    toJSON(ActorProfileMap: Map<number, UserProfile>, TargetProfileMap: Map<number, UserProfile>) {
+    toJSON(ActorProfileMap: Map<string, UserProfile>, TargetProfileMap: Map<string, UserProfile>) {
         return this.auditLogs.map((l) => {
             if (!this.serverData) return null;
-            const ActorProfile = ActorProfileMap.get(l.actor_id ?? -1);
+            const ActorProfile = ActorProfileMap.get(l.actor_id ?? "");
             if (!ActorProfile) return null;
 
-            const TargetProfile = TargetProfileMap.get(Number(l.target_id) ?? -1);
+            const TargetProfile = TargetProfileMap.get(l.target_id ?? "");
             if (!TargetProfile) return null;
 
             return {

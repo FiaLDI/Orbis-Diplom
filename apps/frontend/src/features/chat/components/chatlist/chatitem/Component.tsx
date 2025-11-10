@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { setActiveChat } from "@/features/chat";
-import { ChatContextMenu } from "@/features/shared";
+import { ChatContextMenu } from "@/shared/ui";
 import { Props } from "./inteface";
 
 export const Component: React.FC<Props> = ({ chat, isServer, editQuery, deleteQuery }) => {
@@ -27,11 +27,11 @@ export const Component: React.FC<Props> = ({ chat, isServer, editQuery, deleteQu
                         }
                     >
                         {!isServer && (
-                            <div className="w-fit">
+                            <div className="w-20 h-20 lg:w-7 lg:h-7 flex-shrink-0 rounded">
                                 <img
                                     src={chat.avatar_url || "/img/icon.png"}
                                     alt=""
-                                    className="w-20 h-20 lg:w-7 lg:h-7 object-contain"
+                                    className="w-full h-full object-cover rounded"
                                 />
                             </div>
                         )}

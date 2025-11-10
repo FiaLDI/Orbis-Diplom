@@ -1,5 +1,5 @@
 export interface Props {
-    serverid?: number;
+    serverid?: string;
     name?: string;
-    projectId?: number;
+    projectId?: string;
 }

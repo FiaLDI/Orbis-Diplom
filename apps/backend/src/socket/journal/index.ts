@@ -12,20 +12,20 @@ export const journalSocket = (ioJournal: Namespace, socket: Socket) => {
         }
     } catch {}
 
-    socket.on("set-status", (userId: number, status: string) => {
+    socket.on("set-status", (userId: string, status: string) => {
         redisClient.set(`user:${userId}:${status}`, "true");
         socket.broadcast.emit("user-online", userId);
     });
 
-    socket.on("join-server", (serverId: number) => {
+    socket.on("join-server", (serverId: string) => {
         socket.join(`server:${serverId}`);
     });
 
-    socket.on("leave-server", (serverId: number) => {
+    socket.on("leave-server", (serverId: string) => {
         socket.leave(`server:${serverId}`);
     });
 
-    socket.on("update-into-server", (signal: string, serverId: number) => {
+    socket.on("update-into-server", (signal: string, serverId: string) => {
         if (signal === "update-server-active") {
             ioJournal.to(`server:${serverId}`).emit("update-into-server");
         }

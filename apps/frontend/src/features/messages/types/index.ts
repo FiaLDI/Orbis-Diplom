@@ -6,9 +6,9 @@ export interface MessageContent {
 }
 
 export interface Message {
-    id: number;
-    chatId: number;
-    userId: number;
+    id: string;
+    chatId: string;
+    userId: string;
     username: string;
     avatarUrl?: string | null;
     replyToId?: number | null;

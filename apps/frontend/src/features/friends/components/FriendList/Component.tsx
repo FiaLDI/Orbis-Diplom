@@ -25,9 +25,10 @@ import {
 } from "../..";
 import { setFriendMode } from "../../slice";
 import { Component as SearchFriends } from "./SearchFriends";
-import { AnimatedContextMenu, useContextMenu } from "@/features/shared";
+import { AnimatedContextMenu } from "@/shared/ui";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+import { useContextMenu } from "@/shared/hooks";
 
 export const Component: React.FC = () => {
     const { t } = useTranslation("friends");
@@ -53,7 +54,7 @@ export const Component: React.FC = () => {
         HTMLUListElement
     >();
 
-    const handleClick = (id: number) => trigger(id);
+    const handleClick = (id: string) => trigger(id);
 
     useEffect(() => {
         if (!mode) return;
@@ -94,7 +95,7 @@ export const Component: React.FC = () => {
         });
     }, [friends, onlineUsers, mode]);
 
-    const handleStartChat = async (userId: number) => {
+    const handleStartChat = async (userId: string) => {
         try {
             const chat = await startChat(userId).unwrap();
             console.log("💬 Чат создан:", chat);
@@ -105,7 +106,7 @@ export const Component: React.FC = () => {
         }
     };
 
-    const handleRemoveFriend = async (userId: number) => {
+    const handleRemoveFriend = async (userId: string) => {
         if (!confirm("Удалить из друзей?")) return;
         try {
             await removeFriend(userId).unwrap();
@@ -117,7 +118,7 @@ export const Component: React.FC = () => {
         }
     };
 
-    const handleBlockFriend = async (userId: number) => {
+    const handleBlockFriend = async (userId: string) => {
         if (!confirm("Заблокировать пользователя?")) return;
         try {
             await blockFriend(userId).unwrap();
@@ -129,7 +130,7 @@ export const Component: React.FC = () => {
         }
     };
 
-    const handleUnblockFriend = async (userId: number) => {
+    const handleUnblockFriend = async (userId: string) => {
         if (!confirm("Разблокировать пользователя?")) return;
         try {
             await unblockFriend(userId).unwrap();

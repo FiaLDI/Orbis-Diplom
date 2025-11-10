@@ -3,41 +3,12 @@ import { chat, setActiveChat } from "@/features/chat";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useDeleteChatMutation, useEmitServerUpdate } from "@/features/server";
 import { ChatEditForm, useDeletePersonalChatMutation } from "@/features/chat";
-import { useContextMenu } from "@/features/shared";
-import { AnimatedContextMenu } from "../AnimatedContextMenu";
+import { useContextMenu } from "@/shared/hooks";
 import { Pencil, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import {
-    BaseQueryFn,
-    FetchArgs,
-    FetchBaseQueryError,
-    FetchBaseQueryMeta,
-    MutationDefinition,
-} from "@reduxjs/toolkit/query";
-import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
+import { ChatContextMenuProps } from "./interface";
+import { AnimatedContextMenu } from "../AnimatedContextMenu";
 
-interface ChatContextMenuProps {
-    triggerElement: (handlers: { onContextMenu: (e: React.MouseEvent) => void }) => React.ReactNode;
-    chat: chat;
-    editQuery?: MutationTrigger<
-        MutationDefinition<
-            any,
-            BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>,
-            "Projects" | "Issues" | "Statuses" | "Priorities",
-            any,
-            "issueApi"
-        >
-    >;
-    deleteQuery?: MutationTrigger<
-        MutationDefinition<
-            any,
-            BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>,
-            "Projects" | "Issues" | "Statuses" | "Priorities",
-            any,
-            "issueApi"
-        >
-    >;
-}
 
 export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({
     triggerElement,

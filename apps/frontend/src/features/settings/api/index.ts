@@ -20,14 +20,14 @@ export const settingsApi = createApi({
         },
     }),
     endpoints: (builder) => ({
-        updateProfile: builder.mutation<any, { id: number; data: Partial<ProfileInfo> }>({
+        updateProfile: builder.mutation<any, { id: string; data: Partial<ProfileInfo> }>({
             query: ({ id, data }) => ({
                 url: `/users/${id}`,
                 method: "PUT",
                 body: data,
             }),
         }),
-        updateAccount: builder.mutation<any, { id: number; data: Partial<AccountInfo> }>({
+        updateAccount: builder.mutation<any, { id: string; data: Partial<AccountInfo> }>({
             query: ({ id, data }) => ({
                 url: `/users/${id}`,
                 method: "PUT",

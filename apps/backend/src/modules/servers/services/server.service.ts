@@ -6,10 +6,10 @@ import { ServerJoinDto } from "../dtos/server.join.dto";
 import { ServerInfoDto } from "../dtos/server.info.dto";
 import { ChatService } from "@/modules/chat";
 import { ServerInfo } from "../entities/server.info.entities";
-import { ServerUpdateDto } from "../entities/server.update.dto";
+import { ServerUpdateDto } from "../dtos/server.update.dto";
 import { Errors } from "@/common/errors";
-import { ServerChatIdDto, ServerIdOnlyDto } from "../entities/server.chats.dto";
-import { ServerMemberDto } from "../entities/server.member.dto";
+import { ServerChatIdDto, ServerIdOnlyDto } from "../dtos/server.chats.dto";
+import { ServerMemberDto } from "../dtos/server.member.dto";
 import { UserService } from "@/modules/users";
 
 @injectable()
@@ -23,7 +23,7 @@ export class ServerService {
         private userService: UserService
     ) {}
 
-    async check(serverId: number, userId: number) {
+    async check(serverId: string, userId: string) {
         const existing = await this.prisma.user_server.findUnique({
             where: {
                 user_id_server_id: {
@@ -36,7 +36,7 @@ export class ServerService {
         return existing;
     }
 
-    async getServer(serverId: number) {
+    async getServer(serverId: string) {
         const server = await this.prisma.servers.findFirst({
             select: {
                 id: true,
@@ -50,7 +50,7 @@ export class ServerService {
         return server;
     }
 
-    async getUserServers(id: number) {
+    async getUserServers(id: string) {
         const servers = await this.prisma.servers.findMany({
             where: {
                 user_server: {
@@ -70,7 +70,7 @@ export class ServerService {
         return servers;
     }
 
-    async createServerUser(creatorId: number, name: string) {
+    async createServerUser(creatorId: string, name: string) {
         await this.prisma.$transaction(async (tx) => {
             const server = await this.createServer(tx, creatorId, name);
             await this.connectToServer(tx, server.id, creatorId);
@@ -102,7 +102,7 @@ export class ServerService {
         return serverInfo;
     }
 
-    private async connectToServer(tx: Prisma.TransactionClient, serverId: number, userId: number) {
+    private async connectToServer(tx: Prisma.TransactionClient, serverId: string, userId: string) {
         await tx.user_server.create({
             data: {
                 user_id: userId,
@@ -114,7 +114,7 @@ export class ServerService {
         return { message: "Success" };
     }
 
-    private async createServer(tx: Prisma.TransactionClient, userId: number, name: string) {
+    private async createServer(tx: Prisma.TransactionClient, userId: string, name: string) {
         const server = await tx.servers.create({
             data: {
                 creator_id: userId,
@@ -156,7 +156,6 @@ export class ServerService {
             await tx.server_bans.deleteMany({ where: { server_id: dto.serverId } });
             await tx.invites.deleteMany({ where: { server_id: dto.serverId } });
             await tx.audit_logs.deleteMany({ where: { server_id: dto.serverId } });
-            await tx.reports.deleteMany({ where: { server_id: dto.serverId } });
 
             await tx.project_issues.deleteMany({
                 where: {
@@ -236,14 +235,14 @@ export class ServerService {
         return { message: "User unbanned" };
     }
 
-    async getServerMembers({ serverId }: { serverId: number }) {
+    async getServerMembers({ serverId }: { serverId: string }) {
         const members = await this.prisma.user_server.findMany({
             where: { server_id: serverId },
             select: { user_id: true },
         });
 
         const rolesData = await this.rolesService.getServerMembers(serverId);
-        const rolesMap = new Map<number, any>(rolesData.map((r) => [r.user_id, r.roles]));
+        const rolesMap = new Map<string, any>(rolesData.map((r) => [r.user_id, r.roles]));
 
         const result = [];
         for (const member of members) {

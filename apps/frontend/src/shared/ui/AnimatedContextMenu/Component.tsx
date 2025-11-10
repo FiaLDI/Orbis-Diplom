@@ -1,29 +1,7 @@
 import React, { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { AnimatedContextMenuProps } from "./interface";
 
-export interface ContextMenuItem {
-    label: string;
-    action: () => void;
-    icon?: React.ReactNode;
-    danger?: boolean;
-    disabled?: boolean;
-}
-
-export interface AnimatedContextMenuProps {
-    visible: boolean;
-    x: number;
-    y: number;
-    items: ContextMenuItem[];
-    menuRef: React.RefObject<HTMLElement>;
-    onClose: () => void;
-}
-
-/**
- * Универсальное анимированное контекстное меню (в стиле Discord)
- * ✅ Автоматическое позиционирование внутри экрана
- * ✅ Плавная анимация появления/скрытия
- * ✅ Поддержка danger, disabled, и иконок
- */
 export const AnimatedContextMenu: React.FC<AnimatedContextMenuProps> = ({
     visible,
     x,
@@ -36,7 +14,6 @@ export const AnimatedContextMenu: React.FC<AnimatedContextMenuProps> = ({
     const itemHeight = 36;
     const padding = 10;
 
-    // ✅ Расчёт безопасной позиции меню
     const { safeX, safeY, origin } = useMemo(() => {
         const totalHeight = items.length * itemHeight + padding * 2;
         const fitsRight = x + menuWidth < window.innerWidth;
@@ -45,7 +22,6 @@ export const AnimatedContextMenu: React.FC<AnimatedContextMenuProps> = ({
         const calcX = fitsRight ? x : x - menuWidth;
         const calcY = fitsBottom ? y : y - totalHeight;
 
-        // Определяем точку анимации (scale origin)
         const transformOrigin = `${fitsBottom ? "top" : "bottom"} ${fitsRight ? "left" : "right"}`;
 
         return { safeX: calcX, safeY: calcY, origin: transformOrigin };
@@ -66,7 +42,7 @@ export const AnimatedContextMenu: React.FC<AnimatedContextMenuProps> = ({
                     style={{
                         top: `${safeY}px`,
                         left: `${safeX}px`,
-                        transformOrigin: origin, // ✅ направление анимации в зависимости от позиции
+                        transformOrigin: origin,
                     }}
                     onContextMenu={(e) => e.preventDefault()}
                 >

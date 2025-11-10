@@ -1,5 +1,5 @@
 export interface chat {
-    id: number;
+    id: string;
     username: string;
     name?: string;
     type: string;
@@ -9,7 +9,7 @@ export interface chat {
     updated_at: string;
     avatar_url: string;
     users: string[];
-    owner: number;
+    owner: string;
 }
 
 export interface chatState {

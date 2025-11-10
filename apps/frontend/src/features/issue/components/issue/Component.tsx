@@ -6,14 +6,15 @@ import { Component as OpenIssue } from "./open";
 import { Component as AssignModal } from "./assign";
 import { MoveLeft, ListTree, Orbit, Pencil, Trash2 } from "lucide-react";
 import { Statuses } from "../../types";
-import { AnimatedContextMenu, ContextMenuItem } from "@/features/shared";
-import { useContextMenu } from "@/features/shared";
+import { AnimatedContextMenu } from "@/shared/ui";
+import { useContextMenu } from "@/shared/hooks";
 import { config } from "@/config";
+import { ContextMenuItem } from "@/shared/ui/AnimatedContextMenu/interface";
 
 interface Props {
-    serverId?: number;
+    serverId?: string;
     name?: string;
-    projectId?: number;
+    projectId?: string;
 }
 
 export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {

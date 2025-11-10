@@ -16,7 +16,6 @@ import { moderationModule } from "./modules/moderation/module";
 
 export const app = express();
 
-// middlewares
 app.use(
     cors({
         origin: ENVCONFIG.FRONTENDADDRES,

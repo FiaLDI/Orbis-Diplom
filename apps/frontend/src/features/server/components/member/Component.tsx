@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useLazyGetInfoUserQuery } from "@/features/user";
-import { AnimatedContextMenu } from "@/features/shared";
-import { useContextMenu } from "@/features/shared";
+import { AnimatedContextMenu } from "@/shared/ui";
+import { useContextMenu } from "@/shared/hooks";
 import {
     useBanUserMutation,
     useKickUserMutation,
@@ -16,10 +16,10 @@ export const Component: React.FC = () => {
     const membersServer = useAppSelector((s) => s.server.activeserver?.users) as
         | Member[]
         | undefined;
-    const activeserverId = useAppSelector((s) => s.server.activeserver?.id) as number | undefined;
+    const activeserverId = useAppSelector((s) => s.server.activeserver?.id) as string | undefined;
     const chatinfo = useAppSelector((s) => s.chat.activeChat as any);
-    const meId = useAppSelector((s) => s.auth.user?.info.id) as number | undefined;
-    const [banModal, setBanModal] = useState<{ open: boolean; userId?: number; username?: string }>(
+    const meId = useAppSelector((s) => s.auth.user?.info.id) as string | undefined;
+    const [banModal, setBanModal] = useState<{ open: boolean; userId?: string; username?: string }>(
         {
             open: false,
         }
@@ -50,16 +50,16 @@ export const Component: React.FC = () => {
 
     const { contextMenu, handleContextMenu, closeMenu, menuRef } = useContextMenu<Member>();
 
-    const onViewProfile = (id: number) => triggerProfile(id);
+    const onViewProfile = (id: string) => triggerProfile(id);
 
-    const doKick = async (userId: number) => {
+    const doKick = async (userId: string) => {
         if (!activeserverId) return;
         try {
             await kickUser({ serverId: activeserverId, userId }).unwrap();
         } catch (e: any) {}
     };
 
-    const doUnban = async (userId: number) => {
+    const doUnban = async (userId: string) => {
         if (!activeserverId) return;
         try {
             await unbanUser({ serverId: activeserverId, userId }).unwrap();
@@ -81,7 +81,7 @@ export const Component: React.FC = () => {
                 label: t("moderate.copy"),
                 action: () => navigator.clipboard?.writeText(String(target.id)),
             },
-            { label: "—", action: () => {} }, // разделитель (отрисуем как disabled)
+            { label: "—", action: () => {} },
             {
                 label: t("moderate.kick"),
                 action: () => doKick(target.id),
@@ -113,7 +113,7 @@ export const Component: React.FC = () => {
         unbanLoading,
     ]);
 
-    const handleLeftClick = (id: number) => {
+    const handleLeftClick = (id: string) => {
         onViewProfile(id);
     };
 

@@ -11,8 +11,8 @@ import { config } from "@/config";
 
 interface Props {
     issue: any;
-    projectId: number;
-    serverId: number;
+    projectId: string;
+    serverId: string;
     onClose: () => void;
 }
 
@@ -22,8 +22,8 @@ export const Component: React.FC<Props> = ({ serverId, issue, onClose, projectId
     const [getIssues] = useLazyGetIssuesQuery();
 
     const [search, setSearch] = useState("");
-    const [loadingId, setLoadingId] = useState<number | null>(null);
-    const [localAssigned, setLocalAssigned] = useState<number[]>(
+    const [loadingId, setLoadingId] = useState<string | null>(null);
+    const [localAssigned, setLocalAssigned] = useState<string[]>(
         issue?.assignees?.map((a: any) => a.user_id || a.id) || []
     );
 
@@ -33,7 +33,7 @@ export const Component: React.FC<Props> = ({ serverId, issue, onClose, projectId
         m.username.toLowerCase().includes(search.toLowerCase())
     );
 
-    const handleAssign = async (userId: number) => {
+    const handleAssign = async (userId: string) => {
         setLocalAssigned((prev) => [...new Set([...prev, userId])]);
         setLoadingId(userId);
 
@@ -46,7 +46,7 @@ export const Component: React.FC<Props> = ({ serverId, issue, onClose, projectId
         }
     };
 
-    const handleUnassign = async (userId: number) => {
+    const handleUnassign = async (userId: string) => {
         setLocalAssigned((prev) => prev.filter((id) => id !== userId));
         setLoadingId(userId);
 

@@ -42,7 +42,7 @@ export const Component: React.FC = () => {
     const joinServerHandler = async () => {
         if (!idServer) return;
         try {
-            await joinServer(Number(idServer));
+            await joinServer(idServer);
             setOpen(false);
         } catch (err) {
             console.log(err);

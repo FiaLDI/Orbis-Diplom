@@ -24,14 +24,14 @@ export const notificationApi = createApi({
             query: () => "/notifications",
             providesTags: ["Notification"],
         }),
-        markNotificationRead: builder.mutation<void, number>({
+        markNotificationRead: builder.mutation<void, string>({
             query: (id) => ({
                 url: `/notifications/${id}/read`,
                 method: "PUT",
             }),
             invalidatesTags: ["Notification"],
         }),
-        deleteNotification: builder.mutation<void, number>({
+        deleteNotification: builder.mutation<void, string>({
             query: (id) => ({
                 url: `/notifications/${id}`,
                 method: "DELETE",

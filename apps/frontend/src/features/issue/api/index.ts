@@ -17,13 +17,11 @@ export const issueApi = createApi({
     }),
     tagTypes: ["Projects", "Issues", "Statuses", "Priorities"],
     endpoints: (builder) => ({
-        /* 🔹 Projects */
         getProject: builder.query({
-            query: (serverId: number) => `/servers/${serverId}/projects`,
+            query: (serverId: string) => `/servers/${serverId}/projects`,
             providesTags: (result, error, serverId) => [{ type: "Projects", id: serverId }],
             transformResponse: (response: any) => response.data,
         }),
-
         createProject: builder.mutation({
             query: ({ serverId, data }) => ({
                 url: `/servers/${serverId}/projects`,
@@ -32,7 +30,6 @@ export const issueApi = createApi({
             }),
             invalidatesTags: (result, error, { serverId }) => [{ type: "Projects", id: serverId }],
         }),
-
         updateProject: builder.mutation({
             query: ({ serverId, projectId, data }) => ({
                 url: `/servers/${serverId}/projects/${projectId}`,
@@ -41,8 +38,7 @@ export const issueApi = createApi({
             }),
             invalidatesTags: (result, error, { serverId }) => [{ type: "Projects", id: serverId }],
         }),
-
-        deleteProject: builder.mutation<void, { serverId: number; projectId: number }>({
+        deleteProject: builder.mutation<void, { serverId: string; projectId: string }>({
             query: ({ serverId, projectId }) => ({
                 url: `/servers/${serverId}/projects/${projectId}`,
                 method: "DELETE",
@@ -50,8 +46,8 @@ export const issueApi = createApi({
             invalidatesTags: (result, error, { serverId }) => [{ type: "Projects", id: serverId }],
         }),
 
-        /* 🔹 Issues */
-        getIssues: builder.query<any[], { serverId: number; projectId: number }>({
+        
+        getIssues: builder.query<any[], { serverId: string; projectId: string }>({
             query: ({ serverId, projectId }) => `/servers/${serverId}/projects/${projectId}/issues`,
             providesTags: (result, error, { projectId }) =>
                 result
@@ -62,7 +58,6 @@ export const issueApi = createApi({
                     : [{ type: "Issues", id: `PROJECT-${projectId}` }],
             transformResponse: (response: any) => response.data,
         }),
-
         createIssue: builder.mutation({
             query: ({ serverId, projectId, data }) => ({
                 url: `/servers/${serverId}/projects/${projectId}/issues`,
@@ -73,7 +68,6 @@ export const issueApi = createApi({
                 { type: "Issues", id: `PROJECT-${projectId}` },
             ],
         }),
-
         updateIssue: builder.mutation({
             query: ({ serverId, projectId, issueId, data }) => ({
                 url: `/servers/${serverId}/projects/${projectId}/issues/${issueId}`,
@@ -85,7 +79,6 @@ export const issueApi = createApi({
                 { type: "Issues", id: `PROJECT-${projectId}` },
             ],
         }),
-
         deleteIssue: builder.mutation({
             query: ({ serverId, projectId, issueId }) => ({
                 url: `/servers/${serverId}/projects/${projectId}/issues/${issueId}`,
@@ -96,46 +89,36 @@ export const issueApi = createApi({
                 { type: "Issues", id: `PROJECT-${projectId}` },
             ],
         }),
-
-        assignUserToIssue: builder.mutation<
-            void,
-            { serverId: number; issueId: number; userId: number }
-        >({
+        assignUserToIssue: builder.mutation({
             query: ({ serverId, issueId, userId }) => ({
                 url: `/servers/${serverId}/issues/${issueId}/assignees/${userId}`,
                 method: "POST",
             }),
         }),
-
-        unassignUserFromIssue: builder.mutation<
-            void,
-            { serverId: number; issueId: number; userId: number }
-        >({
+        unassignUserFromIssue: builder.mutation({
             query: ({ serverId, issueId, userId }) => ({
                 url: `/servers/${serverId}/issues/${issueId}/assignees/${userId}`,
                 method: "DELETE",
             }),
         }),
 
-        /* 🔹 Statuses / Priorities */
+        
         getStatuses: builder.query({
             query: (serverId) => `/servers/${serverId}/issues/statuses`,
             providesTags: [{ type: "Statuses", id: "LIST" }],
             transformResponse: (response: any) => response.data,
         }),
-
         getPriority: builder.query({
             query: (serverId) => `/servers/${serverId}/issues/priorities`,
             providesTags: [{ type: "Priorities", id: "LIST" }],
             transformResponse: (response: any) => response.data,
         }),
 
-        /* 🔹 Issue ↔ Chat */
+
         getChatIssue: builder.query({
             query: ({ serverId, issueId }) => `/servers/${serverId}/issues/${issueId}/chats`,
             transformResponse: (response: any) => response.data,
         }),
-
         createChatIssue: builder.mutation({
             query: ({ serverId, issueId, data }) => ({
                 url: `/servers/${serverId}/issues/${issueId}/chats`,
@@ -143,7 +126,6 @@ export const issueApi = createApi({
                 body: data,
             }),
         }),
-
         updateChatIssue: builder.mutation({
             query: ({ serverId, issueId, chatId, data }) => ({
                 url: `/servers/${serverId}/issues/${issueId}/chats/${chatId}`,
@@ -151,7 +133,6 @@ export const issueApi = createApi({
                 body: data,
             }),
         }),
-
         deleteChatIssue: builder.mutation({
             query: ({ serverId, issueId, chatId }) => ({
                 url: `/servers/${serverId}/issues/${issueId}/chats/${chatId}`,

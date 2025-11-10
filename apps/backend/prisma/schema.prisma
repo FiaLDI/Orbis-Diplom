@@ -26,19 +26,12 @@ model permission_type {
   role_permission role_permission[]
 }
 
-model settings_type {
-  id   Int    @id @default(autoincrement())
-  name String @db.VarChar(50)
-
-  chat_settings chat_settings[]
-}
-
 /* =========================
    ПОЛЬЗОВАТЕЛИ / ПРОФИЛИ
    ========================= */
 
 model users {
-  id            Int     @id @default(autoincrement())
+  id            String  @id @default(uuid()) @db.Uuid
   email         String? @unique @db.VarChar(255)
   username      String? @unique @db.VarChar(255)
   password_hash String?
@@ -49,27 +42,24 @@ model users {
   user_server          user_server[]
   chats                chats[]       @relation("UserCreatedChats")
   chat_users           chat_users[]
-  blocks_initiated users_blocks[] @relation("BlockerRelation") // кого я заблокировал
-  blocks_received  users_blocks[] @relation("BlockedRelation")
+  blocks_initiated     users_blocks[] @relation("BlockerRelation")
+  blocks_received      users_blocks[] @relation("BlockedRelation")
   messages             messages[]
   friend_requests_from friend_requests[] @relation("RequestFrom")
   friend_requests_to   friend_requests[] @relation("RequestTo")
   created_servers      servers[]         @relation("UserCreatedServers")
-  issue_assignee issue_assignee[] 
+  issue_assignee       issue_assignee[]
 
-  server_bans         server_bans[]        
-  bans_made           server_bans[]        @relation("BanActor") 
-  invites             invites[]            
-  audit_logs          audit_logs[]         
-  reports_made        reports[]            @relation("ReportReporter") 
-  reports_resolved    reports[]            @relation("ReportResolver") 
-  message_reads       message_reads[]
-  push_subscriptions  push_subscriptions[]
-  notifications       notifications[]
+  server_bans    server_bans[]
+  bans_made      server_bans[]        @relation("BanActor")
+  invites        invites[]
+  audit_logs     audit_logs[]
+  message_reads  message_reads[]
+  notifications  notifications[]
 }
 
 model user_preferences {
-  user_id          Int    @id
+  user_id          String  @id @db.Uuid
   privacy_settings String?
   timezone         String? @db.VarChar(50)
   theme            String? @db.VarChar(20)
@@ -81,7 +71,7 @@ model user_preferences {
 }
 
 model user_profile {
-  user_id    Int     @id
+  user_id    String  @id @db.Uuid
   first_name String? @db.VarChar(100)
   last_name  String? @db.VarChar(100)
   birth_date DateTime?
@@ -89,20 +79,19 @@ model user_profile {
   gender     String? @db.VarChar(20)
   location   String? @db.VarChar(100)
   about      String?
-  is_online  Boolean  @default(false)
-  
+  is_online  Boolean @default(false)
+
   user users @relation(fields: [user_id], references: [id])
 }
 
 model users_blocks {
   id               Int       @id @default(autoincrement())
-  id_users         Int       // кто блокирует
-  blocked_user_id  Int       // кого блокируют
+  id_users         String    @db.Uuid // кто блокирует
+  blocked_user_id  String    @db.Uuid // кого блокируют
   reason_type_id   Int
   created_at       DateTime? @default(now())
   end_at           DateTime?
 
-  // 🔹 связи
   blocker          users             @relation("BlockerRelation", fields: [id_users], references: [id])
   blocked          users             @relation("BlockedRelation", fields: [blocked_user_id], references: [id])
   block_reason_type block_reason_type @relation(fields: [reason_type_id], references: [id])
@@ -115,8 +104,8 @@ model users_blocks {
    ========================= */
 
 model friend_requests {
-  from_user_id Int
-  to_user_id   Int
+  from_user_id String @db.Uuid
+  to_user_id   String @db.Uuid
   status       String
   created_at   DateTime? @default(now())
 
@@ -131,42 +120,40 @@ model friend_requests {
    ========================= */
 
 model servers {
-  id         Int     @id @default(autoincrement())
-  creator_id Int?
-  name       String  @db.VarChar(100)
+  id         String   @id @default(uuid()) @db.Uuid
+  creator_id String?  @db.Uuid
+  name       String   @db.VarChar(100)
   avatar_url String?
   created_at DateTime?
   updated_at DateTime?
 
-  creator users?       @relation("UserCreatedServers", fields: [creator_id], references: [id])
+  creator      users?        @relation("UserCreatedServers", fields: [creator_id], references: [id])
   user_server  user_server[]
   server_chats server_chats[]
 
-  roles role_server[]
-
+  roles   role_server[]
   project project[]
-  
-  server_bans   server_bans[]    
-  invites       invites[]        
-  audit_logs    audit_logs[]    
-  reports       reports[]
+
+  server_bans server_bans[]
+  invites     invites[]
+  audit_logs  audit_logs[]
 }
 
 model role_server {
-  id        Int     @id @default(autoincrement())
-  server_id Int
+  id        String  @id @default(uuid()) @db.Uuid
+  server_id String  @db.Uuid
   name      String  @db.VarChar(50)
-  color     String? @db.VarChar(7) 
+  color     String? @db.VarChar(7)
 
   server          servers             @relation(fields: [server_id], references: [id])
   role_permission role_permission[]
-  members         user_server_roles[]   // 👈 связь многие-ко-многим с user_server
+  members         user_server_roles[]
 
   @@index([server_id])
 }
 
 model role_permission {
-  role_id       Int
+  role_id       String @db.Uuid
   permission_id Int
   granted_at    DateTime?
 
@@ -179,8 +166,8 @@ model role_permission {
 }
 
 model user_server {
-  user_id    Int
-  server_id  Int
+  user_id    String   @db.Uuid
+  server_id  String   @db.Uuid
   created_at DateTime?
 
   user   users   @relation(fields: [user_id], references: [id])
@@ -193,24 +180,24 @@ model user_server {
 }
 
 model user_server_roles {
-  user_id   Int
-  server_id Int
-  role_id   Int
+  user_id   String @db.Uuid
+  server_id String @db.Uuid
+  role_id   String @db.Uuid
 
   user_server user_server @relation(fields: [user_id, server_id], references: [user_id, server_id])
   role        role_server @relation(fields: [role_id], references: [id])
 
-  @@id([user_id, server_id, role_id]) 
+  @@id([user_id, server_id, role_id])
   @@index([role_id])
 }
 
 /* Серверные баны */
 model server_bans {
-  server_id  Int
-  user_id    Int
+  server_id  String @db.Uuid
+  user_id    String @db.Uuid
   reason     String?
   created_at DateTime? @default(now())
-  banned_by  Int?
+  banned_by  String? @db.Uuid
 
   server servers @relation(fields: [server_id], references: [id])
   user   users   @relation(fields: [user_id], references: [id])
@@ -223,8 +210,8 @@ model server_bans {
 /* Приглашения на сервер */
 model invites {
   code       String  @id
-  server_id  Int
-  creator_id Int
+  server_id  String  @db.Uuid
+  creator_id String  @db.Uuid
   expires_at DateTime?
   max_uses   Int?
   uses       Int     @default(0)
@@ -241,24 +228,23 @@ model invites {
    ========================= */
 
 model chats {
-  id         Int      @id @default(autoincrement())
-  creator_id Int?
+  id         String   @id @default(uuid()) @db.Uuid
+  creator_id String?  @db.Uuid
   created_at DateTime?
   name       String?
 
   creator users? @relation("UserCreatedChats", fields: [creator_id], references: [id])
 
   chat_users    chat_users[]
-  chat_settings chat_settings[]
   messages      messages[]
   server_chats  server_chats[]
   message_reads message_reads[]
-  chat_issues   chat_issues []
+  chat_issues   chat_issues[]
 }
 
 model server_chats {
-  id_server Int
-  id_chats  Int
+  id_server String @db.Uuid
+  id_chats  String @db.Uuid
 
   server servers @relation(fields: [id_server], references: [id])
   chat   chats   @relation(fields: [id_chats], references: [id])
@@ -269,38 +255,16 @@ model server_chats {
 }
 
 model chat_users {
-  user_id    Int
-  chat_id    Int
-  role_id    Int?
+  user_id    String @db.Uuid
+  chat_id    String @db.Uuid
   created_at DateTime?
   updated_at DateTime?
 
-  users     users      @relation(fields: [user_id], references: [id])
-  chats     chats      @relation(fields: [chat_id], references: [id])
-  role_chat role_chat? @relation(fields: [role_id], references: [id])
+  users users @relation(fields: [user_id], references: [id])
+  chats chats @relation(fields: [chat_id], references: [id])
 
   @@id([user_id, chat_id])
   @@index([chat_id])
-  @@index([role_id])
-}
-
-/* Опционально: пер-канальные роли */
-model role_chat {
-  id   Int    @id @default(autoincrement())
-  name String @db.VarChar(50)
-
-  chat_users chat_users[]
-}
-
-model chat_settings {
-  id_chats         Int
-  id_settings_type Int
-  value            String?
-
-  chats         chats         @relation(fields: [id_chats], references: [id])
-  settings_type settings_type @relation(fields: [id_settings_type], references: [id])
-
-  @@id([id_chats, id_settings_type])
 }
 
 /* =========================
@@ -308,31 +272,30 @@ model chat_settings {
    ========================= */
 
 model messages {
-  id           Int       @id @default(autoincrement())
-  chat_id      Int?
-  user_id      Int?
-  reply_to_id  Int?
+  id           String   @id @default(uuid()) @db.Uuid
+  chat_id      String?  @db.Uuid
+  user_id      String?  @db.Uuid
+  reply_to_id  String?  @db.Uuid
   is_edited    Boolean?
   updated_at   DateTime?
   created_at   DateTime?
-  content_text String?   
+  content_text String?
 
-  chat     chats?    @relation(fields: [chat_id], references: [id])
-  user     users?    @relation(fields: [user_id], references: [id])
+  chat chats? @relation(fields: [chat_id], references: [id])
+  user users? @relation(fields: [user_id], references: [id])
 
   reply_to messages?  @relation("MessageReply", fields: [reply_to_id], references: [id])
   replies  messages[] @relation("MessageReply")
 
   messages_content messages_content[]
-  reports reports[]
 
   @@index([chat_id, created_at])
   @@index([user_id, created_at])
-  @@index([content_text]) 
+  @@index([content_text])
 }
 
 model content {
-  id   String @id
+  id   String @id @default(uuid()) @db.Uuid
   text String?
   url  String?
 
@@ -340,11 +303,11 @@ model content {
 }
 
 model messages_content {
-  id_messages Int
-  type        String?  @db.VarChar(50) 
+  id_messages String @db.Uuid
+  type        String?  @db.VarChar(50)
   size        Int?
   uploaded_at DateTime?
-  id_content  String
+  id_content  String @db.Uuid
 
   message messages @relation(fields: [id_messages], references: [id])
   content content  @relation(fields: [id_content], references: [id])
@@ -353,16 +316,16 @@ model messages_content {
 }
 
 /* =========================
-   МОДЕРАЦИЯ / ЛОГИ / РЕПОРТЫ
+   МОДЕРАЦИЯ / ЛОГИ
    ========================= */
 
 model audit_logs {
-  id         Int       @id @default(autoincrement())
-  server_id  Int
-  actor_id   Int
-  action     String    @db.VarChar(50) 
-  target_id  String?   
-  metadata   String?   
+  id         String   @id @default(uuid()) @db.Uuid
+  server_id  String   @db.Uuid
+  actor_id   String   @db.Uuid
+  action     String    @db.VarChar(50)
+  target_id  String?
+  metadata   String?
   created_at DateTime? @default(now())
 
   server servers @relation(fields: [server_id], references: [id])
@@ -371,32 +334,14 @@ model audit_logs {
   @@index([server_id, created_at])
 }
 
-model reports {
-  id          Int       @id @default(autoincrement())
-  server_id   Int
-  message_id  Int?
-  reporter_id Int
-  reason      String?
-  status      String    @default("open") 
-  created_at  DateTime? @default(now())
-  resolved_by Int?
-
-  server   servers  @relation(fields: [server_id], references: [id])
-  message  messages? @relation(fields: [message_id], references: [id])
-  reporter users    @relation("ReportReporter", fields: [reporter_id], references: [id])
-  resolver users?   @relation("ReportResolver", fields: [resolved_by], references: [id])
-
-  @@index([server_id, status])
-}
-
 /* =========================
    УВЕДОМЛЕНИЯ / ПРОЧТЕНО
    ========================= */
 
 model message_reads {
-  user_id              Int
-  chat_id              Int
-  last_read_message_id Int?
+  user_id              String @db.Uuid
+  chat_id              String @db.Uuid
+  last_read_message_id String? @db.Uuid
   updated_at           DateTime? @default(now())
 
   user users @relation(fields: [user_id], references: [id])
@@ -407,12 +352,12 @@ model message_reads {
 }
 
 model notifications {
-  id         Int      @id @default(autoincrement())
-  user_id    Int      
-  type       String   @db.VarChar(50) 
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  type       String   @db.VarChar(50)
   title      String   @db.VarChar(255)
-  body       String?  
-  data       String?  
+  body       String?
+  data       String?
   is_read    Boolean  @default(false)
   created_at DateTime @default(now())
 
@@ -421,31 +366,17 @@ model notifications {
   @@index([user_id])
 }
 
-/* Web Push подписки */
-model push_subscriptions {
-  id         Int      @id @default(autoincrement())
-  user_id    Int
-  endpoint   String
-  p256dh     String
-  auth       String
-  created_at DateTime? @default(now())
-
-  user users @relation(fields: [user_id], references: [id])
-
-  @@unique([user_id, endpoint])
-  @@index([user_id])
-}
 /* =========================
    ПЛАНИРОВАНИЕ / ПРОЕКТЫ / ЗАДАЧИ
    ========================= */
 
 model project {
-  id          Int       @id @default(autoincrement())
-  server_id   Int
-  name        String    @db.VarChar(100)
+  id          String   @id @default(uuid()) @db.Uuid
+  server_id   String   @db.Uuid
+  name        String   @db.VarChar(100)
   description String?
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
   server servers @relation(fields: [server_id], references: [id])
 
@@ -453,15 +384,15 @@ model project {
 }
 
 model issue {
-  id          Int       @id @default(autoincrement())
-  title       String    @db.VarChar(200)
+  id          String        @id @default(uuid()) @db.Uuid
+  title       String        @db.VarChar(200)
   description String?
   priority    IssuePriority @default(MEDIUM)
   status_id   Int
-  due_date    DateTime?        // дедлайн
-  parent_id   Int?             // ссылка на родительскую задачу
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
+  due_date    DateTime?
+  parent_id   String?       @db.Uuid
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
 
   status  issue_status @relation(fields: [status_id], references: [id])
   parent  issue?       @relation("IssueParent", fields: [parent_id], references: [id])
@@ -480,8 +411,8 @@ enum IssuePriority {
 }
 
 model project_issues {
-  project_id Int
-  issue_id   Int
+  project_id String @db.Uuid
+  issue_id   String @db.Uuid
 
   project project @relation(fields: [project_id], references: [id])
   issue   issue   @relation(fields: [issue_id], references: [id])
@@ -490,8 +421,8 @@ model project_issues {
 }
 
 model chat_issues {
-  chat_id  Int
-  issue_id Int
+  chat_id  String @db.Uuid
+  issue_id String @db.Uuid
 
   chat  chats @relation(fields: [chat_id], references: [id])
   issue issue @relation(fields: [issue_id], references: [id])
@@ -507,8 +438,8 @@ model issue_status {
 }
 
 model issue_assignee {
-  issue_id Int
-  user_id  Int
+  issue_id String @db.Uuid
+  user_id  String @db.Uuid
 
   issue issue @relation(fields: [issue_id], references: [id])
   user  users @relation(fields: [user_id], references: [id])

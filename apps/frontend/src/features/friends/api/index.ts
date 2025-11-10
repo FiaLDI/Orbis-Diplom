@@ -70,16 +70,16 @@ export const friendsApi = createApi({
             invalidatesTags: ["Requests"],
         }),
 
-        removeFriend: builder.mutation<void, number>({
+        removeFriend: builder.mutation<void, string>({
             query: (id) => ({ url: `/friends/${id}`, method: "DELETE" }),
         }),
-        blockFriend: builder.mutation<void, number>({
+        blockFriend: builder.mutation<void, string>({
             query: (id) => ({
                 url: `/friends/${id}/block`,
                 method: "POST",
             }),
         }),
-        unblockFriend: builder.mutation<void, number>({
+        unblockFriend: builder.mutation<void, string>({
             query: (id) => ({
                 url: `/api/friends/${id}/unblock`,
                 method: "POST",

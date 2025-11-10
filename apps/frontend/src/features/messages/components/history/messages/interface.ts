@@ -8,7 +8,7 @@ export interface SingleMessageProps {
 
 export interface MessageGroupp {
     username: string;
-    user_id: number;
+    user_id: string;
     avatar_url?: string | null;
     minute: string;
     messages: Message[];

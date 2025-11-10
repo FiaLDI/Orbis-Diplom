@@ -9,16 +9,17 @@ import { UserFriend } from "../entities/user.friend.entities";
 import { Errors } from "@/common/errors";
 import { RequestsFriends } from "../entities/friend.request.entities";
 import { UserService } from "@/modules/users/services/user.service";
-import { sendNotification } from "@/utils/sendNotification";
+import { NotificationService } from "@/modules/notifications";
 
 @injectable()
 export class FriendService {
     constructor(
         @inject(TYPES.Prisma) private prisma: PrismaClient,
-        @inject(TYPES.UserService) private userService: UserService
+        @inject(TYPES.UserService) private userService: UserService,
+        @inject(TYPES.NotificationService) private notificationService: NotificationService
     ) {}
 
-    async getUserFriends(id: number) {
+    async getUserFriends(id: string) {
         const friends = await this.prisma.users.findMany({
             where: {
                 OR: [
@@ -47,7 +48,7 @@ export class FriendService {
         return entity;
     }
 
-    async getFriendRequests(id: number, direction: "incoming" | "outcoming") {
+    async getFriendRequests(id: string, direction: "incoming" | "outcoming") {
         const entity = new RequestsFriends();
 
         if (direction === "outcoming") {
@@ -75,7 +76,7 @@ export class FriendService {
         return entity;
     }
 
-    async getFriendStatus(id: number, toUserId: number) {
+    async getFriendStatus(id: string, toUserId: string) {
         const relation = await this.prisma.friend_requests.findFirst({
             where: {
                 OR: [
@@ -92,7 +93,10 @@ export class FriendService {
         return { status: relation.status };
     }
 
-    async friendInvite(id: number, toUserId: number) {
+    async friendInvite(id: string, toUserId: string) {
+        if (id === toUserId) {
+            throw Errors.conflict("You cannot send a friend request to yourself");
+        }
         const existing = await this.prisma.friend_requests.findFirst({
             where: {
                 OR: [
@@ -101,9 +105,17 @@ export class FriendService {
                 ],
             },
         });
-
         if (existing) {
-            throw Errors.conflict("Request already exists");
+            throw Errors.conflict("Friend request already exists");
+        }
+
+        const [fromUser, toUser] = await Promise.all([
+            this.userService.getUsernameById(id),
+            this.userService.getUsernameById(toUserId),
+        ]);
+
+        if (!fromUser || !toUser) {
+            throw Errors.notFound("User not found");
         }
 
         await this.prisma.friend_requests.create({
@@ -114,44 +126,44 @@ export class FriendService {
             },
         });
 
-        const username = this.userService.getUsernameById(toUserId);
+        const senderUsername = await this.userService.getUsernameById(id);
 
-        await sendNotification(toUserId, {
+        await this.notificationService.sendNotification(toUserId, {
             type: "friend_request",
             title: "Friend Request",
-            body: `${username} sent you a friend request`,
+            body: `${senderUsername} sent you a friend request`,
             data: { from_user_id: id },
         });
 
         return { message: "Success" };
     }
 
-    async friendConfirm(id: number, toUserId: number) {
+    async friendConfirm(id: string, toUserId: string) {
         const existing = await this.prisma.friend_requests.findFirst({
             where: {
-                from_user_id: id,
-                to_user_id: toUserId,
+                from_user_id: toUserId,
+                to_user_id: id,
                 status: "pending",
             },
         });
 
-        if (existing) {
+        if (!existing) {
             throw Errors.notFound("Friend request not found or already processed");
         }
 
         await this.prisma.friend_requests.updateMany({
             where: {
-                from_user_id: id,
-                to_user_id: toUserId,
+                from_user_id: toUserId,
+                to_user_id: id,
             },
             data: {
                 status: "accepted",
             },
         });
 
-        const username = this.userService.getUsernameById(id);
+        const username = await this.userService.getUsernameById(id);
 
-        await sendNotification(toUserId, {
+        await this.notificationService.sendNotification(toUserId, {
             type: "friend_accept",
             title: "Friend Request Accepted",
             body: `${username} accepted your friend request`,
@@ -161,30 +173,30 @@ export class FriendService {
         return { message: "Success" };
     }
 
-    async friendReject(id: number, toUserId: number) {
+    async friendReject(id: string, toUserId: string) {
         const existing = await this.prisma.friend_requests.findFirst({
             where: {
-                from_user_id: id,
-                to_user_id: toUserId,
+                from_user_id: toUserId,
+                to_user_id: id,
                 status: "pending",
             },
         });
 
-        if (existing) {
+        if (!existing) {
             throw Errors.notFound("Friend request not found or already processed");
         }
 
         await this.prisma.friend_requests.deleteMany({
             where: {
-                from_user_id: id,
-                to_user_id: toUserId,
+                from_user_id: toUserId,
+                to_user_id: id,
                 status: "pending",
             },
         });
 
-        const username = this.userService.getUsernameById(id);
+        const username = await this.userService.getUsernameById(id);
 
-        await sendNotification(toUserId, {
+        await this.notificationService.sendNotification(toUserId, {
             type: "friend_reject",
             title: "Friend Request Rejected",
             body: `${username} reject your friend request`,
@@ -194,16 +206,17 @@ export class FriendService {
         return { message: "Success" };
     }
 
-    async friendDelete(id: number, toUserId: number) {
+    async friendDelete(id: string, toUserId: string) {
         const existing = await this.prisma.friend_requests.findFirst({
             where: {
-                from_user_id: id,
-                to_user_id: toUserId,
-                status: "accepted",
+                OR: [
+                    { from_user_id: id, to_user_id: toUserId, status: "accepted" },
+                    { from_user_id: toUserId, to_user_id: id, status: "accepted" },
+                ],
             },
         });
 
-        if (existing) {
+        if (!existing) {
             throw Errors.notFound("Friend request not found or already processed");
         }
 
@@ -216,9 +229,9 @@ export class FriendService {
             },
         });
 
-        const username = this.userService.getUsernameById(id);
+        const username = await this.userService.getUsernameById(id);
 
-        await sendNotification(toUserId, {
+        await this.notificationService.sendNotification(toUserId, {
             type: "friend_remove",
             title: "Friend remove you",
             body: `${username} remove you at friends`,
@@ -228,7 +241,7 @@ export class FriendService {
         return { message: "Success" };
     }
 
-    async blockUser(blockerId: number, blockedUserId: number) {
+    async blockUser(blockerId: string, blockedUserId: string) {
         if (blockerId === blockedUserId) {
             throw Errors.conflict("You cannot block yourself");
         }
@@ -263,7 +276,7 @@ export class FriendService {
         return { message: "User successfully blocked" };
     }
 
-    async unBlockUser(blockerId: number, blockedUserId: number) {
+    async unBlockUser(blockerId: string, blockedUserId: string) {
         if (blockerId === blockedUserId) {
             throw Errors.conflict("You cannot unblock yourself");
         }
@@ -287,7 +300,7 @@ export class FriendService {
         return { message: "User successfully unblocked" };
     }
 
-    async getBlockedUsers(blockerId: number) {
+    async getBlockedUsers(blockerId: string) {
         const user = await this.prisma.users.findUnique({
             where: { id: blockerId },
         });

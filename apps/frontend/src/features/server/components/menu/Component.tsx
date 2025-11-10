@@ -1,8 +1,8 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import { Plus, Link } from "lucide-react";
-import { useContextMenu } from "@/features/shared";
-import { AnimatedContextMenu } from "@/features/shared/components/AnimatedContextMenu";
+import { useContextMenu } from "@/shared/hooks";
+import { AnimatedContextMenu } from "@/shared/ui";
 import { Props } from "./interface";
 import { useTranslation } from "react-i18next";
 

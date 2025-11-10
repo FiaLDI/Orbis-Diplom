@@ -4,7 +4,7 @@ import { useAppSelector } from "@/app/hooks";
 export function useEmitNotification() {
     const token = useAppSelector((s) => s.auth.user?.access_token);
 
-    return (userId: number, payload: any) => {
+    return (userId: string, payload: any) => {
         if (!token) return;
         const socket = getNotificationSocket(token);
         if (!socket?.connected) return;

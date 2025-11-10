@@ -1,6 +1,9 @@
 services:
   backend:
-    build: ./apps/backend
+    image: orbis_backend_image
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
     container_name: orbis_backend
     restart: always
     env_file:

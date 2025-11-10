@@ -1,6 +1,6 @@
 export interface ComponentProps {
-    userId: number;
-    serverId: number;
-    availableRoles: { id: number; name: string; color?: string }[];
-    userRoles: { id: number; name: string }[];
+    userId: string;
+    serverId: string;
+    availableRoles: { id: string; name: string; color?: string }[];
+    userRoles: { id: string; name: string }[];
 }

@@ -1,8 +1,8 @@
 export class MessageCheckEntity {
     constructor(
         private check: {
-            chat_id: number | null;
-            user_id: number | null;
+            chat_id: string | null;
+            user_id: string | null;
         } | null
     ) {}
 

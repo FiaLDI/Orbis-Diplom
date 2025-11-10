@@ -1,10 +1,10 @@
 export interface AuditLog {
-    id: number;
-    server_id: number;
-    actor_id: number;
+    id: string;
+    server_id: string;
+    actor_id: string;
     action: string;
     target_id?: string;
     metadata?: string;
     created_at: string;
-    actor?: { id: number; username?: string };
+    actor?: { id: string; username?: string };
 }

@@ -14,7 +14,7 @@ export class ChatController {
         try {
             const dto = UpdateChatSchema.parse({
                 ...(req as any).user,
-                chatId: parseInt(req.params.id),
+                chatId: req.params.id,
                 name: req.body.name,
             });
             const entity = await this.chatService.updateChat(dto.chatId, dto.name);
@@ -32,7 +32,7 @@ export class ChatController {
         try {
             const dto = DeleteChatSchema.parse({
                 ...(req as any).user,
-                chatId: parseInt(req.params.id),
+                chatId: req.params.id,
             });
             const entity = await this.chatService.deleteChat(dto.chatId);
 
@@ -49,7 +49,7 @@ export class ChatController {
         try {
             const dto = StartChatSchema.parse({
                 ...(req as any).user,
-                userId: parseInt(req.params.id),
+                userId: req.params.id,
             });
             const entity = await this.chatService.startChat(dto.id, dto.userId);
 

@@ -4,8 +4,8 @@ import { Component as SingleMessage } from "./messages";
 import { setEditMode, setReply, clearActiveHistory, setActiveHistory } from "@/features/messages";
 import { useLazyGetMessagesQuery, useRemoveMessageMutation } from "@/features/messages";
 import { useChatMessages } from "@/features/chat";
-import { useContextMenu } from "@/features/shared";
-import { AnimatedContextMenu } from "@/features/shared/components/AnimatedContextMenu";
+import { useContextMenu } from "@/shared/hooks";
+import { AnimatedContextMenu } from "@/shared/ui";
 import { Reply, Pencil, Copy, Trash2 } from "lucide-react";
 import { Props } from "./interface";
 import { useTranslation } from "react-i18next";
@@ -35,7 +35,7 @@ export const Component: React.FC<Props> = ({ bottomRef, topRef }) => {
         HTMLUListElement
     >();
 
-    const prevChatId = useRef<number | undefined>();
+    const prevChatId = useRef<string | undefined>();
 
     useEffect(() => {
         if (activeChat?.id === prevChatId.current) return;

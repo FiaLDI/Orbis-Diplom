@@ -12,12 +12,12 @@ export class UserController {
 
     getProfileById = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const dto = GetUserProfileSchema.parse({ id: Number(req.params.id) });
+            const dto = GetUserProfileSchema.parse({ id: req.params.id });
             const entity = await this.userService.getProfileById(dto.id);
 
             return res.json({
                 message: "Profile",
-                data: entity,
+                data: entity.toPublicJSON(),
             });
         } catch (err) {
             next(err);
@@ -55,7 +55,7 @@ export class UserController {
     searchUser = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = SearchUserSchema.parse({ ...(req as any).user, name: req.query.name });
-            const entity = await this.userService.searchUser(dto.id, dto.name);
+            const entity = await this.userService.searchUser(dto.name);
 
             return res.json({
                 message: "Users",
@@ -67,6 +67,6 @@ export class UserController {
     };
 
     deleteUser = async (req: Request, res: Response, next: NextFunction) => {
-        const dto = GetUserProfileSchema.parse({ id: Number((req as any).user.id) });
+        const dto = GetUserProfileSchema.parse({ id: (req as any).user.id });
     };
 }

@@ -45,7 +45,7 @@ export const Component: React.FC = () => {
     const onSubmit: SubmitHandler<FormData> = async (data) => {
         if (!user?.id) return;
         try {
-            await updateProfile({ id: Number(user.id), data }).unwrap();
+            await updateProfile({ id: user.id, data }).unwrap();
         } catch (err) {
             console.error("Profile update error:", err);
         }

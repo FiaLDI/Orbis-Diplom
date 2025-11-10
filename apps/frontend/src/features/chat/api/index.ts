@@ -34,7 +34,7 @@ export const chatApi = createApi({
                 method: "PUT",
                 body: data,
             }),
-            invalidatesTags: (result, error, { id }) => [{ type: "Chat", id }], // 👈 триггерит обновление getChatInfo
+            invalidatesTags: (result, error, { id }) => [{ type: "Chat", id }], 
         }),
 
         deletePersonalChat: builder.mutation({

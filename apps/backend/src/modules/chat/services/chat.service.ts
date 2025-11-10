@@ -3,13 +3,13 @@ import { TYPES } from "@/di/types";
 import type { Prisma, PrismaClient } from "@prisma/client";
 import { Errors } from "@/common/errors";
 import { Chat } from "../entities/chat.entities";
-import { ServerChatIdDto } from "@/modules/servers/entities/server.chats.dto";
+import { ServerChatIdDto } from "@/modules/servers/dtos/server.chats.dto";
 
 @injectable()
 export class ChatService {
     constructor(@inject(TYPES.Prisma) private prisma: PrismaClient) {}
 
-    async getUsersChat(id: number) {
+    async getUsersChat(id: string) {
         const chats = await this.prisma.chats.findMany({
             where: {
                 chat_users: {
@@ -26,7 +26,7 @@ export class ChatService {
         return chatInfo;
     }
 
-    async getServerChat(serverId: number) {
+    async getServerChat(serverId: string) {
         const chats = await this.prisma.chats.findMany({
             where: {
                 server_chats: {
@@ -43,7 +43,7 @@ export class ChatService {
         return chatInfo;
     }
 
-    async updateChat(chatId: number, name: string) {
+    async updateChat(chatId: string, name: string) {
         const chat = await this.prisma.chats.update({
             where: { id: chatId },
             data: { name },
@@ -51,7 +51,7 @@ export class ChatService {
         return chat;
     }
 
-    async deleteChat(chatId: number) {
+    async deleteChat(chatId: string) {
         await this.prisma.chat_users.deleteMany({
             where: { chat_id: chatId },
         });
@@ -60,33 +60,40 @@ export class ChatService {
         return { message: "Deleted" };
     }
 
-    async startChat(id: number, userId: number) {
-        const existingChat = await this.prisma.$queryRaw<
-            { chat_id: number; u1: string; u2: string }[]
-        >`
-            SELECT cu1.chat_id, u1.username as u1, u2.username as u2
-            FROM chat_users cu1
-            JOIN chat_users cu2 ON cu1.chat_id = cu2.chat_id
-            JOIN users u1 ON u1.id = cu1.user_id
-            JOIN users u2 ON u2.id = cu2.user_id
-            WHERE cu1.user_id = ${Number(id)} AND cu2.user_id = ${userId}
-        `;
+    async startChat(id: string, userId: string) {
+        if (id === userId) {
+            return Errors.conflict("Cannot start chat with yourself");
+        }
 
-        const u1 = await this.prisma.users.findUnique({
-            where: { id: Number(id) },
-            select: { username: true },
-        });
-
-        const u2 = await this.prisma.users.findUnique({
-            where: { id: Number(userId) },
-            select: { username: true },
-        });
+        const [u1, u2] = await Promise.all([
+            this.prisma.users.findUnique({
+                where: { id },
+                select: { username: true }
+            }),
+            this.prisma.users.findUnique({
+                where: { id: userId },
+                select: { username: true }
+            })
+        ]);
 
         if (!u1 || !u2) {
             return Errors.notFound("User not found");
         }
+        const existingChat = await this.prisma.chats.findFirst({
+            where: {
+                chat_users: {
+                    some: { user_id: id }
+                },
+                AND: {
+                    chat_users: {
+                        some: { user_id: userId }
+                    }
+                }
+            },
+            select: { id: true }
+        });
 
-        if (existingChat.length > 0) {
+        if (existingChat) {
             return Errors.conflict("Chat already exists");
         }
 
@@ -102,7 +109,7 @@ export class ChatService {
             await tx.chat_users.createMany({
                 data: [
                     { user_id: id, chat_id: createdChat.id },
-                    { user_id: Number(userId), chat_id: createdChat.id },
+                    { user_id: userId, chat_id: createdChat.id },
                 ],
             });
 
@@ -112,12 +119,12 @@ export class ChatService {
         return chat.id;
     }
 
-    async cleanServerChats(tx: Prisma.TransactionClient, serverId: number) {
+    async cleanServerChats(tx: Prisma.TransactionClient, serverId: string) {
         await tx.server_chats.deleteMany({ where: { id_server: serverId } });
         await tx.chats.deleteMany({ where: { server_chats: { some: { id_server: serverId } } } });
     }
 
-    async listServerChats(serverId: number) {
+    async listServerChats(serverId: string) {
         const chats = await this.prisma.chats.findMany({
             where: { server_chats: { some: { id_server: serverId } } },
             select: { id: true, name: true, created_at: true },
@@ -125,7 +132,7 @@ export class ChatService {
         return chats;
     }
 
-    async createServerChat(serverId: number, creatorId: number, name = "default chat") {
+    async createServerChat(serverId: string, creatorId: string, name = "default chat") {
         const chat = await this.prisma.$transaction(async (tx) => {
             const createdChat = await tx.chats.create({
                 data: {
@@ -175,7 +182,7 @@ export class ChatService {
         return { message: "Chat deleted" };
     }
 
-    async getChatsByIds(ids: number[]) {
+    async getChatsByIds(ids: string[]) {
         return await this.prisma.chats.findMany({
             where: { id: { in: ids } },
             select: { id: true, name: true, created_at: true },

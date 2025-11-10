@@ -1,6 +1,6 @@
 export interface Props {
-    roleId: number;
+    roleId: string;
     roleName: string;
     roleColor?: string;
-    serverId: number;
+    serverId: string;
 }

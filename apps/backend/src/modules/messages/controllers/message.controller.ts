@@ -16,7 +16,7 @@ export class MessageController {
         try {
             const dto = MessageHistorySchema.parse({
                 ...(req as any).user,
-                chatId: parseInt(req.params.id),
+                chatId: req.params.id,
                 offset: Number(req.query.offset) || Number(0),
             });
             const entity = await this.messageService.getMessages({
@@ -39,7 +39,7 @@ export class MessageController {
             const dto = MessageSendSchema.parse({
                 ...(req as any).user,
                 ...req.body,
-                chatId: parseInt(req.params.id),
+                chatId: req.params.id,
             });
             const entity = await this.messageService.sendMessage({
                 id: dto.id,
@@ -61,7 +61,7 @@ export class MessageController {
         try {
             const dto = MessageHistorySchema.parse({
                 ...(req as any).user,
-                chatId: parseInt(req.params.id),
+                chatId: req.params.id,
                 offset: req.query.offset,
             });
             const entity = await this.messageService.getMessages({
@@ -84,7 +84,7 @@ export class MessageController {
             const dto = MessageEditSchema.parse({
                 ...(req as any).user,
                 ...req.body,
-                messageId: parseInt(req.params.id),
+                messageId: req.params.id,
             });
 
             const { check, checkData } = await this.messageService.checkMessage(dto.messageId);
@@ -113,7 +113,7 @@ export class MessageController {
         try {
             const dto = MessageDeleteSchema.parse({
                 ...(req as any).user,
-                messageId: parseInt(req.params.id, 10),
+                messageId: req.params.id,
             });
 
             const { check, checkData } = await this.messageService.checkMessage(dto.messageId);

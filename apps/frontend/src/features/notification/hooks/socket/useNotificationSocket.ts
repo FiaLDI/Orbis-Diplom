@@ -28,12 +28,12 @@ export const useNotificationSocket = () => {
             dispatch(addNotification(notif));
         };
 
-        const handleUserOnline = ({ userId }: { userId: number }) => {
+        const handleUserOnline = ({ userId }: { userId: string }) => {
             console.log("🟢 User online:", userId);
             dispatch(userOnline(userId));
         };
 
-        const handleUserOffline = ({ userId }: { userId: number }) => {
+        const handleUserOffline = ({ userId }: { userId: string }) => {
             console.log("🔴 User offline:", userId);
             dispatch(userOffline(userId));
         };
@@ -44,13 +44,11 @@ export const useNotificationSocket = () => {
         socket.on("user-online", handleUserOnline);
         socket.on("user-offline", handleUserOffline);
 
-        // ♻️ TTL-пинг каждые 30 секунд
         const pingInterval = setInterval(() => {
             if (socket.connected) socket.emit("ping-online");
         }, 30_000);
 
         return () => {
-            // ⚠️ ВАЖНО: НЕ вызываем socket.disconnect()!
             clearInterval(pingInterval);
             socket.off("connect", handleConnect);
             socket.off("disconnect", handleDisconnect);
