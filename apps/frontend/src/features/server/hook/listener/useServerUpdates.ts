@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 export function useServerUpdates(
     socket: any,
-    serverId: string | undefined,
+    serverId: string | undefined | null,
     trigger: any,
     dispatch: any
 ) {

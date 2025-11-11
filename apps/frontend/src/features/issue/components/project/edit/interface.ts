@@ -1,6 +1,6 @@
 export interface Props {
-    projectId: number;
-    serverId: number;
+    projectId: string;
+    serverId: string;
     projectName: string;
     projectDescription: string;
 }
