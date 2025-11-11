@@ -13,9 +13,9 @@ export interface ToastState {
 }
 
 export type ToastPosition =
-    | "top-right"
-    | "top-left"
-    | "bottom-right"
-    | "bottom-left"
-    | "top-center"
-    | "bottom-center";
+  | "top-right"
+  | "top-left"
+  | "bottom-right"
+  | "bottom-left"
+  | "center";
+

@@ -1,8 +1,9 @@
 
 import React from "react";
 import { Props } from "./interface";
-import { useMenuModel } from "./model/useMenuModel";
-import { CreateServerButton, MenuLayout, NotificationArea, PersonalButton, ServerList, SettingsButton } from "./ui";
+import { CreateServerButton, MenuLayout, NotificationArea, PersonalButton, SettingsButton } from "../../ui";
+import { useMenuModel } from "../../model/useMenuModel";
+import { ServerList } from "../../ui/view/ServerList";
 
 export const Component: React.FC<Props> = ({ socket, notificationConnect, server }) => {
 

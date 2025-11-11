@@ -3,14 +3,14 @@ import React from "react";
 import {
     ChatArea,
     IssueArea,
-    EmptyServerState,
     SettingsArea,
     FriendListArea,
     MemberListArea,
-} from "./";
+} from "../";
 
 import { MessageMenu } from "@/features/chat";
-import { CommunicateUI } from "../model/types";
+import { CommunicateUI } from "../../model/types";
+import { EmptyServerState } from "../empty/EmptyServerState";
 
 export const MainView = ({
     ui,
