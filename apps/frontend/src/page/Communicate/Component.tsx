@@ -8,14 +8,14 @@ import { AppMenu } from "./components";
 import { Profile } from "@/features/user";
 
 export const Component = () => {
-    const { socket, ui, openProjectId, serverId, serverName, isConnected } = useCommunicateModel();
+    const { socket, ui, openProjectId, serverId, serverName, isConnected, server } = useCommunicateModel();
 
     if (!socket) return null;
     if (!ui) return null;
 
     return (
         <PageLayout
-            sidebar={<AppMenu socket={socket} notificationConnect={isConnected} />}
+            sidebar={<AppMenu socket={socket} notificationConnect={isConnected} server={server} />}
             profile={<Profile />}
             main={
                 <MainView

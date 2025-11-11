@@ -13,16 +13,17 @@ export function useCommunicateModel() {
         userId,
         activeChat,
         isSettingsActive,
-        activeserver,
+        server,
         issues,
     } = useAppSelector((s) => ({
         userId: s.auth.user?.info.id,
         activeChat: s.chat.activeChat,
         isSettingsActive: s.server.isSettingsActive,
-        activeserver: s.server.activeserver,
+        server: s.server,
         issues: s.issue,
     }));
 
+    const activeserver = server.activeserver;
     const openProjectId = issues.openProjectId ?? undefined;
     const serverId = activeserver?.id;
     const serverName = activeserver?.name;
@@ -66,6 +67,7 @@ export function useCommunicateModel() {
         serverId,
         serverName,
         openProjectId,
+        server,
         isConnected,
     };
 }

@@ -70,7 +70,7 @@ export const Component: React.FC = () => {
                     setOpen(false);
                 }}
             >
-                <div className="p-0 text-white flex flex-col w-[300px]">
+                <div className="p-0 text-white flex flex-col w-[500px]">
                     <div className="bg-background w-full rounded flex items-center justify-baseline p-5">
                         <h2 className="w-full text-2xl">{t("form.title")}</h2>
                         <button
@@ -83,7 +83,7 @@ export const Component: React.FC = () => {
                         </button>
                     </div>
                     <div className="w-full flex flex-col p-5 gap-5 items-center">
-                        <div className="w-full flex flex-col gap-5 items-end">
+                        <div className="w-full flex gap-5 items-end">
                             <ModalInput
                                 placeHolder={t("form.createplaceholder")}
                                 name="servername"
@@ -94,7 +94,7 @@ export const Component: React.FC = () => {
                                 {t("form.create")}
                             </ModalButton>
                         </div>
-                        <div className="w-full flex flex-col gap-5 items-end">
+                        <div className="w-full flex gap-5 items-end">
                             <ModalInput
                                 placeHolder={t("form.connectplaceholder")}
                                 name="serverid"
