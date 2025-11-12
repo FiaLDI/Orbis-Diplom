@@ -5,16 +5,13 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    
     "preview": "vite preview",
-
     "lint": "eslint . --config eslint.config.mjs",
     "lint:fix": "eslint . --config eslint.config.mjs --fix",
-
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-
-    "fix": "npm run lint:fix && npm run format"
+    "fix": "npm run lint:fix && npm run format",
+    "lint-stage": "git add . && lint-staged && git reset"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

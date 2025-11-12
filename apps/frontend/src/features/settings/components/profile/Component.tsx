@@ -1,92 +1,129 @@
 import React from "react";
 import { useProfileFormModel } from "../../model/useProfileFormModel";
-import { FormInput } from "../../ui/field/FormInput";
-import { FormSelect } from "../../ui/field/FormSelect";
-import { FormTextArea } from "../../ui/field/FormTextArea";
-import { AvatarUpload } from "@/shared/ui/Upload/AvatarUpload";
 import { SettingsLayout } from "../../ui/layout/SettingsLayout";
 import { UserData } from "@/features/auth";
 
-export const Component: React.FC<{ user: UserData["info"] }> = ({ user }) => {
-    const {
-        form,
-        onSubmit,
-        handleAvatarChange,
-        t,
-        updateState: { isLoading, error },
-        upload,
-    } = useProfileFormModel(user);
+import {
+  FormInput,
+  FormSelect,
+  FormTextArea,
+  SubmitButton,
+  FormError,
+} from "@/shared/ui/Form";
+import { AvatarUpload } from "@/shared/ui/Upload/AvatarUpload";
+import { ProfileFormData } from "./interface";
 
-    const { register, handleSubmit, formState } = form;
-    const { errors } = formState;
+export const ProfileForm: React.FC<{ user: UserData["info"] }> = ({ user }) => {
+  const {
+    form,
+    onSubmit,
+    handleAvatarChange,
+    t,
+    updateState: { isLoading, error },
+    upload,
+  } = useProfileFormModel(user);
 
-    return (
-        <SettingsLayout>
-            <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-                <AvatarUpload
-                    avatarUrl={form.watch("avatar_url") || user?.avatar_url || "/img/icon.png"}
-                    label={t("menu.profile.form.field.avatar.label")}
-                    onSelect={handleAvatarChange}
-                    progress={upload.overallProgress}
-                    loading={upload.loading}
-                />
+  const { register, handleSubmit, formState, watch } = form;
+  const { errors } = formState;
 
-                <FormInput
-                    label={t("menu.profile.form.field.firstname.label")}
-                    placeholder={t("menu.profile.form.field.firstname.placeholder")}
-                    register={register("first_name")}
-                    error={errors.first_name?.message}
-                />
+  return (
+    <SettingsLayout>
+      <form
+        className="flex flex-col gap-5 w-full max-w-xl"
+        onSubmit={handleSubmit(onSubmit)}
+        autoComplete="off"
+      >
+        <h2 className="text-xl font-semibold mb-2">
+          {t("menu.profile.title")}
+        </h2>
 
-                <FormInput
-                    label={t("menu.profile.form.field.secondname.label")}
-                    placeholder={t("menu.profile.form.field.secondname.placeholder")}
-                    register={register("last_name")}
-                    error={errors.last_name?.message}
-                />
+        {/* Avatar upload */}
+        <AvatarUpload
+          avatarUrl={watch("avatar_url") || user?.avatar_url || "/img/icon.png"}
+          label={t("menu.profile.form.field.avatar.label")}
+          onSelect={handleAvatarChange}
+          progress={upload.overallProgress}
+          loading={upload.loading}
+        />
 
-                <FormInput
-                    label={t("menu.profile.form.field.date.label")}
-                    type="date"
-                    register={register("birth_date")}
-                />
+        {/* First name */}
+        <FormInput<ProfileFormData>
+          name="first_name"
+          type="text"
+          label={t("menu.profile.form.field.firstname.label")}
+          placeholder={t("menu.profile.form.field.firstname.placeholder")}
+          register={register}
+          error={errors.first_name}
+        />
 
-                <FormSelect
-                    label={t("menu.profile.form.field.gender.label")}
-                    register={register("gender")}
-                >
-                    <option value="">{t("menu.profile.form.field.gender.select")}</option>
-                    <option value="male">{t("menu.profile.form.field.gender.option.1")}</option>
-                    <option value="female">{t("menu.profile.form.field.gender.option.2")}</option>
-                    <option value="other">{t("menu.profile.form.field.gender.option.3")}</option>
-                </FormSelect>
+        {/* Last name */}
+        <FormInput<ProfileFormData>
+          name="last_name"
+          type="text"
+          label={t("menu.profile.form.field.secondname.label")}
+          placeholder={t("menu.profile.form.field.secondname.placeholder")}
+          register={register}
+          error={errors.last_name}
+        />
 
-                <FormInput
-                    label={t("menu.profile.form.field.location.label")}
-                    placeholder={t("menu.profile.form.field.location.placeholder")}
-                    register={register("location")}
-                    error={errors.location?.message}
-                />
+        {/* Birth date */}
+        <FormInput<ProfileFormData>
+          name="birth_date"
+          type="date"
+          label={t("menu.profile.form.field.date.label")}
+          register={register}
+          error={errors.birth_date}
+        />
 
-                <FormTextArea
-                    label={t("menu.profile.form.field.aboutme.label")}
-                    placeholder={t("menu.profile.form.field.aboutme.placeholder")}
-                    register={register("about")}
-                    error={errors.about?.message}
-                />
+        {/* Gender */}
+        <FormSelect<ProfileFormData>
+          name="gender"
+          label={t("menu.profile.form.field.gender.label")}
+          register={register}
+          error={errors.gender}
+        >
+          <option value="">{t("menu.profile.form.field.gender.select")}</option>
+          <option value="male">
+            {t("menu.profile.form.field.gender.option.1")}
+          </option>
+          <option value="female">
+            {t("menu.profile.form.field.gender.option.2")}
+          </option>
+          <option value="other">
+            {t("menu.profile.form.field.gender.option.3")}
+          </option>
+        </FormSelect>
 
-                <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="mt-3 py-2 bg-background/70 hover:bg-background text-white rounded disabled:opacity-50"
-                >
-                    {isLoading ? t("menu.profile.form.loading") : t("menu.profile.form.submit")}
-                </button>
+        {/* Location */}
+        <FormInput<ProfileFormData>
+          name="location"
+          type="text"
+          label={t("menu.profile.form.field.location.label")}
+          placeholder={t("menu.profile.form.field.location.placeholder")}
+          register={register}
+          error={errors.location}
+        />
 
-                {error && (
-                    <div className="text-red-400 text-sm">{(error as any).data?.message}</div>
-                )}
-            </form>
-        </SettingsLayout>
-    );
+        {/* About me */}
+        <FormTextArea<ProfileFormData>
+          name="about"
+          label={t("menu.profile.form.field.aboutme.label")}
+          placeholder={t("menu.profile.form.field.aboutme.placeholder")}
+          register={register}
+          error={errors.about}
+        />
+
+        <SubmitButton
+          label={
+            isLoading
+              ? t("menu.profile.form.loading")
+              : t("menu.profile.form.submit")
+          }
+          loading={isLoading}
+        />
+
+        <FormError message={(error as any)?.data?.message} />
+      </form>
+    </SettingsLayout>
+  );
 };

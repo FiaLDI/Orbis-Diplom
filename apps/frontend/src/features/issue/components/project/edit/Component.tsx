@@ -1,105 +1,143 @@
-import React, { useState } from "react";
-import { ModalInput, ModalLayout } from "@/shared";
-import { Props } from "./interface";
-import { useDeleteProjectMutation, useUpdateProjectMutation } from "@/features/issue";
+import React from "react";
+import { ModalLayout } from "@/shared";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { Ellipsis, X } from "lucide-react";
 import { useEmitServerUpdate } from "@/features/server";
+import {
+  useDeleteProjectMutation,
+  useUpdateProjectMutation,
+} from "@/features/issue";
+import { Props } from "./interface";
+import { ProjectEditFormData } from "./interface";
 
-export const Component: React.FC<Props> = ({
-    projectId,
-    serverId,
-    projectName,
-    projectDescription,
+import {
+  FormInput,
+  FormTextArea,
+  SubmitButton,
+  FormError,
+} from "@/shared/ui/Form";
+
+export const ProjectEditModal: React.FC<Props> = ({
+  projectId,
+  serverId,
+  projectName,
+  projectDescription,
 }) => {
-    const [open, setOpen] = useState(false);
-    const [name, setName] = useState(projectName);
-    const [description, setDescription] = useState(projectDescription);
+  const [open, setOpen] = React.useState(false);
+  const emitServerUpdate = useEmitServerUpdate();
+  const [updateProject, updateState] = useUpdateProjectMutation();
+  const [removeProject, removeState] = useDeleteProjectMutation();
 
-    const [updateProject] = useUpdateProjectMutation();
-    const [removeProject] = useDeleteProjectMutation();
+  const form = useForm<ProjectEditFormData>({
+    defaultValues: {
+      name: projectName || "",
+      description: projectDescription || "",
+    },
+  });
 
-    const emitServerUpdate = useEmitServerUpdate();
+  const { register, handleSubmit, formState } = form;
+  const { errors } = formState;
 
-    const save = async () => {
-        if (!name.trim() || !description.trim()) return;
+  const onSubmit: SubmitHandler<ProjectEditFormData> = async (data) => {
+    if (!data.name.trim() || !data.description.trim()) return;
 
-        try {
-            await updateProject({ projectId, serverId, data: { name, description } }).unwrap();
-            emitServerUpdate(serverId);
-            setOpen(false);
-        } catch (err) {
-            console.error("Ошибка при обновлении проекта:", err);
-        }
-    };
+    try {
+      await updateProject({ projectId, serverId, data }).unwrap();
+      emitServerUpdate(serverId);
+      setOpen(false);
+    } catch (err) {
+      console.error("Ошибка при обновлении проекта:", err);
+    }
+  };
 
-    const rem = async () => {
-        try {
-            await removeProject({ serverId, projectId }).unwrap();
-            emitServerUpdate(serverId);
-            setOpen(false);
-        } catch (err) {
-            console.error("Ошибка при удалении проекта:", err);
-        }
-    };
+  const handleDelete = async () => {
+    try {
+      await removeProject({ serverId, projectId }).unwrap();
+      emitServerUpdate(serverId);
+      setOpen(false);
+    } catch (err) {
+      console.error("Ошибка при удалении проекта:", err);
+    }
+  };
 
-    return (
-        <>
+  return (
+    <>
+      {/* Кнопка открытия */}
+      <button
+        onClick={() => setOpen(true)}
+        className="cursor-pointer p-2 rounded text-sm hover:text-black"
+      >
+        <Ellipsis />
+      </button>
+
+      {/* Модалка */}
+      <ModalLayout open={open} onClose={() => setOpen(false)}>
+        <div className="p-0 w-[420px] text-white">
+          {/* Заголовок */}
+          <div className="bg-background w-full rounded flex items-center justify-between p-5">
+            <div className="font-semibold text-lg">Project editor</div>
             <button
-                onClick={() => setOpen(true)}
-                className="cursor-pointer p-5 rounded text-sm hover:text-black"
+              className="cursor-pointer p-0 w-fit"
+              onClick={() => setOpen(false)}
             >
-                <Ellipsis />
+              <X />
             </button>
+          </div>
 
-            <ModalLayout open={open} onClose={() => setOpen(false)}>
-                <div className="p-0 w-[400px]">
-                    <div className="bg-background w-full rounded flex items-center justify-baseline p-5">
-                        <div className="w-full">Project editor</div>
-                        <button
-                            className="cursor-pointer p-0 w-fit"
-                            onClick={() => {
-                                setOpen((prev) => !prev);
-                            }}
-                        >
-                            <X />
-                        </button>
-                    </div>
-                    <div className="p-5">
-                        <div>
-                            <label className="p-3 block">Project name</label>
-                            <ModalInput
-                                placeHolder="Enter project name"
-                                name="projectname"
-                                value={name}
-                                change={(e) => setName((e.target as HTMLInputElement).value)}
-                            />
-                        </div>
+          {/* Форма */}
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="p-5 flex flex-col gap-5"
+            autoComplete="off"
+          >
+            {/* Название проекта */}
+            <FormInput<ProjectEditFormData>
+              name="name"
+              label="Project name"
+              placeholder="Enter project name"
+              register={register}
+              validation={{ required: "Name is required" }}
+              error={errors.name}
+            />
 
-                        <div className="">
-                            <label className="p-3 block">Project description</label>
-                            <textarea
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                className="w-full border rounded px-2 py-1 bg-transparent"
-                            />
-                        </div>
-                        <div className="flex gap-5">
-                            <button
-                                className="mt-4 w-full bg-background/80 text-white py-2 rounded hover:bg-background disabled:opacity-50"
-                                onClick={rem}
-                            >
-                                Delete
-                            </button>
-                            <button
-                                className="mt-4 w-full bg-background/80 text-white py-2 rounded hover:bg-background disabled:opacity-50"
-                                onClick={save}
-                            >
-                                Save
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </ModalLayout>
-        </>
-    );
+            {/* Описание проекта */}
+            <FormTextArea<ProjectEditFormData>
+              name="description"
+              label="Project description"
+              placeholder="Enter project description"
+              register={register}
+              validation={{ required: "Description is required" }}
+              error={errors.description}
+            />
+
+            {/* Ошибки */}
+            <FormError
+              message={
+                (updateState.error as any)?.data?.message ||
+                (removeState.error as any)?.data?.message
+              }
+            />
+
+            {/* Кнопки */}
+            <div className="flex gap-3 mt-2">
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={removeState.isLoading}
+                className="flex-1 bg-red-600 hover:bg-red-700 py-2 rounded text-white disabled:opacity-60"
+              >
+                {removeState.isLoading ? "Deleting..." : "Delete"}
+              </button>
+
+              <SubmitButton
+                label={updateState.isLoading ? "Saving..." : "Save"}
+                loading={updateState.isLoading}
+                className="flex-1"
+              />
+            </div>
+          </form>
+        </div>
+      </ModalLayout>
+    </>
+  );
 };

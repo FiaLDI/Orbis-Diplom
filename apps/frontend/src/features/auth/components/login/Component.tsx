@@ -1,78 +1,84 @@
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLoginUserMutation } from "../../api";
+import { useLoginUserMutation } from "@/features/auth/api";
 import { useNavigate } from "react-router-dom";
-import { InputField, SubmitButton } from "../fields";
 import { useTranslation } from "react-i18next";
-import { LoginFormData, loginSchema } from "../../validation";
+import { LoginFormData, loginSchema } from "@/features/auth/validation";
 
-export const Component: React.FC = () => {
-    const { t } = useTranslation("auth");
-    const navigate = useNavigate();
-    const [login, { isLoading, error }] = useLoginUserMutation();
+import { FormInput, SubmitButton, FormError } from "@/shared/ui/Form";
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<LoginFormData>({
-        resolver: zodResolver(loginSchema),
-    });
+export const LoginForm: React.FC = () => {
+  const { t } = useTranslation("auth");
+  const navigate = useNavigate();
+  const [login, { isLoading, error }] = useLoginUserMutation();
 
-    const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
-        try {
-            await login(data).unwrap();
-        } catch (err) {
-            console.error("Login error:", err);
-        }
-    };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
 
-    return (
-        <div className="p-10 lg:p-10 rounded-md bg-background/30 text-white w-[450px]">
-            <form
-                onSubmit={handleSubmit(onSubmit)}
-                autoComplete="off"
-                className="flex flex-col gap-5"
-            >
-                <h1 className="text-2xl text-center">{t("login.title")}</h1>
+  const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
+    try {
+      await login(data).unwrap();
+    } catch (err) {
+      console.error("Login error:", err);
+    }
+  };
 
-                <InputField<LoginFormData>
-                    type="email"
-                    placeholder={t("login.email")}
-                    name="email"
-                    register={register}
-                    error={errors.email}
-                />
+  return (
+    <div
+      className={
+        "p-10 rounded-md bg-background/30 text-white w-[450px] flex flex-col items-center"
+      }
+    >
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        autoComplete="off"
+        className="flex flex-col gap-5 w-full"
+      >
+        <h1 className="text-2xl text-center font-semibold">
+          {t("login.title")}
+        </h1>
 
-                <InputField<LoginFormData>
-                    type="password"
-                    placeholder={t("login.password")}
-                    name="password"
-                    register={register}
-                    error={errors.password}
-                />
+        <FormInput<LoginFormData>
+          name="email"
+          type="email"
+          label={t("login.email")}
+          placeholder={t("login.email")}
+          register={register}
+          error={errors.email}
+        />
 
-                <SubmitButton label={t("login.submit")} disabled={isLoading} />
+        <FormInput<LoginFormData>
+          name="password"
+          type="password"
+          label={t("login.password")}
+          placeholder={t("login.password")}
+          register={register}
+          error={errors.password}
+        />
 
-                {error && (
-                    <div className="text-red-400 text-center mt-2">
-                        Ошибка: {(error as any).data?.message}
-                    </div>
-                )}
+        <SubmitButton label={t("login.submit")} loading={isLoading} />
 
-                <span className="text-center">
-                    <a
-                        href=""
-                        onClick={(e) => {
-                            e.preventDefault();
-                            navigate("/register");
-                        }}
-                    >
-                        {t("login.register")}
-                    </a>
-                </span>
-            </form>
-        </div>
-    );
+        <FormError message={(error as any)?.data?.message} />
+
+        <span className="text-center text-sm text-white/70 mt-2">
+          <a
+            href="#"
+            className="underline hover:text-white"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/register");
+            }}
+          >
+            {t("login.register")}
+          </a>
+        </span>
+      </form>
+    </div>
+  );
 };

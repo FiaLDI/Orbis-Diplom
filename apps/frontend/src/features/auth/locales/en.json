@@ -1,4 +1,3 @@
-
 {
   "login": {
     "title": "Sign in to your account",
@@ -11,10 +10,12 @@
     "email": {
       "title": "Start registration",
       "placeholder": "Email",
+      "label": "Email",
       "submit": "Send verification code"
     },
     "code": {
       "placeholder": "Enter the code",
+      "label": "Code",
       "submit": "Continue registration"
     },
     "register": {

@@ -1,4 +1,4 @@
 import React from "react";
-import { SettingsServer } from "@/features/server";
+import { ServerSettingsForm } from "@/features/server";
 
-export const SettingsArea = () => <SettingsServer />;
+export const SettingsArea = () => <ServerSettingsForm />;
