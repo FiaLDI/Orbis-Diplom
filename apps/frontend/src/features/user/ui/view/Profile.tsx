@@ -1,7 +1,6 @@
 import React from "react";
 
-export const ProfileView: React.FC<{userInfo: any}> = ({userInfo}) => {
-
+export const ProfileView: React.FC<{ userInfo: any }> = ({ userInfo }) => {
     if (!userInfo) return null;
 
     return (
@@ -22,9 +21,7 @@ export const ProfileView: React.FC<{userInfo: any}> = ({userInfo}) => {
                     <div className="truncate ">{userInfo?.username}</div>
                 </div>
                 <div className="flex justify-between gap-10">
-                    <button
-                        className={"px-5 py-2 bg-background/70 data-[active]:bg-background"}
-                    >
+                    <button className={"px-5 py-2 bg-background/70 data-[active]:bg-background"}>
                         About
                     </button>
                 </div>

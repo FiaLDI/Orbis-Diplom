@@ -10,19 +10,16 @@ import { shallowEqual } from "react-redux";
 export function useCommunicateModel() {
     const dispatch = useAppDispatch();
 
-    const {
-        userId,
-        activeChat,
-        isSettingsActive,
-        server,
-        issues,
-    } = useAppSelector((s) => ({
-        userId: s.auth.user?.info.id,
-        activeChat: s.chat.activeChat,
-        isSettingsActive: s.server.isSettingsActive,
-        server: s.server,
-        issues: s.issue,
-    }), shallowEqual);
+    const { userId, activeChat, isSettingsActive, server, issues } = useAppSelector(
+        (s) => ({
+            userId: s.auth.user?.info.id,
+            activeChat: s.chat.activeChat,
+            isSettingsActive: s.server.isSettingsActive,
+            server: s.server,
+            issues: s.issue,
+        }),
+        shallowEqual
+    );
 
     const activeserver = server.activeserver;
     const openProjectId = issues.openProjectId ?? undefined;
@@ -58,7 +55,6 @@ export function useCommunicateModel() {
             isSettingsActive: Boolean(isSettingsActive),
         };
     }, [activeChat, activeserver, serverId, issueMode, isSettingsActive]);
-
 
     const { isConnected } = useNotificationSocket();
 

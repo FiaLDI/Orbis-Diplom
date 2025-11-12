@@ -4,11 +4,7 @@ import { ProfileLayout } from "../../ui/Layout/ProfileLayout";
 import { ProfileView } from "../../ui/view/Profile";
 
 export const Component: React.FC = () => {
-    const {
-        userInfo,
-        open,
-        closeProfileHandler,
-    } = usePublicProfileModel();
+    const { userInfo, open, closeProfileHandler } = usePublicProfileModel();
 
     if (!userInfo) return null;
 
@@ -17,7 +13,7 @@ export const Component: React.FC = () => {
             userInfo={userInfo}
             open={open}
             closeProfileHandler={closeProfileHandler}
-            Profile={<ProfileView userInfo={userInfo}/>}
+            Profile={<ProfileView userInfo={userInfo} />}
         />
     );
 };

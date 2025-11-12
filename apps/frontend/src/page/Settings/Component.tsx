@@ -11,16 +11,16 @@ import {
 import { useAppSelector } from "@/app/hooks";
 
 const SettingsContent: Record<string, React.FC<any>> = {
-  Account: AccountSettings,
-  Profile: ProfileSettings,
-  Appearance: AppearanceSettings,
-  Language: LanguageSettings,
+    Account: AccountSettings,
+    Profile: ProfileSettings,
+    Appearance: AppearanceSettings,
+    Language: LanguageSettings,
 };
 
 export const Component: React.FC = () => {
     const { t } = useTranslation("settings");
     const settings = useAppSelector((s) => s.settings);
-    
+
     const user = useAppSelector((s) => s.auth.user?.info);
     const [currentSettingsPage, setCurrentSettingsPage] = useState<string>("Account");
     const [logout] = useLogoutUserMutation();
@@ -80,7 +80,7 @@ export const Component: React.FC = () => {
                         {t(`title.${currentSettingsPage.toLowerCase()}`)}
                     </h1>
                     <div className="p-5">
-                        <CurrentSettings settings={settings} user={user}/>
+                        <CurrentSettings settings={settings} user={user} />
                     </div>
                 </div>
             </div>

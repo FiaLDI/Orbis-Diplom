@@ -4,30 +4,27 @@ import { SettingsLayout } from "../../ui/layout/SettingsLayout";
 import { AppearanceButton } from "../../ui/button/AppearanceButton";
 import { settingsState } from "../../types";
 
-export const Component:  React.FC<{settings?: settingsState}> = ({settings}) => {
-    const {t,
-        setStandartTheme,
-        setLightTheme,
-        setDarkTheme} = useApperanceModel();
+export const Component: React.FC<{ settings?: settingsState }> = ({ settings }) => {
+    const { t, setStandartTheme, setLightTheme, setDarkTheme } = useApperanceModel();
 
     if (!settings) return null;
 
     return (
         <SettingsLayout>
             <h3 className="text-left">{t("menu.appearance.theme.title")}</h3>
-            <AppearanceButton 
+            <AppearanceButton
                 theme="standart"
                 handler={setStandartTheme}
                 title={t("menu.appearance.theme.standart")}
                 isCurrent={settings.theme === "standart"}
             />
-            <AppearanceButton 
+            <AppearanceButton
                 theme="light"
                 handler={setLightTheme}
                 title={t("menu.appearance.theme.light")}
                 isCurrent={settings.theme === "light"}
             />
-            <AppearanceButton 
+            <AppearanceButton
                 theme="dark"
                 handler={setDarkTheme}
                 title={t("menu.appearance.theme.dark")}

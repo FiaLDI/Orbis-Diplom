@@ -1,12 +1,6 @@
 import React from "react";
 
-import {
-    ChatArea,
-    IssueArea,
-    SettingsArea,
-    FriendListArea,
-    MemberListArea,
-} from "../";
+import { ChatArea, IssueArea, SettingsArea, FriendListArea, MemberListArea } from "../";
 
 import { MessageMenu } from "@/features/chat";
 import { CommunicateUI } from "../../model/types";
@@ -28,20 +22,16 @@ export const MainView = ({
             {!ui.issueMode && <MessageMenu />}
 
             {ui.issueMode && ui.hasActiveServer && (
-                <IssueArea
-                    serverId={serverId}
-                    projectId={openProjectId}
-                    serverName={serverName}
-                />
+                <IssueArea serverId={serverId} projectId={openProjectId} serverName={serverName} />
             )}
 
             {ui.isPersonalChat && <ChatArea />}
 
             {ui.isServerChat && !ui.isSettingsActive && <ChatArea />}
 
-            {ui.hasActiveServer && !ui.hasActiveChat && !ui.issueMode && !ui.isSettingsActive &&
+            {ui.hasActiveServer && !ui.hasActiveChat && !ui.issueMode && !ui.isSettingsActive && (
                 <EmptyServerState />
-            }
+            )}
 
             {ui.isSettingsActive && <SettingsArea />}
 

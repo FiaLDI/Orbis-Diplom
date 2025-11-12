@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { Toast } from "../types";
 
-export function useToastItemModel({toast, onClose}: { toast: Toast; onClose: () => void }) {
-    
+export function useToastItemModel({ toast, onClose }: { toast: Toast; onClose: () => void }) {
     const [progress, setProgress] = useState(100);
-    
+
     useEffect(() => {
         if (!toast) return;
         if (!toast.duration) return;
@@ -27,14 +26,13 @@ export function useToastItemModel({toast, onClose}: { toast: Toast; onClose: () 
         warning: "bg-yellow-500 text-black",
         info: "bg-blue-500",
     };
-    
-    
+
     return {
         progress,
         onClose,
         styles,
         duration: toast.duration,
         message: toast.message,
-        type: toast.type
+        type: toast.type,
     };
 }

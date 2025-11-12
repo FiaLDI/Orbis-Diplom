@@ -12,9 +12,9 @@ export function useMenuModel(socket: any, server: any) {
     const [getServersUser] = useLazyGetServersQuery({});
     const navigator = useNavigate();
 
-    React.useEffect(()=>{
-        getServersUser({})
-    }, [])
+    React.useEffect(() => {
+        getServersUser({});
+    }, []);
 
     const setActiveServerHandler = (id: string) => {
         const srv = server.servers.find((s: any) => s.id === id);
@@ -28,22 +28,21 @@ export function useMenuModel(socket: any, server: any) {
         socket?.emit("join-server", id);
     };
 
-
     const setDisableServerHandler = () => {
         dispatch(setActiveChat(undefined));
         dispatch(setActiveServer(undefined));
         dispatch(setOpenProject(null));
         dispatch(setOpenIssue(null));
-    }
+    };
 
     const navigateToSettingsPage = () => {
-        navigator("/app/settings")
-    }
+        navigator("/app/settings");
+    };
 
     return {
         avatarUrl,
         setActiveServerHandler,
         setDisableServerHandler,
-        navigateToSettingsPage
+        navigateToSettingsPage,
     };
 }

@@ -46,7 +46,6 @@ export const issueApi = createApi({
             invalidatesTags: (result, error, { serverId }) => [{ type: "Projects", id: serverId }],
         }),
 
-        
         getIssues: builder.query<any[], { serverId: string; projectId: string }>({
             query: ({ serverId, projectId }) => `/servers/${serverId}/projects/${projectId}/issues`,
             providesTags: (result, error, { projectId }) =>
@@ -102,7 +101,6 @@ export const issueApi = createApi({
             }),
         }),
 
-        
         getStatuses: builder.query({
             query: (serverId) => `/servers/${serverId}/issues/statuses`,
             providesTags: [{ type: "Statuses", id: "LIST" }],
@@ -113,7 +111,6 @@ export const issueApi = createApi({
             providesTags: [{ type: "Priorities", id: "LIST" }],
             transformResponse: (response: any) => response.data,
         }),
-
 
         getChatIssue: builder.query({
             query: ({ serverId, issueId }) => `/servers/${serverId}/issues/${issueId}/chats`,

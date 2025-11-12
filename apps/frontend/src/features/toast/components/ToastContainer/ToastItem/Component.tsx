@@ -1,13 +1,12 @@
 import React from "react";
 import { Toast } from "@/features/toast/types";
-import { motion,  } from "framer-motion";
+import { motion } from "framer-motion";
 import { useToastItemModel } from "@/features/toast/model/useToastItemModel";
 import { toastMotion } from "@/features/toast/ui/animation/ToastMotion";
 import { ProgressBar } from "@/features/toast/ui/animation/ProgressBar";
 
 export const Component = (props: { toast: Toast; onClose: () => void }) => {
-    
-    const {onClose, type, styles, message, duration, progress} = useToastItemModel(props);
+    const { onClose, type, styles, message, duration, progress } = useToastItemModel(props);
 
     return (
         <motion.div

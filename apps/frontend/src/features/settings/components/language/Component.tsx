@@ -3,8 +3,8 @@ import { SettingsLayout } from "../../ui/layout/SettingsLayout";
 import { settingsState } from "../..";
 import { useLanguageModel } from "../../model/useLanguageModel";
 
-export const Component: React.FC<{settings?: settingsState}> = ({settings}) => {
-    const {t, handleChangeLanguage } = useLanguageModel()
+export const Component: React.FC<{ settings?: settingsState }> = ({ settings }) => {
+    const { t, handleChangeLanguage } = useLanguageModel();
 
     if (!settings) return null;
 

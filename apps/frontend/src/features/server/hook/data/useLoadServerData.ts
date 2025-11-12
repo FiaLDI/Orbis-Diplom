@@ -21,9 +21,9 @@ import {
 import { useAppDispatch } from "@/app/hooks";
 import { setActiveChat } from "@/features/chat";
 
-export function useLoadServerData({serverId}: {serverId?: string}) {
+export function useLoadServerData({ serverId }: { serverId?: string }) {
     const dispatch = useAppDispatch();
-    
+
     const [triggerMembers] = useLazyGetServersMembersQuery();
     const [getServer] = useLazyGetServersInsideQuery();
     const [getPermission] = useLazyGetPermissionsQuery();
@@ -66,6 +66,5 @@ export function useLoadServerData({serverId}: {serverId?: string}) {
         fetchServerData();
     }, [serverId, fetchServerData]);
 
-    
-    return {getProject, getServerInside, getServerRoles, getServerChats}
+    return { getProject, getServerInside, getServerRoles, getServerChats };
 }

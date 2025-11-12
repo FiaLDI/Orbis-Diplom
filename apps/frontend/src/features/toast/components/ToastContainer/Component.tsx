@@ -5,7 +5,7 @@ import { useToastModel } from "../../model/useToastModel";
 import { ToastLayout } from "../../ui/layout/ToastLayout";
 
 export const Component = () => {
-    const {toasts, position, removeToastHandler} = useToastModel();
+    const { toasts, position, removeToastHandler } = useToastModel();
 
     return (
         <ToastLayout position={position}>

@@ -9,7 +9,6 @@ import { useTranslation } from "react-i18next";
 import { ChatContextMenuProps } from "./interface";
 import { AnimatedContextMenu } from "../AnimatedContextMenu";
 
-
 export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({
     triggerElement,
     chat,

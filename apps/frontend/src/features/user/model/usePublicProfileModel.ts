@@ -12,8 +12,8 @@ export function usePublicProfileModel() {
     const closeProfileHandler = () => {
         dispatch(closeProfile());
         setOpen((prev) => !prev);
-    }
-    
+    };
+
     useEffect(() => {
         if (check) {
             setOpen(true);

@@ -1,5 +1,3 @@
-
-
 export interface ContextMenuProps {
     visible: boolean;
     x: number;

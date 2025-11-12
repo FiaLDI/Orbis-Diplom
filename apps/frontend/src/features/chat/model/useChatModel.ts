@@ -1,8 +1,3 @@
-
 export function useProfileFormModel() {
-  
-
-  return {
-    
-  };
+    return {};
 }

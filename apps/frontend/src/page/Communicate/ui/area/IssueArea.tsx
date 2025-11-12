@@ -11,15 +11,8 @@ export const IssueArea = ({
     serverName?: string;
 }) => {
     return projectId ? (
-        <IssueComponent
-            serverId={serverId}
-            projectId={projectId}
-            name={serverName}
-        />
+        <IssueComponent serverId={serverId} projectId={projectId} name={serverName} />
     ) : (
-        <ProjectComponent
-            serverId={serverId}
-            name={serverName}
-        />
+        <ProjectComponent serverId={serverId} name={serverName} />
     );
 };
