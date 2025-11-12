@@ -5,6 +5,7 @@ import { setOpenIssue, setOpenProject, toggleIssueMode } from "@/features/issue"
 import { useUserData } from "@/features/user";
 import { useNotificationSocket } from "@/features/notification";
 import { useServerData } from "@/features/server";
+import { shallowEqual } from "react-redux";
 
 export function useCommunicateModel() {
     const dispatch = useAppDispatch();
@@ -21,7 +22,7 @@ export function useCommunicateModel() {
         isSettingsActive: s.server.isSettingsActive,
         server: s.server,
         issues: s.issue,
-    }));
+    }), shallowEqual);
 
     const activeserver = server.activeserver;
     const openProjectId = issues.openProjectId ?? undefined;

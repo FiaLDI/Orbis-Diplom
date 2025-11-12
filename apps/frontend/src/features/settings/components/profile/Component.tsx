@@ -1,32 +1,36 @@
 import React from "react";
 import { useProfileFormModel } from "../../model/useProfileFormModel";
-import { AvatarUpload } from "../../ui/upload/AvatarUpload";
 import { FormInput } from "../../ui/field/FormInput";
 import { FormSelect } from "../../ui/field/FormSelect";
 import { FormTextArea } from "../../ui/field/FormTextArea";
+import { AvatarUpload } from "@/shared/ui/Upload/AvatarUpload";
+import { SettingsLayout } from "../../ui/layout/SettingsLayout";
+import { UserData } from "@/features/auth";
 
-export const Component = () => {
+export const Component: React.FC<{user: UserData["info"]}> = ({user}) => {
   const {
     form,
     onSubmit,
     handleAvatarChange,
     t,
     updateState: { isLoading, error },
-    user,
-  } = useProfileFormModel();
+    upload
+  } = useProfileFormModel(user);
 
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
 
   return (
-    <div className="flex flex-col gap-4 p-5 bg-foreground/30 w-full text-white">
+    <SettingsLayout>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
         
         <AvatarUpload
-            avatarUrl={form.watch("avatar_url")}
-            label={t("upload.avatar")}
-            onSelect={(file) => handleAvatarChange(file)}
-            />
+          avatarUrl={form.watch("avatar_url") || user?.avatar_url || "/img/icon.png"}
+          label={t("menu.profile.form.field.avatar.label")}
+          onSelect={handleAvatarChange}
+          progress={upload.overallProgress}
+          loading={upload.loading}
+        />
 
         <FormInput
           label={t("menu.profile.form.field.firstname.label")}
@@ -82,6 +86,6 @@ export const Component = () => {
 
         {error && <div className="text-red-400 text-sm">{(error as any).data?.message}</div>}
       </form>
-    </div>
+    </SettingsLayout>
   );
 };

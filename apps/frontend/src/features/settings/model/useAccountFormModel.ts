@@ -3,9 +3,9 @@ import { useAppSelector } from "@/app/hooks";
 import { useUpdateAccountMutation } from "@/features/settings";
 import { useTranslation } from "react-i18next";
 import type {FormData} from "../components/account/interface";
+import { UserData } from "@/features/auth";
 
-export function useAccountFormModel() {
-  const user = useAppSelector((s) => s.auth.user?.info);
+export function useAccountFormModel(user: UserData["info"]) {
   const { t } = useTranslation("settings");
   const [updateAccount, updateState] = useUpdateAccountMutation();
 

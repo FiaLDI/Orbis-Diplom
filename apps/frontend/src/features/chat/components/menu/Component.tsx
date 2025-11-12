@@ -8,7 +8,6 @@ import {
     useCreateChatMutation,
     useEmitServerUpdate,
 } from "@/features/server";
-import { useLazyGetChatsUsersQuery } from "@/features/user";
 import { toggleIssueMode } from "@/features/issue";
 import { shallowEqual } from "react-redux";
 import { useTranslation } from "react-i18next";

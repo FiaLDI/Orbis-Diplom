@@ -1,26 +1,25 @@
 import React from "react";
 import { useAccountFormModel } from "../../model/useAccountFormModel";
 import { FormInput } from "../../ui/field/FormInput";
+import { SettingsLayout } from "../../ui/layout/SettingsLayout";
+import { UserData } from "@/features/auth";
 
-export const Component = () => {
-  const { form, onSubmit, t, error, isLoading } = useAccountFormModel();
+export const Component: React.FC<{user: UserData["info"]}> = ({user}) => {
+  const { form, onSubmit, t, error, isLoading } = useAccountFormModel(user);
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
 
   return (
-    <div className="p-5 bg-foreground/30 text-white rounded-lg">
+    <SettingsLayout>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
-        
-        {/* USERNAME */}
-       <FormInput
-            label={t("menu.account.form.field.username.label")}
-            placeholder={t("menu.account.form.field.username.placeholder")}
-            error={errors.username?.message}
-            type="text"
-            register={register("username", { required: "Введите имя" })}
-        />
+        <FormInput
+              label={t("menu.account.form.field.username.label")}
+              placeholder={t("menu.account.form.field.username.placeholder")}
+              error={errors.username?.message}
+              type="text"
+              register={register("username", { required: "Введите имя" })}
+          />
 
-        {/* EMAIL */}
         <FormInput
             label={t("menu.account.form.field.email.label")}
             placeholder={t("menu.account.form.field.email.placeholder")}
@@ -34,8 +33,6 @@ export const Component = () => {
             })}
         />
 
-
-        {/* PASSWORD */}
         <FormInput
             label={t("menu.account.form.field.password.label")}
             placeholder={t("menu.account.form.field.password.placeholder")}
@@ -46,7 +43,6 @@ export const Component = () => {
             })}
         />
 
-        {/* NUMBER */}
         <FormInput
             label={t("menu.account.form.field.number.label")}
             placeholder={t("menu.account.form.field.number.placeholder")}
@@ -67,6 +63,6 @@ export const Component = () => {
 
         {error && <div className="error-text">{(error as any).data?.message}</div>}
       </form>
-    </div>
+    </SettingsLayout>
   );
 };

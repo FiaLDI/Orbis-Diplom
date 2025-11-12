@@ -1,46 +1,38 @@
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import React from "react";
-import { setTheme } from "../../slice";
-import { useTranslation } from "react-i18next";
+import { useApperanceModel } from "../../model/useApperanceModel";
+import { SettingsLayout } from "../../ui/layout/SettingsLayout";
+import { AppearanceButton } from "../../ui/button/AppearanceButton";
+import { settingsState } from "../../types";
 
-export const Component: React.FC = () => {
-    const settings = useAppSelector((s) => s.settings);
-    const dispatch = useAppDispatch();
-    const { t } = useTranslation("settings");
+export const Component:  React.FC<{settings?: settingsState}> = ({settings}) => {
+    const {t,
+        setStandartTheme,
+        setLightTheme,
+        setDarkTheme} = useApperanceModel();
+
+    if (!settings) return null;
 
     return (
-        <div className="flex flex-col gap-5 p-5 text-center min-h-[200px] test-bg ">
+        <SettingsLayout>
             <h3 className="text-left">{t("menu.appearance.theme.title")}</h3>
-            <button
-                className={
-                    settings.theme === "standart"
-                        ? "bg-blue-950 p-10 w-[250px] border border-white cursor-pointer"
-                        : "bg-blue-950 p-10 w-[250px] cursor-pointer"
-                }
-                onClick={() => dispatch(setTheme("standart"))}
-            >
-                <div className="">{t("menu.appearance.theme.standart")}</div>
-            </button>
-            <button
-                className={
-                    settings.theme === "light"
-                        ? "bg-gray-400 p-10 w-[250px] border border-white cursor-pointer"
-                        : "bg-gray-400 p-10 w-[250px] cursor-pointer"
-                }
-                onClick={() => dispatch(setTheme("light"))}
-            >
-                <div className="">{t("menu.appearance.theme.light")}</div>
-            </button>
-            <button
-                className={
-                    settings.theme === "dark"
-                        ? "bg-gray-900 p-10 w-[250px] border border-white cursor-pointer"
-                        : "bg-gray-900 p-10 w-[250px] cursor-pointer"
-                }
-                onClick={() => dispatch(setTheme("dark"))}
-            >
-                <div className="">{t("menu.appearance.theme.dark")}</div>
-            </button>
-        </div>
+            <AppearanceButton 
+                theme="standart"
+                handler={setStandartTheme}
+                title={t("menu.appearance.theme.standart")}
+                isCurrent={settings.theme === "standart"}
+            />
+            <AppearanceButton 
+                theme="light"
+                handler={setLightTheme}
+                title={t("menu.appearance.theme.light")}
+                isCurrent={settings.theme === "light"}
+            />
+            <AppearanceButton 
+                theme="dark"
+                handler={setDarkTheme}
+                title={t("menu.appearance.theme.dark")}
+                isCurrent={settings.theme === "dark"}
+            />
+        </SettingsLayout>
     );
 };

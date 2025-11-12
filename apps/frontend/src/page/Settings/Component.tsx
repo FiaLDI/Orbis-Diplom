@@ -8,19 +8,24 @@ import {
     LanguageSettings,
     ProfileSettings,
 } from "@/features/settings";
+import { useAppSelector } from "@/app/hooks";
 
-const SettingsContent: Record<string, JSX.Element> = {
-    Account: <AccountSettings />,
-    Profile: <ProfileSettings />,
-    Appearance: <AppearanceSettings />,
-    Language: <LanguageSettings />,
+const SettingsContent: Record<string, React.FC<any>> = {
+  Account: AccountSettings,
+  Profile: ProfileSettings,
+  Appearance: AppearanceSettings,
+  Language: LanguageSettings,
 };
 
 export const Component: React.FC = () => {
     const { t } = useTranslation("settings");
+    const settings = useAppSelector((s) => s.settings);
+    
+    const user = useAppSelector((s) => s.auth.user?.info);
     const [currentSettingsPage, setCurrentSettingsPage] = useState<string>("Account");
     const [logout] = useLogoutUserMutation();
     const navigate = useNavigate();
+    const CurrentSettings = SettingsContent[currentSettingsPage];
 
     const menuItems = Object.keys(SettingsContent);
 
@@ -74,7 +79,9 @@ export const Component: React.FC = () => {
                     <h1 className="p-5 border-b border-b-[#ffffff52]">
                         {t(`title.${currentSettingsPage.toLowerCase()}`)}
                     </h1>
-                    <div className="p-5">{SettingsContent[currentSettingsPage]}</div>
+                    <div className="p-5">
+                        <CurrentSettings settings={settings} user={user}/>
+                    </div>
                 </div>
             </div>
         </div>

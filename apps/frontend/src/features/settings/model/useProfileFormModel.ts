@@ -4,9 +4,10 @@ import { uploadFiles } from "@/features/upload";
 import { useUpdateProfileMutation } from "@/features/settings";
 import { useTranslation } from "react-i18next";
 import type {FormData} from "../components/profile/interface";
+import { UserData } from "@/features/auth";
 
-export function useProfileFormModel() {
-  const user = useAppSelector((s) => s.auth.user?.info);
+export function useProfileFormModel(user: UserData["info"]) {
+  const upload = useAppSelector((s) => s.upload);
   const dispatch = useAppDispatch();
   const { t } = useTranslation("settings");
 
@@ -26,10 +27,15 @@ export function useProfileFormModel() {
     },
   });
 
-  const handleAvatarChange = async (file: File) => {
-    const uploaded = await dispatch(uploadFiles([file])).unwrap();
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    
+    const uploaded = await dispatch(uploadFiles(Array.from(files))).unwrap();
+
     form.setValue("avatar_url", uploaded[0], { shouldValidate: true });
-    };
+  };
+
 
   const onSubmit = async (data: FormData) => {
     if (!user?.id) return;
@@ -48,5 +54,6 @@ export function useProfileFormModel() {
     t,
     updateState,
     user,
+    upload
   };
 }

@@ -1,21 +1,15 @@
 import React from "react";
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { setLanguage } from "../../slice";
-import { useTranslation } from "react-i18next";
+import { SettingsLayout } from "../../ui/layout/SettingsLayout";
+import { settingsState } from "../..";
+import { useLanguageModel } from "../../model/useLanguageModel";
 
-export const Component: React.FC = () => {
-    const settings = useAppSelector((s) => s.settings);
-    const dispatch = useAppDispatch();
-    const { t, i18n } = useTranslation("settings");
+export const Component: React.FC<{settings?: settingsState}> = ({settings}) => {
+    const {t, handleChangeLanguage } = useLanguageModel()
 
-    const handleChangeLanguage = (lang: "ru" | "en") => {
-        dispatch(setLanguage(lang));
-        i18n.changeLanguage(lang);
-        localStorage.setItem("i18nextLng", lang);
-    };
+    if (!settings) return null;
 
     return (
-        <div className="flex flex-col gap-5 p-5 text-center">
+        <SettingsLayout>
             <h3 className="bg-[#ffffff11] p-2 flex justify-between">{t("menu.language.label")}</h3>
 
             <div className="p-2 flex flex-col gap-2">
@@ -31,6 +25,6 @@ export const Component: React.FC = () => {
                     </div>
                 ))}
             </div>
-        </div>
+        </SettingsLayout>
     );
 };

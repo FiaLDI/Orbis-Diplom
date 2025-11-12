@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { AuditDrawer } from "@/features/moderation";
 import { uploadFiles } from "@/features/upload";
 import { useNavigate } from "react-router-dom";
+import { AvatarUpload } from "@/shared/ui/Upload/AvatarUpload";
 
 export const Component: React.FC = () => {
     const { activeserver } = useAppSelector((s) => ({
@@ -112,27 +113,19 @@ export const Component: React.FC = () => {
                             />
                         </div>
 
-                        {/* AVATAR UPLOADER */}
                         <div className="flex flex-col gap-2">
                             <label className="text-sm opacity-70">
                                 {t("settings.server_avatar")}
                             </label>
 
-                            <div className="flex items-center gap-4">
-                                <img
-                                    src={avatarPreview || "/img/icon.png"}
-                                    className="w-[60px] h-[60px] rounded-full object-cover bg-black/40"
-                                />
-
-                                <input type="file" accept="image/*" onChange={handleAvatarSelect} />
+                            <AvatarUpload
+                                avatarUrl={avatarPreview || "/img/icon.png"}
+                                onSelect={handleAvatarSelect}
+                                label={t("settings.server_avatar")}
+                                progress={upload.overallProgress}
+                                loading={upload.loading}
+                            />
                             </div>
-
-                            {upload.loading && (
-                                <div className="text-sm opacity-80">
-                                    Uploading: {upload.overallProgress}%
-                                </div>
-                            )}
-                        </div>
 
                         {/* SAVE BUTTON */}
                         <button
