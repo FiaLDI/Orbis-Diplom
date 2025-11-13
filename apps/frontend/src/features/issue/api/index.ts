@@ -95,7 +95,7 @@ export const issueApi = createApi({
     }),
     deleteIssue: builder.mutation({
       query: ({ serverId, projectId, issueId }) => ({
-        url: `/servers/${serverId}/projects/${projectId}/issues/${issueId}`,
+        url: `/servers/${serverId}/issues/${issueId}`,
         method: "DELETE",
       }),
       invalidatesTags: (result, error, { projectId, issueId }) => [

@@ -9,93 +9,93 @@ import { ChatContextMenuProps } from "./interface";
 import { AnimatedContextMenu } from "../AnimatedContextMenu";
 
 export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({
-  triggerElement,
-  chat,
-  t,
-  editQuery,
-  deleteQuery,
-}) => {
-  const activeServer = useAppSelector((s) => s.server.activeserver);
-  const activeChat = useAppSelector((s) => s.chat.activeChat);
-  const issue = useAppSelector((s) => s.issue.openIssue);
-  const [deleteServerChat] = useDeleteChatMutation();
-  const [deleteChat] = useDeletePersonalChatMutation();
-  const emitServerUpdate = useEmitServerUpdate();
-  const [editingChat, setEditingChat] = useState<chat | null>(null);
-  const dispatch = useAppDispatch();
-
-  const { contextMenu, handleContextMenu, menuRef, closeMenu } = useContextMenu<
+    triggerElement,
     chat,
-    HTMLUListElement
-  >();
+    t,
+    editQuery,
+    deleteQuery,
+}) => {
+    const activeServer = useAppSelector((s) => s.server.activeserver);
+    const activeChat = useAppSelector((s) => s.chat.activeChat);
+    const issue = useAppSelector((s) => s.issue.openIssue);
+    const [deleteServerChat] = useDeleteChatMutation();
+    const [deleteChat] = useDeletePersonalChatMutation();
+    const emitServerUpdate = useEmitServerUpdate();
+    const [editingChat, setEditingChat] = useState<chat | null>(null);
+    const dispatch = useAppDispatch();
 
-  const menuItems = [
-    {
-      label: t ? t("chat.edit.title") : "",
-      action: () => setEditingChat(contextMenu?.data ?? null),
-      icon: <Pencil size={16} />,
-    },
-    {
-      label: t ? t("chat.edit.delete") : "",
-      action: () => {
-        if (!activeServer?.id) {
-          if (!confirm(`${t ? t("chat.edit.delete") : ""}?`)) return;
-          if (contextMenu?.data.id == activeChat?.id) {
-            dispatch(setActiveChat(undefined));
-          }
-          deleteChat(contextMenu?.data.id);
-        }
+    const { contextMenu, handleContextMenu, menuRef, closeMenu } = useContextMenu<
+        chat,
+        HTMLUListElement
+    >();
 
-        if (!activeServer?.id || !contextMenu?.data) return;
-        if (!confirm(`${t ? t("chat.edit.delete") : ""}?`)) return;
+    const menuItems = [
+        {
+            label: t ? t("chat.edit.title") : "",
+            action: () => setEditingChat(contextMenu?.data ?? null),
+            icon: <Pencil size={16} />,
+        },
+        {
+            label: t ? t("chat.edit.delete") : "",
+            action: () => {
+                if (!activeServer?.id) {
+                    if (!confirm(`${t ? t("chat.edit.delete") : ""}?`)) return;
+                    if (contextMenu?.data.id == activeChat?.id) {
+                        dispatch(setActiveChat(undefined));
+                    }
+                    deleteChat(contextMenu?.data.id);
+                }
 
-        if (deleteQuery) {
-          deleteQuery({
-            serverId: activeServer.id,
-            issueId: issue,
-            chatId: contextMenu.data.id,
-          });
-        } else {
-          deleteServerChat({
-            id: activeServer.id,
-            chatId: contextMenu.data.id,
-          });
-        }
+                if (!activeServer?.id || !contextMenu?.data) return;
+                if (!confirm(`${t ? t("chat.edit.delete") : ""}?`)) return;
 
-        emitServerUpdate(activeServer.id);
-      },
-      icon: <Trash2 size={16} />,
-      danger: true,
-    },
-  ];
+                if (deleteQuery) {
+                    deleteQuery({
+                        serverId: activeServer.id,
+                        issueId: issue,
+                        chatId: contextMenu.data.id,
+                    });
+                } else {
+                    deleteServerChat({
+                        id: activeServer.id,
+                        chatId: contextMenu.data.id,
+                    });
+                }
 
-  return (
-    <>
-      {triggerElement({ onContextMenu: (e) => handleContextMenu(e, chat) })}
+                emitServerUpdate(activeServer.id);
+            },
+            icon: <Trash2 size={16} />,
+            danger: true,
+        },
+    ];
 
-      <AnimatedContextMenu
-        visible={!!contextMenu}
-        x={contextMenu?.x ?? 0}
-        y={contextMenu?.y ?? 0}
-        items={menuItems}
-        onClose={closeMenu}
-        menuRef={menuRef}
-      />
+    return (
+        <>
+            {triggerElement({ onContextMenu: (e) => handleContextMenu(e, chat) })}
 
-      {editingChat && (
-        <ChatEditForm
-          initialData={editingChat}
-          onClose={() => setEditingChat(null)}
-          onSave={() => {
-            emitServerUpdate(activeServer?.id);
-            setEditingChat(null);
-          }}
-          t={t}
-          editQuery={editQuery}
-          activeServerId={activeServer?.id}
-          issueId={issue}
-        />
-      )}
-    </>
-  );
+            <AnimatedContextMenu
+                visible={!!contextMenu}
+                x={contextMenu?.x ?? 0}
+                y={contextMenu?.y ?? 0}
+                items={menuItems}
+                onClose={closeMenu}
+                menuRef={menuRef}
+            />
+
+            {editingChat && (
+                <ChatEditForm
+                    initialData={editingChat}
+                    onClose={() => setEditingChat(null)}
+                    onSave={() => {
+                        emitServerUpdate(activeServer?.id);
+                        setEditingChat(null);
+                    }}
+                    t={t}
+                    editQuery={editQuery}
+                    activeServerId={activeServer?.id}
+                    issueId={issue}
+                />
+            )}
+        </>
+    );
 };

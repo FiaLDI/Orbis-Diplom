@@ -1,49 +1,49 @@
 export interface MessageContent {
-  id: string;
-  type: "text" | "image" | "file";
-  text?: string;
-  url?: string;
+    id: string;
+    type: "text" | "image" | "file";
+    text?: string;
+    url?: string;
 }
 
 export interface Message {
-  id: string;
-  chatId: string;
-  userId: string;
-  username: string;
-  avatarUrl?: string | null;
-  replyToId?: string | null;
-  isEdited: boolean;
-  content: MessageContent[];
-  createdAt: string;
-  updatedAt?: string | null;
+    id: string;
+    chatId: string;
+    userId: string;
+    username: string;
+    avatarUrl?: string | null;
+    replyToId?: string | null;
+    isEdited: boolean;
+    content: MessageContent[];
+    createdAt: string;
+    updatedAt?: string | null;
 }
 
 export interface Content {
-  id: string;
-  type: "text" | "image" | "file";
-  text?: string;
-  url?: string;
+    id: string;
+    type: "text" | "image" | "file";
+    text?: string;
+    url?: string;
 }
 
 export type ChatHistory = Message[];
 
 export interface messageSliceState {
-  activeHistory: Message[];
-  histories: Record<string, ChatHistory>;
-  openMessage?: Message;
-  uploadstate: boolean;
-  activeChat?: {
-    id: string;
-    name?: string;
-  };
-  uploadedFiles?: {
-    type: string;
-    url: string;
-  }[];
-  editmode?: {
-    enabled: boolean;
-    messagesId: string;
-    chatId: string;
-  };
-  reply?: string;
+    activeHistory: Message[];
+    histories: Record<string, ChatHistory>;
+    openMessage?: Message;
+    uploadstate: boolean;
+    activeChat?: {
+        id: string;
+        name?: string;
+    };
+    uploadedFiles?: {
+        type: string;
+        url: string;
+    }[];
+    editmode?: {
+        enabled: boolean;
+        messagesId: string;
+        chatId: string;
+    };
+    reply?: string;
 }

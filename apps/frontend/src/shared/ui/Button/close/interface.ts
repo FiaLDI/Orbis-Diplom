@@ -1,3 +1,3 @@
 export interface Props {
-  handler: () => void;
+    handler: () => void;
 }

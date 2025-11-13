@@ -62,7 +62,7 @@ export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
   };
 
   const deleteIssue = (task: any) => {
-    deleteIssueApi({ projectId, issueId: task.id });
+    deleteIssueApi({ serverId, projectId, issueId: task.id });
     emitServerUpdate("issue", serverId, task.id);
     closeMenu();
   };

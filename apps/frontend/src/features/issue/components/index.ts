@@ -1,2 +1,2 @@
-export { Component as ProjectComponent } from "./project";
+export { ProjectList } from "./project/list";
 export { Component as IssueComponent } from "./issue";
