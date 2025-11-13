@@ -1,4 +1,4 @@
 export type ServerFormData = {
-  name: string;
-  serverId: string;
+    name: string;
+    serverId: string;
 };
