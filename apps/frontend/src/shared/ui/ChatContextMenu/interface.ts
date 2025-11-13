@@ -1,32 +1,48 @@
 import { chat } from "@/features/chat";
 import {
-    BaseQueryFn,
-    FetchArgs,
-    FetchBaseQueryError,
-    FetchBaseQueryMeta,
-    MutationDefinition,
+  BaseQueryFn,
+  FetchArgs,
+  FetchBaseQueryError,
+  FetchBaseQueryMeta,
+  MutationDefinition,
 } from "@reduxjs/toolkit/query";
 import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
+import { TFunction } from "i18next";
 
 export interface ChatContextMenuProps {
-    triggerElement: (handlers: { onContextMenu: (e: React.MouseEvent) => void }) => React.ReactNode;
-    chat: chat;
-    editQuery?: MutationTrigger<
-        MutationDefinition<
-            any,
-            BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>,
-            "Projects" | "Issues" | "Statuses" | "Priorities",
-            any,
-            "issueApi"
-        >
-    >;
-    deleteQuery?: MutationTrigger<
-        MutationDefinition<
-            any,
-            BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, {}, FetchBaseQueryMeta>,
-            "Projects" | "Issues" | "Statuses" | "Priorities",
-            any,
-            "issueApi"
-        >
-    >;
+  triggerElement: (handlers: {
+    onContextMenu: (e: React.MouseEvent) => void;
+  }) => React.ReactNode;
+  chat: chat;
+  editQuery?: MutationTrigger<
+    MutationDefinition<
+      any,
+      BaseQueryFn<
+        string | FetchArgs,
+        unknown,
+        FetchBaseQueryError,
+        {},
+        FetchBaseQueryMeta
+      >,
+      "Projects" | "Issues" | "Statuses" | "Priorities",
+      any,
+      "issueApi"
+    >
+  >;
+  deleteQuery?: MutationTrigger<
+    MutationDefinition<
+      any,
+      BaseQueryFn<
+        string | FetchArgs,
+        unknown,
+        FetchBaseQueryError,
+        {},
+        FetchBaseQueryMeta
+      >,
+      "Projects" | "Issues" | "Statuses" | "Priorities",
+      any,
+      "issueApi"
+    >
+  >;
+  t?: TFunction<"chat", undefined>;
 }
