@@ -12,6 +12,7 @@ import {
   useUpdateServerMutation,
 } from "@/features/server";
 import { uploadFiles } from "@/features/upload";
+import { shallowEqual } from "react-redux";
 
 export type ServerSettingsFormData = {
   name: string;
@@ -20,10 +21,13 @@ export type ServerSettingsFormData = {
 
 export function useServerSettingsModel() {
   const dispatch = useAppDispatch();
-  const { activeserver, allPermission } = useAppSelector((s) => ({
-    activeserver: s.server.activeserver,
-    allPermission: s.server.allPermission,
-  }));
+  const { activeserver, allPermission } = useAppSelector(
+    (s) => ({
+      activeserver: s.server.activeserver,
+      allPermission: s.server.allPermission,
+    }),
+    shallowEqual,
+  );
   const upload = useAppSelector((s) => s.upload);
 
   const emit = useEmitServerUpdate();

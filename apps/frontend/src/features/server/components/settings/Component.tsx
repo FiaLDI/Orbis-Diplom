@@ -11,42 +11,41 @@ import { DeleteServerSection } from "./sections/DeleteServerSection";
 import { ServerSettingsLayout } from "../../ui/layout/ServerSettingsLayout";
 
 export const ServerSettingsForm: React.FC = () => {
-  const { t } = useTranslation("server");
-  const { activeserver, allPermission, form, ui, lists } =
-    useServerSettingsModel();
+    const { t } = useTranslation("server");
+    const { activeserver, allPermission, form, ui, lists } = useServerSettingsModel();
 
-  if (!activeserver) return null;
+    if (!activeserver) return null;
 
-  return (
-    <ServerSettingsLayout>
-      <SettingsHeader
-        title={`${t("settings.title")} ${activeserver.name}`}
-        onClose={ui.onCloseSettings}
-      />
+    return (
+        <ServerSettingsLayout>
+            <SettingsHeader
+                title={`${t("settings.title")} ${activeserver.name}`}
+                onClose={ui.onCloseSettings}
+            />
 
-      <BasicSettingsSection t={t} activeserver={activeserver} form={form} />
+            <BasicSettingsSection t={t} activeserver={activeserver} form={form} />
 
-      <MembersSection
-        t={t}
-        serverId={activeserver.id}
-        members={lists.members}
-        roles={lists.roles}
-        emitServerUpdate={ui.emit}
-      />
+            <MembersSection
+                t={t}
+                serverId={activeserver.id}
+                members={lists.members}
+                roles={lists.roles}
+                emitServerUpdate={ui.emit}
+            />
 
-      <RolesSection
-        t={t}
-        serverId={activeserver.id}
-        roles={lists.roles}
-        allPermissions={(allPermission ?? []) as any[]}
-        onCreateRole={ui.onCreateRole}
-        onDeleteRole={ui.onDeleteRole}
-        emitServerUpdate={ui.emit}
-      />
+            <RolesSection
+                t={t}
+                serverId={activeserver.id}
+                roles={lists.roles}
+                allPermissions={(allPermission ?? []) as any[]}
+                onCreateRole={ui.onCreateRole}
+                onDeleteRole={ui.onDeleteRole}
+                emitServerUpdate={ui.emit}
+            />
 
-      <DeleteServerSection t={t} onDelete={ui.onDangerDeleteServer} />
+            <DeleteServerSection t={t} onDelete={ui.onDangerDeleteServer} />
 
-      <AuditDrawer activeserver={activeserver as any} />
-    </ServerSettingsLayout>
-  );
+            <AuditDrawer activeserver={activeserver as any} />
+        </ServerSettingsLayout>
+    );
 };

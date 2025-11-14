@@ -2,7 +2,7 @@ export * from "./slice";
 export * from "./api";
 export * from "./types";
 
-export * from "./components";
+export * from "./ui";
 
-export { useChatMessages } from "./hooks/useChatMessages";
-export { useChatSocket } from "./hooks/useChatSocket";
+export { useChatMessages } from "./hooks/message/useChatMessages";
+export { useChatSocket } from "./hooks/socket/useChatSocket";
