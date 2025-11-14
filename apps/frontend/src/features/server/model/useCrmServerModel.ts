@@ -7,27 +7,27 @@ import { useCreateServerModel } from "./useCreateServerModel";
 import { useJoinServerModel } from "./useJoinServerModel";
 
 export function useCrmServerModel() {
-  const { t } = useTranslation("server");
-  const [open, setOpen] = useState(false);
+    const { t } = useTranslation("server");
+    const [open, setOpen] = useState(false);
 
-  const [trigger] = useLazyGetServersQuery();
+    const [trigger] = useLazyGetServersQuery();
 
-  const { onCreate, createState, createForm } = useCreateServerModel(setOpen);
-  const { onJoin, joinState, joinForm } = useJoinServerModel(setOpen);
+    const { onCreate, createState, createForm } = useCreateServerModel(setOpen);
+    const { onJoin, joinState, joinForm } = useJoinServerModel(setOpen);
 
-  useEffect(() => {
-    trigger({});
-  }, [createState, joinState]);
+    useEffect(() => {
+        trigger({});
+    }, [createState, joinState]);
 
-  return {
-    open,
-    t,
-    onCreate,
-    onJoin,
-    setOpen,
-    createForm,
-    joinForm,
-    createState,
-    joinState,
-  };
+    return {
+        open,
+        t,
+        onCreate,
+        onJoin,
+        setOpen,
+        createForm,
+        joinForm,
+        createState,
+        joinState,
+    };
 }

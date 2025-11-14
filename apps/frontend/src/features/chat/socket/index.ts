@@ -4,27 +4,25 @@ import { config } from "@/config";
 let socket: Socket | null = null;
 
 export const initSocket = (token: string): Socket => {
-    if (!socket) {
-        socket = io(`${config.monoliteUrl}/chat`, {
-            auth: { token },
-            autoConnect: true,
-            reconnection: true,
-            reconnectionAttempts: 5,
-            reconnectionDelay: 3000,
-        });
-        console.log("[Socket] new instance created");
-    }
-    return socket;
+  if (!socket) {
+    socket = io(`${config.monoliteUrl}/chat`, {
+      auth: { token },
+      autoConnect: true,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 3000,
+    });
+  }
+  return socket;
 };
 
 export const getSocket = (): Socket | null => {
-    return socket;
+  return socket;
 };
 
 export const disconnectSocket = () => {
-    if (socket) {
-        console.log("[Socket] disconnected manually");
-        socket.disconnect();
-        socket = null;
-    }
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
 };

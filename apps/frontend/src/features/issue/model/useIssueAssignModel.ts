@@ -33,7 +33,6 @@ export function useIssueAssignModel(
 
     try {
       await assignUser({ serverId, issueId: issue.id, userId }).unwrap();
-      console.log(projectId);
       emitServerUpdate("issues", serverId, projectId, "project");
     } catch (err) {
       setLocalAssigned((prev) => prev.filter((id) => id !== userId));

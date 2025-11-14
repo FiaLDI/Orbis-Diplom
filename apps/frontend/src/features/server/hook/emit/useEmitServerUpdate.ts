@@ -18,8 +18,6 @@ export function useEmitServerUpdate() {
       contextType,
     };
 
-    console.log("🚀 [EMIT] server-update", { type, payload });
-
     socket.emit("server-update", type, payload);
   };
 }

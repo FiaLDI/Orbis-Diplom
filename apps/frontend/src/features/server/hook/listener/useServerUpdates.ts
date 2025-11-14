@@ -13,10 +13,6 @@ export function useServerUpdates(
     if (!socket?.on) return;
 
     const eventName = `server:update:${type}`;
-    console.log(
-      `🎧 Подписка на ${eventName} socket.id:`,
-      socket?.id ?? "(pending)",
-    );
 
     const handler = (payload: Payload) => {
       const serverId = payload?.serverId;

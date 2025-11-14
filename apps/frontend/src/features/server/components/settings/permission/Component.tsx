@@ -1,183 +1,122 @@
-import React, { useEffect, useState } from "react";
-import { ModalLayout } from "@/shared";
-import {
-    useGetPermissionsQuery,
-    useGetRolePermissionsQuery,
-    useUpdateRolePermissionsMutation,
-    useUpdateServerRoleMutation,
-} from "@/features/server";
-import { Props } from "./interface";
-import { useTranslation } from "react-i18next";
-import { X } from "lucide-react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { RoleSettingsFormData } from "./interface";
+import React, { useState } from "react";
+import { CloseButton, HeadComponent, ModalLayout } from "@/shared";
 import { FormInput, SubmitButton, FormError } from "@/shared/ui/Form";
+import type { Props, RoleSettingsFormData } from "./interface";
+import { useRoleSettingsModalModel } from "@/features/server/model/useRoleSettingsModalModel";
 
-export const RoleSettingsModal: React.FC<Props> = ({ roleId, serverId, roleName, roleColor }) => {
-    const { t } = useTranslation("server");
-    const [open, setOpen] = useState(false);
+export const RoleSettingsModal: React.FC<Props> = ({
+  t,
+  roleId,
+  serverId,
+  roleName,
+  roleColor,
+  allPermissions,
+  emitServerUpdate,
+}) => {
+  const [open, setOpen] = useState(false);
+  const m = useRoleSettingsModalModel(
+    roleId,
+    roleName,
+    roleColor,
+    serverId,
+    emitServerUpdate,
+    () => setOpen(false),
+  );
+  return (
+    <>
+      <button
+        onClick={() => {
+          setOpen(true);
+          m.form.onOpen();
+        }}
+        className="cursor-pointer px-3 py-1 bg-foreground/70 hover:bg-foreground rounded text-sm text-white"
+      >
+        {t("settings.edit")}
+      </button>
 
-    const { data: allPermissions = [] } = useGetPermissionsQuery({});
-    const {
-        data: rolePermissionsData = [],
-        refetch,
-        isFetching,
-    } = useGetRolePermissionsQuery({ roleId, serverId }, { skip: !roleId });
+      <ModalLayout open={open} onClose={() => setOpen(false)}>
+        <div className="p-0 w-[350px] text-white">
+          <div className="bg-background w-full rounded flex items-center justify-between p-5">
+            <HeadComponent title={t("settings.editmodal")} />
+            <CloseButton handler={() => setOpen(false)} />
+          </div>
 
-    const [updateRolePermissions, updatePermState] = useUpdateRolePermissionsMutation();
-    const [updateServerRole, updateRoleState] = useUpdateServerRoleMutation();
+          <form
+            onSubmit={m.form.onSubmit}
+            className="p-5 flex flex-col gap-4"
+            autoComplete="off"
+          >
+            <FormInput<RoleSettingsFormData>
+              name="name"
+              type="text"
+              label={t("settings.rolename")}
+              placeholder={t("settings.rolename")}
+              register={m.form.register}
+              disabled={["creator", "default"].includes(roleName.toLowerCase())}
+              validation={{ required: t("settings.rolename_required") }}
+              error={m.form.formState.errors?.name as any}
+            />
 
-    // === RHF setup ===
-    const form = useForm<RoleSettingsFormData>({
-        defaultValues: {
-            name: roleName || "",
-            color: roleColor || "#5865F2",
-            permissions: [],
-        },
-    });
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                {t("settings.rolecolor")}
+              </label>
+              <input
+                type="color"
+                {...(m.form as any).register("color")}
+                className="w-16 h-10 cursor-pointer border rounded bg-transparent"
+              />
+            </div>
 
-    const { register, handleSubmit, setValue, watch, formState } = form;
-    const { errors } = formState;
-
-    // === Sync role permissions when modal opens ===
-    useEffect(() => {
-        if (open && roleId) refetch();
-    }, [open, roleId]);
-
-    useEffect(() => {
-        if (rolePermissionsData && Array.isArray(rolePermissionsData)) {
-            const ids = rolePermissionsData.map((p: any) => p.id);
-            setValue("permissions", ids);
-        }
-    }, [rolePermissionsData]);
-
-    const togglePermission = (pid: number) => {
-        const current = watch("permissions") || [];
-        setValue(
-            "permissions",
-            current.includes(pid) ? current.filter((id) => id !== pid) : [...current, pid]
-        );
-    };
-
-    const onSubmit: SubmitHandler<RoleSettingsFormData> = async (data) => {
-        if (roleName.toLowerCase() === "creator") return;
-
-        try {
-            // update role info (name + color)
-            await updateServerRole({
-                roleId,
-                serverId,
-                data: { name: data.name, color: data.color },
-            }).unwrap();
-
-            // update permissions if not creator
-            if (roleName.toLowerCase() !== "creator") {
-                await updateRolePermissions({
-                    serverId,
-                    roleId,
-                    permissions: data.permissions,
-                }).unwrap();
-            }
-
-            setOpen(false);
-        } catch (err) {
-            console.error("Failed to update role:", err);
-        }
-    };
-
-    return (
-        <>
-            <button
-                onClick={() => setOpen(true)}
-                className="cursor-pointer px-3 py-1 bg-foreground/70 hover:bg-foreground rounded text-sm text-white"
-            >
-                {t("settings.edit")}
-            </button>
-
-            <ModalLayout open={open} onClose={() => setOpen(false)}>
-                <div className="p-0 w-[350px] text-white">
-                    {/* Header */}
-                    <div className="bg-background w-full rounded flex items-center justify-between p-5">
-                        <div className="font-semibold">{t("settings.editmodal")}</div>
-                        <button className="cursor-pointer" onClick={() => setOpen(false)}>
-                            <X />
-                        </button>
-                    </div>
-
-                    {/* Form */}
-                    <form
-                        onSubmit={handleSubmit(onSubmit)}
-                        className="p-5 flex flex-col gap-4"
-                        autoComplete="off"
-                    >
-                        {/* Role name */}
-                        <FormInput<RoleSettingsFormData>
-                            name="name"
-                            type="text"
-                            label={t("settings.rolename")}
-                            placeholder={t("settings.rolename")}
-                            register={register}
-                            disabled={["creator", "default"].includes(roleName.toLowerCase())}
-                            validation={{ required: t("settings.rolename_required") }}
-                            error={errors.name}
-                        />
-
-                        {/* Role color */}
-                        <div>
-                            <label className="block text-sm font-medium mb-1">
-                                {t("settings.rolecolor")}
-                            </label>
-                            <input
-                                type="color"
-                                {...register("color")}
-                                className="w-16 h-10 cursor-pointer border rounded bg-transparent"
-                            />
-                        </div>
-
-                        {/* Permissions */}
-                        <div className="flex flex-col gap-1 max-h-[200px] overflow-auto border-t border-white/20 pt-2">
-                            {roleName.toLowerCase() === "creator" ? (
-                                <div className="text-sm text-gray-400">{t("settings.error")}</div>
-                            ) : isFetching ? (
-                                <div>{t("settings.loading")}...</div>
-                            ) : (
-                                allPermissions.map((perm: any) => (
-                                    <label
-                                        key={perm.id}
-                                        className="flex justify-between items-center text-sm py-0.5"
-                                    >
-                                        <span>{t(`settings.role.${perm.name}`)}</span>
-                                        <input
-                                            type="checkbox"
-                                            checked={watch("permissions")?.includes(perm.id)}
-                                            onChange={() => togglePermission(perm.id)}
-                                            className="accent-foreground/80"
-                                        />
-                                    </label>
-                                ))
-                            )}
-                        </div>
-
-                        {/* Submit */}
-                        <SubmitButton
-                            label={
-                                updatePermState.isLoading || updateRoleState.isLoading
-                                    ? `${t("settings.confirm")}...`
-                                    : t("settings.confirm")
-                            }
-                            loading={updatePermState.isLoading || updateRoleState.isLoading}
-                            className="w-full mt-3"
-                        />
-
-                        <FormError
-                            message={
-                                (updatePermState.error as any)?.data?.message ||
-                                (updateRoleState.error as any)?.data?.message
-                            }
-                        />
-                    </form>
+            <div className="flex flex-col gap-1 max-h-[200px] overflow-auto border-t border-white/20 pt-2">
+              {roleName.toLowerCase() === "creator" ? (
+                <div className="text-sm text-gray-400">
+                  {t("settings.error")}
                 </div>
-            </ModalLayout>
-        </>
-    );
+              ) : m.query.isFetching ? (
+                <div>{t("settings.loading")}...</div>
+              ) : (
+                allPermissions?.map((perm: any) => (
+                  <label
+                    key={perm.id}
+                    className="flex justify-between items-center text-sm py-0.5"
+                  >
+                    <span>{t(`settings.role.${perm.name}`)}</span>
+                    <input
+                      type="checkbox"
+                      checked={(m.form.watch("permissions") || []).includes(
+                        perm.id,
+                      )}
+                      onChange={() => m.form.togglePermission(perm.id)}
+                      className="accent-foreground/80"
+                    />
+                  </label>
+                ))
+              )}
+            </div>
+
+            <SubmitButton
+              label={
+                m.mutation.updatePermState.isLoading ||
+                m.mutation.updateRoleState.isLoading
+                  ? `${t("settings.confirm")}...`
+                  : t("settings.confirm")
+              }
+              loading={
+                m.mutation.updatePermState.isLoading ||
+                m.mutation.updateRoleState.isLoading
+              }
+              className="w-full mt-3"
+            />
+            <FormError
+              message={
+                (m.mutation.updatePermState.error as any)?.data?.message ||
+                (m.mutation.updateRoleState.error as any)?.data?.message
+              }
+            />
+          </form>
+        </div>
+      </ModalLayout>
+    </>
+  );
 };

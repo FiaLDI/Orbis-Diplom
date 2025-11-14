@@ -23,8 +23,6 @@ export const Component: React.FC<Props> = ({
   const issue = useAppSelector((s) => selectIssueById(s, issueId));
   const { t } = useTranslation("chat");
 
-  console.log(issue);
-
   const issueChats = issue.chats;
   const activeChat = useAppSelector((s) => s.chat?.activeChat);
   const [createChat] = useCreateChatIssueMutation();

@@ -7,13 +7,9 @@ import {
   useLazyGetServersInsideQuery,
   useLazyGetServersMembersQuery,
   useLazyGetServersRolesQuery,
-  useModerationListener,
-  useServerJournalSocket,
-  useServerUpdates,
 } from "@/features/server";
 
 import {
-  setOpenProject,
   useLazyGetProjectQuery,
   useLazyGetStatusesQuery,
   useLazyGetPriorityQuery,
