@@ -1,6 +1,7 @@
 export interface Props {
-    issue: any;
-    projectId: string;
-    serverId: string;
-    onClose: () => void;
+  issue: any;
+  serverId: string;
+  projectId: string;
+  onClose: () => void;
+  emitServerUpdate: any;
 }

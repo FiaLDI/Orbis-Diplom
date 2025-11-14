@@ -1,21 +1,8 @@
 import React from "react";
-import { CloseButton, HeadComponent, ModalLayout } from "@/shared";
-import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
-import { Ellipsis, X } from "lucide-react";
-import { useEmitServerUpdate } from "@/features/server";
-import {
-  useDeleteProjectMutation,
-  useUpdateProjectMutation,
-} from "@/features/issue";
+import { ModalLayout } from "@/shared";
+import { FormProvider } from "react-hook-form";
+import { Ellipsis } from "lucide-react";
 import { Props } from "./interface";
-import { ProjectEditFormData } from "./interface";
-
-import {
-  FormInput,
-  FormTextArea,
-  SubmitButton,
-  FormError,
-} from "@/shared/ui/Form";
 import { useProjectEditModel } from "@/features/issue/model/useProjectEditModel";
 import { ProjectEditLayout } from "@/features/issue/ui/layout/ProjectEditLayout";
 import { ProjectEditForm } from "@/features/issue/ui/form/ProjectEditForm";

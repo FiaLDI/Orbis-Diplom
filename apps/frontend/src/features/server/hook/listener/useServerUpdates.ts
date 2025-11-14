@@ -1,49 +1,58 @@
 import { useEffect } from "react";
 import type { ServerUpdateType } from "../../types";
 
+type Payload = { serverId: string; contextId?: string };
+
 export function useServerUpdates(
-    socket: any,
-    serverId: string | undefined | null,
-    trigger: any,
-    type: ServerUpdateType,
-    issueId?: string | null
+  socket: any,
+  type: ServerUpdateType,
+  trigger: (arg: any) => void,
+  baseContextId?: string | null,
 ) {
-    useEffect(() => {
-        if (!socket || !serverId) return;
+  useEffect(() => {
+    if (!socket?.on) return;
 
-        const eventName = `server:update:${type}`;
+    const eventName = `server:update:${type}`;
+    console.log(
+      `🎧 Подписка на ${eventName} socket.id:`,
+      socket?.id ?? "(pending)",
+    );
 
-        const handler = (payload?: any) => {
-            console.groupCollapsed(`📥 [CLIENT SOCKET] Событие "${eventName}"`);
-            console.log("🧩 payload:", payload);
-            console.log("📡 serverId (local):", serverId);
-            console.log("📡 issueId (local):", issueId);
-            console.groupEnd();
+    const handler = (payload: Payload) => {
+      const serverId = payload?.serverId;
+      const contextId = payload?.contextId ?? baseContextId ?? null;
+      if (!serverId)
+        return console.warn(`⚠️ ${eventName}: нет serverId`, payload);
 
-            const resolvedServerId = payload?.serverId ?? serverId;
-            const resolvedIssueId = payload?.issueId ?? issueId;
+      switch (type) {
+        // эндпоинты, которые ждут ТОЛЬКО строку serverId
+        case "projects":
+        case "settings":
+        case "chats":
+          // RTK query(getProject / getServerInside / getServerChats) -> query(serverId: string)
+          trigger(serverId);
+          break;
 
-            if (!resolvedServerId) {
-                console.warn(`⚠️ [CLIENT SOCKET] Нет serverId для события ${type}`);
-                return;
-            }
+        // список задач проекта
+        case "issues":
+          if (!contextId) return console.warn(`⚠️ ${eventName}: нет projectId`);
+          // RTK query(getIssues) -> query({ serverId, projectId })
+          trigger({ serverId, projectId: contextId });
+          break;
 
-            try {
-                console.log(`🚀 [CLIENT SOCKET] trigger(${type}) →`, {
-                    resolvedServerId,
-                    resolvedIssueId,
-                });
-                if (resolvedIssueId)
-                    trigger({ serverId: resolvedServerId, issueId: resolvedIssueId });
-                else trigger(resolvedServerId);
-            } catch (err) {
-                console.error(`❌ Ошибка trigger(${type}):`, err);
-            }
-        };
+        // одна задача (или зависимые данные вроде getChatIssue)
+        case "issue":
+          if (!contextId) return console.warn(`⚠️ ${eventName}: нет issueId`);
+          // RTK query(getChatIssue / getIssue) -> query({ serverId, issueId })
+          trigger({ serverId, issueId: contextId });
+          break;
 
-        console.log(`👂 [CLIENT SOCKET] Подписка на "${eventName}" (${serverId})`);
-        socket.on(eventName, handler);
+        default:
+          console.warn(`⚠️ Необработанный type: ${type}`);
+      }
+    };
 
-        return () => socket.off(eventName, handler);
-    }, [socket, serverId, issueId, trigger, type]);
+    socket.on(eventName, handler);
+    return () => socket.off(eventName, handler);
+  }, [socket, type, trigger, baseContextId]);
 }

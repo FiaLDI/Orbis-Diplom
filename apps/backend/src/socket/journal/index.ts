@@ -2,6 +2,12 @@ import jwt from "jsonwebtoken";
 import { Socket, Namespace } from "socket.io";
 import { redisClient } from "@/config";
 
+type ServerUpdatePayload = {
+  serverId: string;
+  contextId?: string;
+  contextType?: "project" | "issue";
+};
+
 export const journalSocket = (ioJournal: Namespace, socket: Socket) => {
   // 🟢 Подключение
   console.log(`🔌 [SOCKET] Новое подключение: ${socket.id}`);
@@ -40,41 +46,35 @@ export const journalSocket = (ioJournal: Namespace, socket: Socket) => {
   });
 
   // 🧩 Унифицированная система обновлений
-  socket.on("server-update", (type: string, payload: { serverId: string; issueId?: string }) => {
-    const { serverId, issueId } = payload;
+  socket.on("server-update", (type: string, payload: ServerUpdatePayload) => {
+    const { serverId, contextId, contextType } = payload;
+
+    if (!serverId) {
+      console.warn(`⚠️ [UPDATE] Пропущен serverId при событии "${type}"`);
+      return;
+    }
+
     const room = `server:${serverId}`;
 
-    console.log(`🛰️ [UPDATE] Тип="${type}" Сервер=${serverId}${issueId ? ` Issue=${issueId}` : ""}`);
+    // Автоматически определяем contextType, если не передан
+    const normalizedPayload: ServerUpdatePayload = {
+      serverId,
+      contextId,
+      contextType:
+        contextType ??
+        (type === "issues"
+          ? "project"
+          : type === "issue"
+          ? "issue"
+          : undefined),
+    };
 
-    switch (type) {
-      case "settings":
-        ioJournal.to(room).emit("server:update:settings", payload);
-        console.log(`⚙️  → Отправлено событие [server:update:settings] в ${room}`);
-        break;
-      case "moderation":
-        ioJournal.to(room).emit("server:update:moderation", payload);
-        console.log(`🧑‍⚖️ → Отправлено событие [server:update:moderation] в ${room}`);
-        break;
-      case "chats":
-        ioJournal.to(room).emit("server:update:chats", payload);
-        console.log(`💬 → Отправлено событие [server:update:chats] в ${room}`);
-        break;
-      case "projects":
-        ioJournal.to(room).emit("server:update:projects", payload);
-        console.log(`📁 → Отправлено событие [server:update:projects] в ${room}`);
-        break;
-      case "issues":
-        ioJournal.to(room).emit("server:update:issues", payload);
-        console.log(`🧩 → Отправлено событие [server:update:issues] в ${room}`);
-        break;
-      case "issue":
-        ioJournal.to(room).emit("server:update:issue", payload);
-        console.log(`🗂️ → Отправлено событие [server:update:issue] в ${room}`);
-        break;
-      default:
-        console.warn(`⚠️ [UNKNOWN] Неподдерживаемый тип обновления: "${type}"`);
-    }
+    ioJournal.to(room).emit(`server:update:${type}`, normalizedPayload);
+
+    console.log(`📡 [UPDATE] ${type.toUpperCase()} → ${room}`, normalizedPayload);
   });
+
+
 
   // 🔴 Отключение
   socket.on("disconnect", (reason: string) => {

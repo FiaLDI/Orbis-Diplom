@@ -1,4 +1,4 @@
 import React from "react";
-import { MemberServer } from "@/features/server";
+import { MembersSidebar } from "@/features/server";
 
-export const MemberListArea = () => <MemberServer />;
+export const MemberListArea = () => <MembersSidebar />;

@@ -1,25 +1,37 @@
-import { useModerationListener, useServerJournalSocket, useServerUpdates } from "@/features/server";
+import {
+  useModerationListener,
+  useServerJournalSocket,
+  useServerUpdates,
+} from "@/features/server";
 
 export function useServerSocketHandlers(
-    handlers: {
-        getProject: any;
-        getServerInside: any;
-        getServerRoles: any;
-        getServerChats: any;
-        getChatIssue: any;
-    },
-    serverId?: string,
-    issueId?: string | null
+  handlers: {
+    getProject: any;
+    getServerInside: any;
+    getServerRoles: any;
+    getServerChats: any;
+    getChatIssue: any;
+    getIssues: any;
+  },
+  baseContextId?: string | null,
 ) {
-    const { getProject, getServerInside, getServerRoles, getServerChats, getChatIssue } = handlers;
-    const { socket } = useServerJournalSocket();
-    useModerationListener(socket);
+  const {
+    getProject,
+    getServerInside,
+    getServerRoles,
+    getServerChats,
+    getChatIssue,
+    getIssues,
+  } = handlers;
+  const { socket } = useServerJournalSocket();
+  useModerationListener(socket);
 
-    useServerUpdates(socket, serverId ?? null, getProject, "projects");
-    useServerUpdates(socket, serverId ?? null, getServerInside, "settings");
-    useServerUpdates(socket, serverId ?? null, getServerRoles, "settings");
-    useServerUpdates(socket, serverId ?? null, getServerChats, "chats");
-    useServerUpdates(socket, serverId ?? null, getChatIssue, "issue", issueId ?? null);
+  useServerUpdates(socket, "projects", getProject);
+  useServerUpdates(socket, "settings", getServerInside);
+  useServerUpdates(socket, "settings", getServerRoles);
+  useServerUpdates(socket, "chats", getServerChats);
+  useServerUpdates(socket, "issue", getChatIssue, baseContextId ?? null);
+  useServerUpdates(socket, "issues", getIssues, baseContextId ?? null);
 
-    return socket;
+  return socket;
 }
