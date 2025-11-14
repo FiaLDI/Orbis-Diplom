@@ -15,24 +15,25 @@ export class MessageController {
     getPersonalMessages = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = MessageHistorySchema.parse({
-                ...(req as any).user,
-                chatId: req.params.id,
-                offset: Number(req.query.offset) || Number(0),
+            ...(req as any).user,
+            chatId: req.params.id,
+            cursor: req.query.cursor ? String(req.query.cursor) : undefined,
             });
+
             const entity = await this.messageService.getMessages({
-                id: dto.id,
-                chatId: dto.chatId,
-                offset: dto.offset,
+            chatId: dto.chatId,
+            cursor: dto.cursor,
             });
 
             return res.json({
-                message: "Messages",
-                data: entity,
+            message: "Messages",
+            data: entity,
             });
         } catch (err) {
             next(err);
         }
-    };
+        };
+
 
     sendMessages = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -64,11 +65,7 @@ export class MessageController {
                 chatId: req.params.id,
                 offset: req.query.offset,
             });
-            const entity = await this.messageService.getMessages({
-                id: dto.id,
-                chatId: dto.chatId,
-                offset: dto.offset,
-            });
+            const entity = await this.messageService.getMessageById(dto.id);
 
             return res.json({
                 message: "Profile",

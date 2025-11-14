@@ -33,7 +33,6 @@ export class RolePermissionMiddleware {
                     where: { id: serverId, creator_id: user.id },
                 });
                 if (isCreator) {
-                    console.log(`✅ User ${user.id} is server creator`);
                     return next();
                 }
 

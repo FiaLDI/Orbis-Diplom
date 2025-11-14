@@ -22,11 +22,8 @@ redisClient.on("ready", () => {
     console.log("✅ Redis connected and ready");
 });
 
-// Функция для подключения к Redis
-
 export const connectRedis = async () => {
     try {
-        console.log(REDIS_PASSWORD);
         await redisClient.connect();
     } catch (err: any) {
         console.error("❌ Redis connection failed:", err.message);

@@ -75,7 +75,6 @@ export class FriendController {
     friendInvite = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const dto = FriendInviteSchema.parse({ ...(req as any).user, toUserId: req.params.id });
-            console.log(dto)
             const entity = await this.friendService.friendInvite(dto.id, dto.toUserId);
 
             return res.json({

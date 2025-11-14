@@ -34,13 +34,6 @@ export const emitTo = <N extends keyof NamespaceEvents, E extends keyof Namespac
 ) => {
     const ns = getNamespace(namespace);
     ns.to(room).emit(event as string, payload);
-
-    if (process.env.NODE_ENV !== "production") {
-        console.log(
-            `📡 [${String(namespace)}] emitted '${String(event)}' → ${room}`,
-            JSON.stringify(payload).slice(0, 200)
-        );
-    }
 };
 
 /**
