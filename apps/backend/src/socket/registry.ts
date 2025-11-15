@@ -26,21 +26,36 @@ export const getNamespace = <N extends keyof NamespaceEvents>(name: N): Namespac
 /**
  * Типизированная отправка событий в комнату / пользователю.
  */
-export const emitTo = <N extends keyof NamespaceEvents, E extends keyof NamespaceEvents[N]>(
-    namespace: N,
-    room: string,
-    event: E,
-    payload: NamespaceEvents[N][E]
+/**
+ * Типизированная отправка событий в комнату / пользователю.
+ * Делает имя namespace устойчивым (поддерживает 'chat' и '/chat'),
+ * и если namespace не зарегистрирован вручную, берёт io.of('/chat') напрямую.
+ */
+export const emitTo = <
+  N extends keyof NamespaceEvents,
+  E extends keyof NamespaceEvents[N]
+>(
+  namespace: N,
+  room: string,
+  event: E,
+  payload: NamespaceEvents[N][E]
 ) => {
-    const ns = getNamespace(namespace);
-    ns.to(room).emit(event as string, payload);
+  const nsKey = String(namespace);
+  const normalized = nsKey.startsWith("/") ? nsKey : `/${nsKey}`;
 
-    if (process.env.NODE_ENV !== "production") {
-        console.log(
-            `📡 [${String(namespace)}] emitted '${String(event)}' → ${room}`,
-            JSON.stringify(payload).slice(0, 200)
-        );
-    }
+  // Пытаемся взять из словаря, иначе берём напрямую из io
+  const ns =
+    namespaces.get(nsKey) ??
+    namespaces.get(normalized) ??
+    getIo().of(normalized);
+
+  ns.to(room).emit(event as string, payload);
+};
+
+export const debugRoom = async (namespace: string, room: string) => {
+  const ns = getIo().of(namespace.startsWith("/") ? namespace : `/${namespace}`);
+  const sockets = await ns.in(room).fetchSockets();
+  console.log(`[${namespace}] room=${room} size=${sockets.length}`, sockets.map(s => s.id));
 };
 
 /**
@@ -48,9 +63,9 @@ export const emitTo = <N extends keyof NamespaceEvents, E extends keyof Namespac
  */
 export const emitToUser = <N extends keyof NamespaceEvents, E extends keyof NamespaceEvents[N]>(
     namespace: N,
-    userId: number,
+    userId: string,
     event: E,
     payload: NamespaceEvents[N][E]
 ) => {
-    emitTo(namespace, `user_${userId}`, event, payload);
+    emitTo(namespace, `user:${userId}`, event, payload);
 };

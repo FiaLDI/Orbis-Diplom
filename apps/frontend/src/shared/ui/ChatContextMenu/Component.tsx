@@ -5,14 +5,13 @@ import { useDeleteChatMutation, useEmitServerUpdate } from "@/features/server";
 import { ChatEditForm, useDeletePersonalChatMutation } from "@/features/chat";
 import { useContextMenu } from "@/shared/hooks";
 import { Pencil, Trash2 } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { ChatContextMenuProps } from "./interface";
 import { AnimatedContextMenu } from "../AnimatedContextMenu";
-
 
 export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({
     triggerElement,
     chat,
+    t,
     editQuery,
     deleteQuery,
 }) => {
@@ -23,7 +22,6 @@ export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({
     const [deleteChat] = useDeletePersonalChatMutation();
     const emitServerUpdate = useEmitServerUpdate();
     const [editingChat, setEditingChat] = useState<chat | null>(null);
-    const { t } = useTranslation("chat");
     const dispatch = useAppDispatch();
 
     const { contextMenu, handleContextMenu, menuRef, closeMenu } = useContextMenu<
@@ -33,15 +31,15 @@ export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({
 
     const menuItems = [
         {
-            label: t("chat.edit.title"),
+            label: t ? t("chat.edit.title") : "",
             action: () => setEditingChat(contextMenu?.data ?? null),
             icon: <Pencil size={16} />,
         },
         {
-            label: t("chat.edit.delete"),
+            label: t ? t("chat.edit.delete") : "",
             action: () => {
                 if (!activeServer?.id) {
-                    if (!confirm(`${t("chat.edit.delete")}?`)) return;
+                    if (!confirm(`${t ? t("chat.edit.delete") : ""}?`)) return;
                     if (contextMenu?.data.id == activeChat?.id) {
                         dispatch(setActiveChat(undefined));
                     }
@@ -49,7 +47,7 @@ export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({
                 }
 
                 if (!activeServer?.id || !contextMenu?.data) return;
-                if (!confirm(`${t("chat.edit.delete")}?`)) return;
+                if (!confirm(`${t ? t("chat.edit.delete") : ""}?`)) return;
 
                 if (deleteQuery) {
                     deleteQuery({
@@ -58,10 +56,13 @@ export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({
                         chatId: contextMenu.data.id,
                     });
                 } else {
-                    deleteServerChat({ id: activeServer.id, chatId: contextMenu.data.id });
+                    deleteServerChat({
+                        id: activeServer.id,
+                        chatId: contextMenu.data.id,
+                    });
                 }
 
-                emitServerUpdate(activeServer.id);
+                emitServerUpdate("chats", activeServer.id);
             },
             icon: <Trash2 size={16} />,
             danger: true,
@@ -86,9 +87,12 @@ export const ChatContextMenu: React.FC<ChatContextMenuProps> = ({
                     initialData={editingChat}
                     onClose={() => setEditingChat(null)}
                     onSave={() => {
-                        emitServerUpdate(activeServer?.id);
+                        if (activeServer?.id) {
+                            emitServerUpdate("chats", activeServer?.id);
+                        }
                         setEditingChat(null);
                     }}
+                    t={t}
                     editQuery={editQuery}
                     activeServerId={activeServer?.id}
                     issueId={issue}

@@ -19,7 +19,28 @@ export const serverModule = () => {
         auth.handle.bind(auth),
         controller.getServerMembers.bind(controller)
     );
-    router.post("/:id/join", auth.handle.bind(auth), controller.joinServerUser.bind(controller));
+    router.post("/join", auth.handle.bind(auth), controller.joinServerUser.bind(controller));
+
+    router.get(
+        "/:id/link",
+        auth.handle.bind(auth),
+        rolePerm.check("MANAGE_INVITES"),
+        controller.getInviteLinks.bind(controller)
+    )
+
+    router.post(
+        "/:id/link",
+        auth.handle.bind(auth),
+        rolePerm.check("MANAGE_INVITES"),
+        controller.createInviteLink.bind(controller)
+    )
+
+    router.delete(
+        "/:id/link",
+        auth.handle.bind(auth),
+        rolePerm.check("MANAGE_INVITES"),
+        controller.deleteInviteLink.bind(controller)
+    )
 
     router.patch(
         "/:id",

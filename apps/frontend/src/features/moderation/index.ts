@@ -1,3 +1,3 @@
 export * from "./api";
-export { BanReasonModal } from "./components";
-export { AuditDrawer } from "./components";
+export { BanReasonModal } from "./ui";
+export { AuditDrawer } from "./ui";

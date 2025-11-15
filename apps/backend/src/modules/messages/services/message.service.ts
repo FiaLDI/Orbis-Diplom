@@ -8,7 +8,7 @@ import { UserProfile } from "@/modules/users/entity/user.profile";
 import { MessageSendDto } from "../dtos/message.send.dto";
 import { v4 as uuidv4 } from "uuid";
 import { MessageItemEntity } from "../entity/message.item.entity";
-import { emitTo } from "@/socket/registry";
+import { debugRoom, emitTo } from "@/socket/registry";
 import { MessageCheckEntity } from "../entity/message.check.entity";
 import { MessageEditDto } from "../dtos/message.edit.dto";
 import { MessageContentDto } from "../dtos/message.content.dto";
@@ -77,36 +77,36 @@ export class MessageService {
         return entity.toJSON();
     }
 
-    async getMessages({ chatId, offset = 0 }: MessageHistoryDto) {
+    async getMessages({ chatId, cursor }: { chatId: string; cursor?: string }) {
         const messages = await this.prisma.messages.findMany({
             where: { chat_id: chatId },
             orderBy: { created_at: "desc" },
             take: 20,
-            skip: offset * 20,
+            skip: cursor ? 1 : 0,
+            ...(cursor && { cursor: { id: cursor } }),
             include: {
-                messages_content: {
-                    include: {
-                        content: { select: { id: true, text: true, url: true } },
-                    },
+            messages_content: {
+                include: {
+                content: { select: { id: true, text: true, url: true } },
                 },
+            },
             },
         });
 
         const messageList = new MessageListEntity(messages.reverse());
         const userIds = messageList.getUserIds().filter((id): id is string => id !== null);
 
-        if (userIds.length === 0) {
-            return [];
-        }
+        if (!userIds.length) return [];
 
         const profiles = await Promise.all(
             userIds.map((id) => this.userService.getProfileById(id))
         );
-
         const profilesMap = UserProfile.getUsersMap(profiles);
 
         return messageList.toJSON(profilesMap);
-    }
+        }
+
+
 
     async createMessage(
         id: string,
@@ -172,6 +172,7 @@ export class MessageService {
 
         const entity = new MessageItemEntity(message, profile, createdContent);
 
+        debugRoom("chat", `chat_${chatId}`)
         emitTo("chat", `chat_${chatId}`, "new-message", entity.toJSON());
 
         return entity.toJSON();

@@ -7,6 +7,7 @@ import {
     MutationDefinition,
 } from "@reduxjs/toolkit/query";
 import { MutationTrigger } from "@reduxjs/toolkit/dist/query/react/buildHooks";
+import { TFunction } from "i18next";
 
 export interface ChatContextMenuProps {
     triggerElement: (handlers: { onContextMenu: (e: React.MouseEvent) => void }) => React.ReactNode;
@@ -29,4 +30,5 @@ export interface ChatContextMenuProps {
             "issueApi"
         >
     >;
+    t?: TFunction<"chat", undefined>;
 }

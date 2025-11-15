@@ -25,6 +25,13 @@ const userSlice = createSlice({
             state.isOpenProfile = false;
             state.openProfile = undefined;
         },
+
+        setChatName(state, action: PayloadAction<{ id: string; name: string }>) {
+            const chat = state.chats?.find((c) => c.id === action.payload.id);
+            if (chat) {
+                chat.name = action.payload.name;
+            }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -39,6 +46,6 @@ const userSlice = createSlice({
     },
 });
 
-export const { setProfile, closeProfile } = userSlice.actions;
+export const { setProfile, closeProfile, setChatName } = userSlice.actions;
 
 export default userSlice.reducer;

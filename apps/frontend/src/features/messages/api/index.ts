@@ -19,12 +19,16 @@ export const messageApi = createApi({
         },
     }),
     endpoints: (builder) => ({
-        getMessages: builder.query({
-            query: ({ id, offset = 0 }) => ({
-                url: `/messages/chats/${id}/messages?offset=${offset}`,
+        getMessages: builder.query<any[], { id: string; cursor?: string }>({
+            query: ({ id, cursor }) => ({
+                url: cursor
+                    ? `/messages/chats/${id}/messages?cursor=${cursor}`
+                    : `/messages/chats/${id}/messages`,
                 method: "GET",
             }),
+            transformResponse: (resp: { message: string; data: any[] }) => resp.data,
         }),
+
         GetMessage: builder.query({
             query: ({ chatId, id }) => ({
                 url: `/message?chat_id=${chatId}&message_id=${id}`,

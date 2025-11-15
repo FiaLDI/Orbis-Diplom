@@ -1,1 +1,2 @@
-export * from "./useApplyTheme";
+export * from "./theme";
+export * from "./model";

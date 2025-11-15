@@ -9,7 +9,6 @@ export const getNotificationSocket = (token: string): Socket => {
     }
 
     if (!notificationSocket) {
-        console.log("🔧 Creating new /notification socket instance...");
         notificationSocket = io(`${config.monoliteUrl}/notification`, {
             auth: { token },
             transports: ["websocket"],

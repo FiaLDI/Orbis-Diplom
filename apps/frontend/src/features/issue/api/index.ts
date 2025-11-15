@@ -15,7 +15,7 @@ export const issueApi = createApi({
             return headers;
         },
     }),
-    tagTypes: ["Projects", "Issues", "Statuses", "Priorities"],
+    tagTypes: ["Projects", "Issues", "Statuses", "Priorities", "Chat"],
     endpoints: (builder) => ({
         getProject: builder.query({
             query: (serverId: string) => `/servers/${serverId}/projects`,
@@ -46,13 +46,15 @@ export const issueApi = createApi({
             invalidatesTags: (result, error, { serverId }) => [{ type: "Projects", id: serverId }],
         }),
 
-        
         getIssues: builder.query<any[], { serverId: string; projectId: string }>({
             query: ({ serverId, projectId }) => `/servers/${serverId}/projects/${projectId}/issues`,
             providesTags: (result, error, { projectId }) =>
                 result
                     ? [
-                          ...result.map((issue) => ({ type: "Issues" as const, id: issue.id })),
+                          ...result.map((issue) => ({
+                              type: "Issues" as const,
+                              id: issue.id,
+                          })),
                           { type: "Issues", id: `PROJECT-${projectId}` },
                       ]
                     : [{ type: "Issues", id: `PROJECT-${projectId}` }],
@@ -70,7 +72,7 @@ export const issueApi = createApi({
         }),
         updateIssue: builder.mutation({
             query: ({ serverId, projectId, issueId, data }) => ({
-                url: `/servers/${serverId}/projects/${projectId}/issues/${issueId}`,
+                url: `/servers/${serverId}/issues/${issueId}`,
                 method: "PATCH",
                 body: data,
             }),
@@ -81,7 +83,7 @@ export const issueApi = createApi({
         }),
         deleteIssue: builder.mutation({
             query: ({ serverId, projectId, issueId }) => ({
-                url: `/servers/${serverId}/projects/${projectId}/issues/${issueId}`,
+                url: `/servers/${serverId}/issues/${issueId}`,
                 method: "DELETE",
             }),
             invalidatesTags: (result, error, { projectId, issueId }) => [
@@ -102,7 +104,6 @@ export const issueApi = createApi({
             }),
         }),
 
-        
         getStatuses: builder.query({
             query: (serverId) => `/servers/${serverId}/issues/statuses`,
             providesTags: [{ type: "Statuses", id: "LIST" }],
@@ -114,30 +115,50 @@ export const issueApi = createApi({
             transformResponse: (response: any) => response.data,
         }),
 
-
         getChatIssue: builder.query({
             query: ({ serverId, issueId }) => `/servers/${serverId}/issues/${issueId}/chats`,
             transformResponse: (response: any) => response.data,
+            providesTags: (result, error, { issueId }) =>
+                result
+                    ? [
+                          ...result.map(({ id }: any) => ({ type: "Chat" as const, id })),
+                          { type: "Chat", id: `Issue-${issueId}` },
+                      ]
+                    : [{ type: "Chat", id: `Issue-${issueId}` }],
         }),
+
         createChatIssue: builder.mutation({
             query: ({ serverId, issueId, data }) => ({
                 url: `/servers/${serverId}/issues/${issueId}/chats`,
                 method: "POST",
                 body: data,
             }),
+            invalidatesTags: (result, error, { issueId }) => [
+                { type: "Chat", id: `Issue-${issueId}` },
+            ],
         }),
+
         updateChatIssue: builder.mutation({
             query: ({ serverId, issueId, chatId, data }) => ({
                 url: `/servers/${serverId}/issues/${issueId}/chats/${chatId}`,
                 method: "PATCH",
                 body: data,
             }),
+            invalidatesTags: (result, error, { issueId, chatId }) => [
+                { type: "Chat", id: chatId },
+                { type: "Chat", id: `Issue-${issueId}` },
+            ],
         }),
+
         deleteChatIssue: builder.mutation({
             query: ({ serverId, issueId, chatId }) => ({
                 url: `/servers/${serverId}/issues/${issueId}/chats/${chatId}`,
                 method: "DELETE",
             }),
+            invalidatesTags: (result, error, { issueId, chatId }) => [
+                { type: "Chat", id: chatId },
+                { type: "Chat", id: `Issue-${issueId}` },
+            ],
         }),
     }),
 });

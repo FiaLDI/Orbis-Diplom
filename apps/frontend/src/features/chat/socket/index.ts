@@ -12,7 +12,6 @@ export const initSocket = (token: string): Socket => {
             reconnectionAttempts: 5,
             reconnectionDelay: 3000,
         });
-        console.log("[Socket] new instance created");
     }
     return socket;
 };
@@ -23,7 +22,6 @@ export const getSocket = (): Socket | null => {
 
 export const disconnectSocket = () => {
     if (socket) {
-        console.log("[Socket] disconnected manually");
         socket.disconnect();
         socket = null;
     }

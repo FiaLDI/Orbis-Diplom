@@ -12,10 +12,4 @@ export interface ToastState {
     position: ToastPosition;
 }
 
-export type ToastPosition =
-    | "top-right"
-    | "top-left"
-    | "bottom-right"
-    | "bottom-left"
-    | "top-center"
-    | "bottom-center";
+export type ToastPosition = "top-right" | "top-left" | "bottom-right" | "bottom-left" | "center";

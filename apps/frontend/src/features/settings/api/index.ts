@@ -1,9 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { config } from "@/config";
-import { ProfileInfo, AccountInfo } from "../types";
 
 export const settingsApi = createApi({
     reducerPath: "settingsApi",
+
     baseQuery: fetchBaseQuery({
         baseUrl: `${config.monoliteUrl}/api`,
         credentials: "include",
@@ -20,14 +20,14 @@ export const settingsApi = createApi({
         },
     }),
     endpoints: (builder) => ({
-        updateProfile: builder.mutation<any, { id: string; data: Partial<ProfileInfo> }>({
+        updateProfile: builder.mutation({
             query: ({ id, data }) => ({
                 url: `/users/${id}`,
                 method: "PUT",
                 body: data,
             }),
         }),
-        updateAccount: builder.mutation<any, { id: string; data: Partial<AccountInfo> }>({
+        updateAccount: builder.mutation({
             query: ({ id, data }) => ({
                 url: `/users/${id}`,
                 method: "PUT",

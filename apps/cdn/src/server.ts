@@ -209,7 +209,6 @@ app.use(
     }),
 );
 
-// Fallback 404
 app.use((req: Request, res: Response) => {
     res.status(404).send("Файл не найден");
 });

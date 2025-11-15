@@ -1,60 +1,60 @@
 {
-    "moderate": {
-        "open": "Open profile",
-        "copy": "Copy ID",
-        "kick": "Kick",
-        "ban": "Ban",
-        "unban": "Unban"
+  "moderate": {
+    "open": "Open profile",
+    "copy": "Copy ID",
+    "kick": "Kick",
+    "ban": "Ban",
+    "unban": "Unban"
+  },
+  "form": {
+    "title": "Search server",
+    "create": "Create",
+    "connect": "Connect",
+    "createplaceholder": "Enter server name",
+    "connectplaceholder": "Enter invite link"
+  },
+  "menu": {
+    "create": "Create text chat",
+    "link": "Create invite link"
+  },
+  "settings": {
+    "title": "Settings",
+    "members": "Members",
+    "roles": "Roles",
+    "assign": "Assign",
+    "assignmodal": "Assign role",
+    "editmodal": "Edit role",
+    "confirm": "Done",
+    "edit": "Edit",
+    "delete": "Delete",
+    "rolename": "Name role",
+    "rolecolor": "Color role",
+    "error": "Permissions cannot be changed for creator",
+    "role": {
+      "ADMIN": "All permissions",
+      "MANAGE_SERVER": "Manage server",
+      "MANAGE_ROLES": "Manage roles",
+      "MANAGE_CHATS": "Manage chats",
+      "KICK_USERS": "Kick users",
+      "BAN_USERS": "Ban users",
+      "UNBAN_USERS": "Unban users",
+      "MANAGE_MESSAGES": "Manage messages",
+      "SEND_MESSAGES": "Send messages",
+      "MANAGE_INVITES": "Manage invites",
+      "VIEW_CHATS": "View chats",
+      "MANAGE_PROJECT": "Manage projects",
+      "MANAGE_ISSUE": "Manage issues",
+      "VIEW_PROJECTS": "View projects",
+      "VIEW_ISSUES": "View issues",
+      "MANAGE_ASSIGNEES": "Manage assignees"
     },
-    "form": {
-        "title": "Search server",
-        "create": "Create",
-        "connect": "Connect",
-        "createplaceholder": "Enter server name",
-        "connectplaceholder": "Enter server id"
-    },
-    "menu": {
-        "create": "Create text chat",
-        "link": "Create invite link"
-    },
-    "settings": {
-        "title": "Settings",
-        "members": "Members",
-        "roles": "Roles",
-        "assign": "Assign",
-        "assignmodal":"Assign role",
-        "editmodal": "Edit role",
-        "confirm": "Done",
-        "edit": "Edit",
-        "delete": "Delete",
-        "rolename": "Name role",
-        "rolecolor": "Color role",
-        "error": "Permissions cannot be changed for creator",
-        "role": {
-            "ADMIN": "All permissions",
-            "MANAGE_SERVER": "Manage server",
-            "MANAGE_ROLES": "Manage roles",
-            "MANAGE_CHATS": "Manage chats",
-            "KICK_USERS": "Kick users",
-            "BAN_USERS": "Ban users",
-            "UNBAN_USERS": "Unban users",
-            "MANAGE_MESSAGES": "Manage messages",
-            "SEND_MESSAGES": "Send messages",
-            "MANAGE_INVITES": "Manage invites",
-            "VIEW_CHATS": "View chats",
-            "MANAGE_PROJECT": "Manage projects",
-            "MANAGE_ISSUE": "Manage issues",
-            "VIEW_PROJECTS": "View projects",
-            "VIEW_ISSUES": "View issues",
-            "MANAGE_ASSIGNEES": "Manage assignees"
-        },
-        "server_settings": "Server settings",
-        "server_name": "Server name",
-        "server_avatar": "Server avatar",
-        "save": "Save",
-        "delete_critical": {
-            "title": "Delete Server",
-            "submit": "Delete"
-        }
+    "server_settings": "Server settings",
+    "server_name": "Server name",
+    "server_avatar": "Server avatar",
+    "save": "Save",
+    "delete_critical": {
+      "title": "Delete Server",
+      "submit": "Delete"
     }
+  }
 }

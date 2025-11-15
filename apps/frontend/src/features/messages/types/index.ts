@@ -11,7 +11,7 @@ export interface Message {
     userId: string;
     username: string;
     avatarUrl?: string | null;
-    replyToId?: number | null;
+    replyToId?: string | null;
     isEdited: boolean;
     content: MessageContent[];
     createdAt: string;

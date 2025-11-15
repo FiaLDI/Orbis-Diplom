@@ -10,6 +10,7 @@ import { ServerInfoSchema } from "../dtos/server.info.dto";
 import { ServerUpdateSchema } from "../dtos/server.update.dto";
 import { ServerMemberSchema } from "../dtos/server.member.dto";
 import { ServerChatIdSchema, ServerIdOnlySchema } from "../dtos/server.chats.dto";
+import { ServerCreateLinkSchema, ServerDeleteLinkSchema } from "../dtos/server.link.dto";
 
 @injectable()
 export class ServerController {
@@ -50,14 +51,8 @@ export class ServerController {
         try {
             const dto = ServerJoinSchema.parse({
                 ...(req as any).user,
-                serverId: req.params.id,
+                code: req.query.code,
             });
-
-            const check = await this.serverService.check(dto.serverId, dto.id);
-
-            if (check) {
-                return Errors.conflict("User already joined this server");
-            }
 
             const entity = await this.serverService.joinServerUser(dto);
 
@@ -213,6 +208,46 @@ export class ServerController {
             });
             const data = await this.serverService.deleteChat(dto);
             return res.json({ message: "Chat deleted", data });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    getInviteLinks = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = ServerCreateLinkSchema.parse({
+                ...(req as any).user,
+                serverId: req.params.id
+            });
+            const data = await this.serverService.getInviteLink(dto);
+            return res.json({ message: "Invite link lists", data });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    createInviteLink = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = ServerCreateLinkSchema.parse({
+                ...(req as any).user,
+                serverId: req.params.id
+            });
+            const data = await this.serverService.createInviteLink(dto);
+            return res.json({ message: "Invite link created", data });
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    deleteInviteLink = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const dto = ServerDeleteLinkSchema.parse({
+                ...(req as any).user,
+                serverId: req.params.id,
+                code: req.query.code
+            });
+            const data = await this.serverService.deleteInviteLink(dto);
+            return res.json({ message: "Invite link deleted", data });
         } catch (err) {
             next(err);
         }

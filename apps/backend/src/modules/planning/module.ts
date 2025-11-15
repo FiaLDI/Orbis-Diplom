@@ -44,21 +44,21 @@ export const planningModule = () => {
     router.post(
         "/:serverId/projects",
         auth.handle.bind(auth),
-        rolePerm.check("MANAGE_PROJECTS"),
+        rolePerm.check("MANAGE_PROJECT"),
         controller.createProject.bind(controller)
     );
 
     router.patch(
         "/:serverId/projects/:projectId",
         auth.handle.bind(auth),
-        rolePerm.check("MANAGE_PROJECTS"),
+        rolePerm.check("MANAGE_PROJECT"),
         controller.updateProject.bind(controller)
     );
 
     router.delete(
         "/:serverId/projects/:projectId",
         auth.handle.bind(auth),
-        rolePerm.check("MANAGE_PROJECTS"),
+        rolePerm.check("MANAGE_PROJECT"),
         controller.deleteProject.bind(controller)
     );
 
@@ -76,7 +76,7 @@ export const planningModule = () => {
     router.post(
         "/:serverId/projects/:projectId/issues",
         auth.handle.bind(auth),
-        rolePerm.check("MANAGE_ISSUES"),
+        rolePerm.check("MANAGE_ISSUE"),
         controller.createIssue.bind(controller)
     );
 
@@ -90,14 +90,14 @@ export const planningModule = () => {
     router.patch(
         "/:serverId/issues/:issueId",
         auth.handle.bind(auth),
-        rolePerm.check("MANAGE_ISSUES"),
+        rolePerm.check("MANAGE_ISSUE"),
         controller.updateIssue.bind(controller)
     );
 
     router.delete(
         "/:serverId/issues/:issueId",
         auth.handle.bind(auth),
-        rolePerm.check("MANAGE_ISSUES"),
+        rolePerm.check("MANAGE_ISSUE"),
         controller.deleteIssue.bind(controller)
     );
 
@@ -133,21 +133,21 @@ export const planningModule = () => {
     router.post(
         "/:serverId/issues/:issueId/chats",
         auth.handle.bind(auth),
-        rolePerm.check("MANAGE_ISSUES"),
+        rolePerm.check("MANAGE_ISSUE"),
         controller.addChatToIssue.bind(controller)
     );
 
     router.delete(
         "/:serverId/issues/:issueId/chats/:chatId",
         auth.handle.bind(auth),
-        rolePerm.check("MANAGE_ISSUES"),
+        rolePerm.check("MANAGE_ISSUE"),
         controller.deleteChatFromIssue.bind(controller)
     );
 
     router.patch(
         "/:serverId/issues/:issueId/chats/:chatId",
         auth.handle.bind(auth),
-        rolePerm.check("MANAGE_ISSUES"),
+        rolePerm.check("MANAGE_ISSUE"),
         controller.editChatFromIssue.bind(controller)
     );
 

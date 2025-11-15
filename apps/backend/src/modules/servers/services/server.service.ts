@@ -11,6 +11,8 @@ import { Errors } from "@/common/errors";
 import { ServerChatIdDto, ServerIdOnlyDto } from "../dtos/server.chats.dto";
 import { ServerMemberDto } from "../dtos/server.member.dto";
 import { UserService } from "@/modules/users";
+import { ServerCreateLinkDto, ServerDeleteLinkDto } from "../dtos/server.link.dto";
+import { v7 as uuidv7 } from "uuid";
 
 @injectable()
 export class ServerService {
@@ -25,6 +27,19 @@ export class ServerService {
 
     async check(serverId: string, userId: string) {
         const existing = await this.prisma.user_server.findUnique({
+            where: {
+                user_id_server_id: {
+                    user_id: userId,
+                    server_id: serverId,
+                },
+            },
+        });
+
+        return existing;
+    }
+
+    private async checkInside(tx: Prisma.TransactionClient, serverId: string, userId: string) {
+        const existing = await tx.user_server.findUnique({
             where: {
                 user_id_server_id: {
                     user_id: userId,
@@ -83,10 +98,25 @@ export class ServerService {
         return { message: "Success" };
     }
 
-    async joinServerUser({ id, serverId }: ServerJoinDto) {
+    async joinServerUser({ id, code }: ServerJoinDto) {
         await this.prisma.$transaction(async (tx) => {
-            await this.connectToServer(tx, serverId, id);
-            await this.rolesService.assignDefaultRoleUser(tx, id, serverId);
+            const link = await this.getInviteLinkByCode(tx, code);
+
+            if (!link) throw Errors.conflict("Non correct invite link");;
+
+            const check = await this.checkInside(tx, link.server_id, id);
+
+            if (check) {
+                throw Errors.conflict("User already joined this server");
+            }
+
+            if (!link.max_uses) throw Errors.conflict("Max uses");
+
+            if ((link.max_uses - link.uses) <= 0) throw Errors.conflict("Max uses");
+
+            await this.useInviteLink(tx, { code: code, uses: link.uses})
+            await this.connectToServer(tx, link.server_id, id);
+            await this.rolesService.assignDefaultRoleUser(tx, id, link.server_id);
         });
 
         return { message: "Success" };
@@ -282,5 +312,63 @@ export class ServerService {
             serverId: dto.serverId,
             chatId: dto.chatId,
         });
+    }
+
+    async createInviteLink(dto: ServerCreateLinkDto) {
+        const link = await this.prisma.invites.create({
+            data: {
+                code: uuidv7().slice(15, 23),
+                expires_at: new Date(30),
+                creator_id: dto.id,
+                max_uses: 10,
+                uses: 0,
+                server_id: dto.serverId
+            },
+        })
+
+        return link.code
+    }
+
+    async deleteInviteLink(dto: ServerDeleteLinkDto) {
+        await this.prisma.invites.deleteMany({
+            where: {
+                code: dto.code,
+                server_id: dto.serverId
+            }
+        })
+
+        return { message: "Succsess"}
+    }
+
+    async getInviteLink(dto: ServerCreateLinkDto) {
+        const links = await this.prisma.invites.findMany({
+            where: {
+                server_id: dto.serverId
+            }
+        })
+
+        return links
+    }
+
+    private async getInviteLinkByCode(tx: Prisma.TransactionClient, code: string) {
+        const link = await tx.invites.findFirst({
+            where: {
+                code: code
+            }
+        })
+
+        return link
+    }
+
+    private async useInviteLink(tx: Prisma.TransactionClient, link: {
+        code: string;
+        uses: number;
+    }) {
+        await tx.invites.update({
+            where: { code: link?.code },
+            data: {
+                uses: link.uses + 1
+            },
+        })
     }
 }
