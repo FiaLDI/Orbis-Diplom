@@ -15,9 +15,9 @@ export function useSettingsState() {
 
   const SettingsContent: Record<string, React.FC<any>> = {
     Account: AccountForm,
-    Profile: AppearanceForm,
-    Appearance: LanguageForm,
-    Language: ProfileForm,
+    Profile: ProfileForm ,
+    Appearance: AppearanceForm,
+    Language: LanguageForm,
   };
 
   const CurrentSettings = SettingsContent[currentSettingsPage];
