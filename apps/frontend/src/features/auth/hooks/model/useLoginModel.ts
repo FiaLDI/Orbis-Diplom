@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useLoginUserMutation } from "../../api";
+import { useLoginUserMutation } from "@/features/auth/api";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { LoginFormData, loginSchema } from "../../validation";
+import { LoginFormData, loginSchema } from "@/features/auth/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export const useLoginModel = () => {

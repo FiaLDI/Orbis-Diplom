@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
-import { useUpdateAccountMutation } from "@/features/settings";
+import { useUpdateAccountMutation } from "@/features/settings/api";
 import { useTranslation } from "react-i18next";
-import type { AccountFormData } from "@/features/settings";
-import { UserData } from "@/features/auth";
+import type { AccountFormData } from "@/features/settings/types";
+import { UserData } from "@/features/auth/types";
 
 export function useAccountFormModel(user: UserData["info"]) {
   const { t } = useTranslation("settings");

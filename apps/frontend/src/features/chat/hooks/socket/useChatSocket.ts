@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { initSocket, getSocket, disconnectSocket } from "../../socket";
+import {
+  initSocket,
+  getSocket,
+  disconnectSocket,
+} from "@/features/chat/socket";
 import { useAppSelector } from "@/app/hooks";
 import type { Socket } from "socket.io-client";
 

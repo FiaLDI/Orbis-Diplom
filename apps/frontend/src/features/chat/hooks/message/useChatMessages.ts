@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { Message, addMessage, setActiveHistory } from "@/features/messages";
-import { useChatSocket } from "../..";
+import { useChatSocket } from "@/features/chat/hooks";
 
 export const useChatMessages = () => {
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
@@ -13,8 +13,7 @@ export const useChatMessages = () => {
 
   useEffect(() => {
     if (!socket || !activeChat?.id) return;
-
-    const chatId = activeChat.id;
+    const chatId = String(activeChat.id);
 
     if ((socket as any)._joinedChatId === chatId) return;
 
@@ -28,12 +27,31 @@ export const useChatMessages = () => {
   }, [socket, activeChat?.id]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !activeChat?.id) return;
 
-    const handleNewMessage = (message: Message) => {
-      if (message.chatId !== activeChat?.id) return;
-      dispatch(addMessage(message));
+    const handleNewMessage = (message: any) => {
+      console.log("📩 SOCKET NEW-MESSAGE:", message);
+      const payloadChatId = String(message?.chatId ?? message?.chat_id ?? "");
+      const activeId = String(activeChat.id);
+
+      if (payloadChatId && payloadChatId !== activeId) {
+        console.log("⚠️ message skipped (wrong chat)", payloadChatId, activeId);
+        return;
+      }
+
+      dispatch(
+        addMessage({ ...message, chatId: payloadChatId || activeId } as any),
+      );
     };
+
+    socket.on("new-message", handleNewMessage);
+    return () => {
+      socket.off("new-message", handleNewMessage);
+    };
+  }, [socket, activeChat?.id, dispatch]);
+
+  useEffect(() => {
+    if (!socket || !activeChat?.id) return;
 
     const handleEditMessage = (payload: {
       message_id: string;
@@ -60,12 +78,10 @@ export const useChatMessages = () => {
       dispatch(setActiveHistory(updated));
     };
 
-    socket.on("new-message", handleNewMessage);
     socket.on("edit-message", handleEditMessage);
     socket.on("delete-message", handleDeleteMessage);
 
     return () => {
-      socket.off("new-message", handleNewMessage);
       socket.off("edit-message", handleEditMessage);
       socket.off("delete-message", handleDeleteMessage);
     };

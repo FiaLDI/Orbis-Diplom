@@ -9,6 +9,7 @@ import { UserProfile } from "@/modules/users/entity/user.profile";
 import { BansEntity } from "../entities/bans.moderation.entity";
 import { ActionModerationDto } from "../dtos/action.moderation.dto";
 import { NotificationService } from "@/modules/notifications";
+import { emitTo, emitToUser } from "@/socket/registry";
 
 @injectable()
 export class ModerationService {
@@ -115,7 +116,8 @@ export class ModerationService {
             data: { serverId },
         });
 
-        emitServerBan(userId, serverId, reason);
+        
+        emitToUser("journal", userId, "server_banned", { serverId });
 
         return ban;
     }
@@ -220,6 +222,8 @@ export class ModerationService {
             body: "Администратор удалил вас с сервера.",
             data: { serverId },
         });
+
+        emitToUser("journal", userId, "server_kicked", { serverId });
 
         return { message: "User kicked from server" };
     }

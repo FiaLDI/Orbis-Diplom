@@ -8,7 +8,7 @@ import { UserProfile } from "@/modules/users/entity/user.profile";
 import { MessageSendDto } from "../dtos/message.send.dto";
 import { v4 as uuidv4 } from "uuid";
 import { MessageItemEntity } from "../entity/message.item.entity";
-import { emitTo } from "@/socket/registry";
+import { debugRoom, emitTo } from "@/socket/registry";
 import { MessageCheckEntity } from "../entity/message.check.entity";
 import { MessageEditDto } from "../dtos/message.edit.dto";
 import { MessageContentDto } from "../dtos/message.content.dto";
@@ -172,6 +172,7 @@ export class MessageService {
 
         const entity = new MessageItemEntity(message, profile, createdContent);
 
+        debugRoom("chat", `chat_${chatId}`)
         emitTo("chat", `chat_${chatId}`, "new-message", entity.toJSON());
 
         return entity.toJSON();

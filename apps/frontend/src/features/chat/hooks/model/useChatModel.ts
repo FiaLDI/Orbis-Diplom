@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { setActiveChat } from "../..";
+import { setActiveChat } from "@/features/chat/slice";
 
 export function useChatModel() {
   const activeChat = useAppSelector((state) => state.chat.activeChat);

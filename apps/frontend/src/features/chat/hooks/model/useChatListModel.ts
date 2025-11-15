@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useMemo } from "react";
-import { chat, setActiveChat } from "../..";
+import { chat, setActiveChat } from "@/features/chat";
 import { useTranslation } from "react-i18next";
 
 export function useChatListModel(search: string = "") {

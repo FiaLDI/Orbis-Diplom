@@ -27,12 +27,9 @@ export function useMessagesListModel(confirm: any) {
   const containerRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-
   const fetchingRef = useRef(false);
-  const prevScrollHeightRef = useRef(0);
-  const prevScrollTopRef = useRef(0);
+  const isPaginatingUpRef = useRef(false);
 
-  // всегда иметь актуальный снапшот истории внутри колбэков observer
   const historyRef = useRef<typeof activeHistory>([]);
   useEffect(() => {
     historyRef.current = activeHistory ?? [];
@@ -47,7 +44,7 @@ export function useMessagesListModel(confirm: any) {
     HTMLUListElement
   >();
 
-  /* ===== Scroll indicators ===== */
+  // ===== Scroll indicators =====
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -62,11 +59,14 @@ export function useMessagesListModel(confirm: any) {
     return () => el.removeEventListener("scroll", handleScroll);
   }, []);
 
-  /* ===== Автоскролл вниз при новых сообщениях (если близко к низу) ===== */
+  // ===== Автоскролл вниз при новых сообщениях =====
   useEffect(() => {
     const el = containerRef.current;
     const bottom = bottomRef.current;
     if (!el || !bottom) return;
+
+    // 🧠 если сейчас идёт пагинация вверх — не скроллим вниз
+    if (isPaginatingUpRef.current) return;
 
     const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
     if (distanceFromBottom < NEAR_BOTTOM_PX) {
@@ -75,19 +75,19 @@ export function useMessagesListModel(confirm: any) {
   }, [activeHistory?.length]);
 
   const handleScrollDown = () => {
-    const el = containerRef.current;
-    if (!el) return;
-    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+    containerRef.current?.scrollTo({
+      top: containerRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   };
 
-  /* ===== Инициализация истории ===== */
+  // ===== Инициализация истории =====
   useEffect(() => {
     if (!activeChat?.id) {
       dispatch(clearActiveHistory());
       return;
     }
 
-    // очистка активной ленты при смене чата, чтобы не мигало
     dispatch(clearActiveHistory());
     setHasMore(true);
 
@@ -107,7 +107,7 @@ export function useMessagesListModel(confirm: any) {
     );
   }, [activeHistory]);
 
-  /* ===== Пагинация вверх (IntersectionObserver + cursor) ===== */
+  // ===== Пагинация вверх =====
   useEffect(() => {
     const rootEl = containerRef.current;
     const topEl = topRef.current;
@@ -120,21 +120,23 @@ export function useMessagesListModel(confirm: any) {
 
       fetchingRef.current = true;
       setIsLoadingMore(true);
+      isPaginatingUpRef.current = true; // 🟢 ставим флаг
+
+      const prevScrollHeight = rootEl.scrollHeight;
+      const prevScrollTop = rootEl.scrollTop;
 
       try {
-        const resp = (await getMessages({
+        const resp: any = await getMessages({
           id: activeChat.id,
           cursor: oldestMessageId,
-        }).unwrap()) as any;
-
+        }).unwrap();
         const rows: any[] = Array.isArray(resp) ? resp : resp?.data;
 
-        if (!rows || rows.length === 0) {
+        if (!rows?.length) {
           setHasMore(false);
           return;
         }
 
-        // prepend без дублей
         const existing = historyRef.current ?? [];
         const existingIds = new Set(existing.map((m: any) => m.id));
         const merged = [
@@ -142,38 +144,28 @@ export function useMessagesListModel(confirm: any) {
           ...existing,
         ];
 
-        // фиксация позиции ДО рендера — уже сохранена снаружи
-        await new Promise((r) => requestAnimationFrame(r));
         dispatch(setActiveHistory(merged));
 
-        // ждём рендер и компенсируем позицию
         await new Promise((r) => requestAnimationFrame(r));
         const newScrollHeight = rootEl.scrollHeight;
-        const added = newScrollHeight - prevScrollHeightRef.current;
-
-        if (prevScrollTopRef.current > 10) {
-          rootEl.scrollTop = prevScrollTopRef.current + added;
-        } else {
-          rootEl.scrollTop = 0; // если были совсем у верха — остаёмся у верха
-        }
+        rootEl.scrollTop = newScrollHeight - prevScrollHeight + prevScrollTop;
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error("Pagination error:", err);
       } finally {
         fetchingRef.current = false;
         setIsLoadingMore(false);
+        isPaginatingUpRef.current = false;
       }
     };
 
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
-        const nearTop = rootEl.scrollTop <= NEAR_TOP_PX;
-
-        if (entry.isIntersecting && nearTop && !fetchingRef.current) {
-          // фиксируем позицию ДО запроса
-          prevScrollHeightRef.current = rootEl.scrollHeight;
-          prevScrollTopRef.current = rootEl.scrollTop;
+        if (
+          entry.isIntersecting &&
+          rootEl.scrollTop <= NEAR_TOP_PX &&
+          !fetchingRef.current
+        ) {
           loadMore();
         }
       },
@@ -185,19 +177,8 @@ export function useMessagesListModel(confirm: any) {
     );
 
     observer.observe(topEl);
-
-    if (
-      (historyRef.current?.length ?? 0) > 0 &&
-      rootEl.scrollTop <= NEAR_TOP_PX &&
-      !fetchingRef.current
-    ) {
-      prevScrollHeightRef.current = rootEl.scrollHeight;
-      prevScrollTopRef.current = rootEl.scrollTop;
-      loadMore();
-    }
-
     return () => observer.disconnect();
-  }, [activeChat?.id]);
+  }, [activeChat?.id, hasMore]);
 
   const handleReplyMessage = () => {
     if (!contextMenu?.data) return;
@@ -220,12 +201,9 @@ export function useMessagesListModel(confirm: any) {
 
   const handleRemoveMessage = async () => {
     const msg = contextMenu?.data;
-
     const ok = await confirm("Удалить сообщение?");
-    if (!ok) closeMenu();
-    if (msg) {
-      removeMessage({ chat_id: msg.chat_id, id: msg.id });
-    }
+    if (!ok) return closeMenu();
+    if (msg) removeMessage({ chat_id: msg.chat_id, id: msg.id });
     closeMenu();
   };
 

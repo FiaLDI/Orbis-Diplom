@@ -30,7 +30,3 @@ export interface ChatEditFormProps {
   issueId?: string | null;
   t?: TFunction<"chat", undefined>;
 }
-
-export type ChatEditFormData = {
-  name: string;
-};

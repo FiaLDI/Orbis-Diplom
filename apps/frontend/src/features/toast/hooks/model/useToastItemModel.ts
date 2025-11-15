@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Toast } from "../types";
+import { Toast } from "@/features/toast/types";
 
 export function useToastItemModel({
   toast,
@@ -27,10 +27,10 @@ export function useToastItemModel({
   }, [toast.duration, onClose]);
 
   const styles = {
-    success: "bg-green-500",
-    error: "bg-red-500",
-    warning: "bg-yellow-500 text-black",
-    info: "bg-blue-500",
+    success: "bg-green-500/50",
+    error: "bg-red-500/50",
+    warning: "bg-yellow-500/50 text-black",
+    info: "bg-blue-500/50",
   };
 
   return {

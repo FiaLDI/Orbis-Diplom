@@ -1,6 +1,6 @@
 import { useAppDispatch } from "@/app/hooks";
 import { useTranslation } from "react-i18next";
-import { setLanguage } from "../../slice";
+import { setLanguage } from "@/features/settings/slice";
 
 export function useLanguageModel() {
   const dispatch = useAppDispatch();

@@ -18,7 +18,7 @@ export const MenuLayout = ({
       <div className="flex lg:flex-col gap-2">
         <div className="">{PersonalMode}</div>
         <div className="flex gap-2 flex-col justify-center">
-          <div className="">{ServerList}</div>
+          <div className="flex gap-2 flex-col justify-center">{ServerList}</div>
           <div className="flex gap-2 flex-col justify-center">
             {CreateServerForm}
           </div>

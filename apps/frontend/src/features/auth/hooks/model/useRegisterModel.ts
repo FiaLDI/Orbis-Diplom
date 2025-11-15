@@ -4,7 +4,7 @@ import {
   useRegisterUserMutation,
   useSendVerificationCodeMutation,
   useVerifyCodeMutation,
-} from "../../api";
+} from "@/features/auth/api";
 import {
   CodeFormData,
   codeSchema,
@@ -12,7 +12,7 @@ import {
   emailSchema,
   RegisterFormData,
   registerSchema,
-} from "../../validation";
+} from "@/features/auth/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 

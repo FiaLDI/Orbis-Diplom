@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { closeProfile } from "../../slice";
+import { closeProfile } from "@/features/user/slice";
 
 export function usePublicProfileModel() {
   const [open, setOpen] = useState<boolean>(false);

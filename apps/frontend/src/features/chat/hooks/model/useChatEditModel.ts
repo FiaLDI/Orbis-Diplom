@@ -1,7 +1,6 @@
-import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { useMemo } from "react";
-import { chat, setActiveChat, useUpdateChatMutation } from "../..";
-import { ChatEditFormData } from "../components/chatlist/chatitem/edit/interface";
+import { useAppDispatch } from "@/app/hooks";
+import { useUpdateChatMutation } from "@/features/chat/api";
+import { ChatEditFormData } from "@/features/chat/types";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { setChatName } from "@/features/user";
 import { useEmitServerUpdate } from "@/features/server";

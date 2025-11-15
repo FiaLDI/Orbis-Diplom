@@ -1,10 +1,9 @@
-// src/features/friends/model/useSearchFriendsModel.ts
 import { useState, useRef, useCallback, useEffect } from "react";
 import {
   useLazyGetUserbyNameQuery,
   useStartChattingMutation,
 } from "@/features/user";
-import { useSendRequestMutation } from "../../api";
+import { useSendRequestMutation } from "@/features/friends/api";
 import { useAppSelector } from "@/app/hooks";
 
 export function useSearchFriendsModel() {

@@ -43,7 +43,7 @@ export type ProfileFormData = {
   first_name?: string;
   last_name?: string;
   birth_date?: string;
-  gender?: "male" | "female" | "other" | "";
+  gender?: string;
   location?: string;
   about?: string;
 };

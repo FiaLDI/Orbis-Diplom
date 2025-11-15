@@ -15,8 +15,8 @@ import {
   useRemoveFriendMutation,
   useBlockFriendMutation,
   useUnblockFriendMutation,
-} from "../..";
-import { setFriendMode } from "../../slice";
+} from "@/features/friends/api";
+import { setFriendMode } from "@/features/friends/slice";
 import { useContextMenu } from "@/shared/hooks";
 import { useConfirm } from "@/shared/hooks/confirm/useConfirm";
 

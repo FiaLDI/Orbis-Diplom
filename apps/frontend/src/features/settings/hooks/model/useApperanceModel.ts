@@ -1,6 +1,6 @@
 import { useAppDispatch } from "@/app/hooks";
 import { useTranslation } from "react-i18next";
-import { setTheme } from "../../slice";
+import { setTheme } from "@/features/settings/slice";
 
 export function useApperanceModel() {
   const dispatch = useAppDispatch();
