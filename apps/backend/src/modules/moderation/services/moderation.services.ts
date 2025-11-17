@@ -1,7 +1,6 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/di/types";
 import type { PrismaClient } from "@prisma/client";
-import { emitServerBan, emitServerKick } from "@/utils/sendBan";
 import { AuditLogsEntity } from "../entities/audit.logs.entity";
 import { UserService } from "@/modules/users";
 import { ServerService } from "@/modules/servers";
@@ -156,8 +155,6 @@ export class ModerationService {
             body: "Вы снова можете присоединиться к серверу.",
             data: { serverId },
         });
-
-        emitServerKick(userId, serverId);
 
         return { message: "User unbanned and rejoined" };
     }

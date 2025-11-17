@@ -1,7 +1,6 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/di/types";
 import type { Prisma, PrismaClient } from "@prisma/client";
-import { MessageHistoryDto } from "../dtos/message.history.dto";
 import { UserService } from "@/modules/users";
 import { MessageListEntity } from "../entity/message.list.entity";
 import { UserProfile } from "@/modules/users/entity/user.profile";
@@ -104,9 +103,7 @@ export class MessageService {
         const profilesMap = UserProfile.getUsersMap(profiles);
 
         return messageList.toJSON(profilesMap);
-        }
-
-
+    }
 
     async createMessage(
         id: string,
