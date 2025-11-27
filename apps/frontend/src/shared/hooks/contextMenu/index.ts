@@ -33,7 +33,7 @@ export function useContextMenu<T, E extends HTMLElement = HTMLUListElement>() {
         };
 
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "Escape") closeMenu(); // ✅ закрытие на ESC
+            if (e.key === "Escape") closeMenu();
         };
 
         document.addEventListener("mousedown", handleClickOutside);

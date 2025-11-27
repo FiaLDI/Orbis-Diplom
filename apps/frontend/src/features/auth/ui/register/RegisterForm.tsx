@@ -61,9 +61,20 @@ export const RegisterForm: React.FC<{ t: TFunction<"server", undefined> }> = ({
   };
 
   return (
-    <div className="rounded-md p-8 bg-background/30 text-white flex flex-col gap-6 w-[450px] overflow-hidden shadow-xl">
-      {/* ====== Single step header + progress ====== */}
-      <div className="flex flex-col gap-3">
+    <div
+      className="
+        rounded-2xl p-8 w-[450px]
+        text-white flex flex-col gap-8 overflow-hidden
+
+        bg-[rgba(10,20,40,0.45)]
+        backdrop-blur-xl
+        border border-cyan-300/20
+        shadow-[0_0_30px_rgba(0,200,255,0.15)]
+        animate-[fadeIn_0.6s_ease-out]
+      "
+    >
+      {/* Title + Progress */}
+      <div className="flex flex-col gap-4">
         <AnimatePresence mode="wait" initial={false}>
           <motion.h1
             key={register.step}
@@ -71,15 +82,22 @@ export const RegisterForm: React.FC<{ t: TFunction<"server", undefined> }> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="text-center text-2xl font-semibold text-white mb-1"
+            className="
+              text-center text-2xl font-semibold
+              drop-shadow-[0_0_12px_rgba(0,255,255,0.4)]
+            "
           >
             {currentLabel}
           </motion.h1>
         </AnimatePresence>
 
+        {/* Progress bar */}
         <div className="relative h-1 w-full bg-white/10 rounded-full overflow-hidden">
           <motion.div
-            className="absolute left-0 top-0 h-full bg-green-400/50 rounded-full"
+            className="
+              absolute left-0 top-0 h-full bg-cyan-300/60 rounded-full
+              shadow-[0_0_8px_rgba(0,255,255,0.6)]
+            "
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
@@ -87,7 +105,7 @@ export const RegisterForm: React.FC<{ t: TFunction<"server", undefined> }> = ({
         </div>
       </div>
 
-      {/* ====== Animated step area ====== */}
+      {/* Step content */}
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={register.step}
@@ -96,14 +114,22 @@ export const RegisterForm: React.FC<{ t: TFunction<"server", undefined> }> = ({
           animate="animate"
           exit="exit"
           transition={{ duration: 0.25, ease: "easeInOut" }}
-          className="flex flex-col gap-5"
+          className="flex flex-col gap-6"
           layout
         >
           {renderStep()}
         </motion.div>
       </AnimatePresence>
 
-      <BackLink label={t("back")} onClick={() => register.navigate("/login")} />
+      <BackLink
+        label={t("back")}
+        onClick={() => register.navigate("/login")}
+        className="
+          text-white/60 hover:text-cyan-300 
+          transition-all 
+          drop-shadow-[0_0_6px_rgba(0,255,255,0.5)]
+        "
+      />
     </div>
   );
 };

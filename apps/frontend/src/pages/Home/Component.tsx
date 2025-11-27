@@ -4,7 +4,7 @@ import { Edge } from "./sections/Edge";
 import { ShowCase } from "./sections/Showcase";
 import { Slider } from "./sections/Slider";
 import { Start } from "./sections/Start";
-import { Support } from "./sections/Support";
+import { SupportForm } from "./sections/Support/SupportForm";
 
 export const Component = () => {
   return (
@@ -14,7 +14,7 @@ export const Component = () => {
       <ShowCase />
       <Slider />
       <Start />
-      <Support />
+      <SupportForm />
     </>
   );
 };

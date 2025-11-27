@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Layout } from "@/pages/Home/components/Layout/Layout";
+import { Layout } from "@/pages/Home/components/layout/Layout";
 import { useAppSelector } from "@/app/hooks";
 import { Component as HomePage } from "@/pages/Home/index";
 import { Component as PoliticalPage } from "@/pages/Political";
