@@ -1,10 +1,11 @@
 import React from "react";
 import { Send, Youtube } from "lucide-react";
 import { NavigationMenu } from "../menu/footer";
+import { ButtonLink } from "../button/link";
 
 export const Footer = () => {
   return (
-    <footer className="relative text-white py-14 px-6 overflow-hidden">
+    <footer className="relative text-white py-6 px-6 overflow-hidden">
 
       {/* Фоновое свечение */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(0,80,255,0.12),_transparent_70%)] pointer-events-none" />
@@ -12,7 +13,7 @@ export const Footer = () => {
       {/* Тонкая неоновая линия сверху */}
       <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
 
-      <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-12">
+      <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-3">
 
         {/* Логотип + описание */}
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10">
@@ -25,7 +26,7 @@ export const Footer = () => {
               <h2 className="font-[sarpanch] text-4xl tracking-wide drop-shadow-[0_0_12px_rgba(0,255,255,0.4)]">
                 ORBIS
               </h2>
-              <p className="text-lg opacity-80 leading-snug max-w-[260px]">
+              <p className="text-lg opacity-80 leading-snug max-w-[300px]">
                 Неважно где ты — важно с нами.  
                 Мы здесь, чтобы быть ближе.
               </p>
@@ -33,7 +34,7 @@ export const Footer = () => {
           </div>
 
           {/* Навигационные блоки */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
             {/* Навигация */}
             <div>
@@ -52,31 +53,24 @@ export const Footer = () => {
               </h3>
 
               <div className="flex flex-col gap-3 text-lg">
-                <a className="flex gap-3 items-center group cursor-pointer">
-                  <Youtube className="w-6 h-6 text-white group-hover:text-cyan-300 transition-all" />
-                  <span className="group-hover:text-cyan-300 transition-all">OrbisYT</span>
-                </a>
-
-                <a className="flex gap-3 items-center group cursor-pointer">
-                  <Send className="w-6 h-6 text-white group-hover:text-cyan-300 transition-all" />
-                  <span className="group-hover:text-cyan-300 transition-all">OrbisTG</span>
-                </a>
+                <ButtonLink href="#" children={<><Youtube className="w-6 h-6 text-white group-hover:text-cyan-300 transition-all" />
+                    <span className="group-hover:text-cyan-300 transition-all">OrbisYT</span></>}/>
+                
+                <ButtonLink href="#" children={<><Send className="w-6 h-6 text-white group-hover:text-cyan-300 transition-all" />
+                    <span className="group-hover:text-cyan-300 transition-all">OrbisTG</span></>}/>
               </div>
             </div>
 
             {/* Контакты */}
             <div>
+              
               <h3 className="text-xl mb-3 text-cyan-300 font-semibold drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
                 Связь с нами
               </h3>
 
               <div className="flex flex-col gap-1 text-lg opacity-90">
-                <span className="hover:text-cyan-300 transition-all cursor-pointer">
-                  orbis.help@orbis.ru
-                </span>
-                <span className="hover:text-cyan-300 transition-all cursor-pointer">
-                  orbis.help2@orbis.ru
-                </span>
+                <ButtonLink href="#" children={<>orbis.help@orbis.ru</>}/>
+                <ButtonLink href="#" children={<>orbis.help2@orbis.ru</>}/>
               </div>
             </div>
           </div>

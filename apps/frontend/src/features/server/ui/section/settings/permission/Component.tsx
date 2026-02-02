@@ -37,7 +37,7 @@ export const RoleSettingsModal: React.FC<Props> = ({
 
       <ModalLayout open={open} onClose={() => setOpen(false)}>
         <div className="p-0 w-[350px] text-white">
-          <div className="bg-background w-full rounded flex items-center justify-between p-5">
+          <div className="bg-foreground/20 w-full rounded flex items-center justify-between p-2">
             <HeadComponent title={t("settings.editmodal")} />
             <CloseButton handler={() => setOpen(false)} />
           </div>

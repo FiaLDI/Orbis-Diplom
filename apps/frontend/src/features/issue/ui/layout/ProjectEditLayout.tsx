@@ -1,3 +1,4 @@
+import { ModalHead } from "@/shared/ui/Modal";
 import React from "react";
 
 export const ProjectEditLayout: React.FC<{
@@ -7,9 +8,9 @@ export const ProjectEditLayout: React.FC<{
     return (
         <div className="p-0 w-[420px] text-white">
             {
-                <div className="bg-background w-full rounded flex items-center justify-between p-5">
+                <ModalHead>
                     {head}
-                </div>
+                </ModalHead>
             }
 
             {form}

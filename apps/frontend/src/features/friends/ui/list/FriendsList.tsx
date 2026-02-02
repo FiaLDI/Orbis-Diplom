@@ -18,7 +18,7 @@ export const FriendsList: React.FC<{
   onConfirm,
   onReject,
 }) => (
-  <ul className="bg-foreground/50 h-full w-full flex flex-col gap-5 p-5 rounded-b-[5px] overflow-y-auto">
+  <ul className="bg-foreground/10 backdrop-blur-sm h-full w-full flex flex-col gap-5 p-5 overflow-y-auto border border-white/30">
     {items.length ? (
       items.map((val) => (
         <FriendListItem

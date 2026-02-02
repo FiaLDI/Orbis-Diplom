@@ -15,15 +15,15 @@ export const ButtonHome: React.FC<ICompoentProps> = ({
         text-2xl lg:text-xl 
         font-semibold 
         w-full 
-        rounded-xl 
+        rounded-md 
         tracking-wide 
         transition-all duration-300 
-        bg-[rgba(0,0,0,0.25)]
+        bg-foreground/10
         backdrop-blur-sm
 
         /* Неоновая рамка */
         border border-cyan-300/40 
-        shadow-[0_0_20px_4px_rgba(0,200,255,0.25)]
+        shadow-[0_0_10px_5px_rgba(0,200,255,0.25)]
 
         /* Цвет текста */
         text-white 

@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { CloseButton, HeadComponent, ModalLayout } from "@/shared";
+import { CloseButton, HeadComponent, ModalHead, ModalLayout } from "@/shared";
 import { ChatEditFormProps } from "./interface";
 import { FormInput, SubmitButton, FormError } from "@/shared/ui/Form";
-import { ChatEditFormData } from "./interface";
 import { useChatEditModel } from "@/features/chat/hooks/model/useChatEditModel";
+import { ChatEditFormData } from "@/features/chat/types";
 
 export const ChatEditForm: React.FC<ChatEditFormProps> = ({
   initialData,
@@ -33,11 +33,11 @@ export const ChatEditForm: React.FC<ChatEditFormProps> = ({
   return (
     <ModalLayout open={!!initialData} onClose={onClose}>
       <div className="p-0 w-[400px] text-white">
-        <div className="bg-background w-full rounded flex items-center justify-between p-5">
+        <ModalHead>
           <HeadComponent title={t ? t("chat.edit.title") : ""} />
 
           <CloseButton handler={onClose} />
-        </div>
+        </ModalHead>
 
         <form
           onSubmit={handleSubmit(onSubmit)}

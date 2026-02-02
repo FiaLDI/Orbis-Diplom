@@ -27,7 +27,7 @@ export const ServerList = ({
             <img
               src={val.avatar_url}
               alt={val.name.slice(0, 1)}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover flex justify-center items-center"
             />
           ) : (
             val.name.slice(0, 1)

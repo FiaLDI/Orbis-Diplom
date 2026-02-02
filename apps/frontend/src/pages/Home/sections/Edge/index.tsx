@@ -2,6 +2,7 @@ import React from "react";
 import { MessageSquare, Bell, Globe } from "lucide-react";
 import { SectionLayout } from "../../components/layout/SectionLayout";
 import { TitleSection } from "../../components/section/TitleSection";
+import { ButtonHome } from "../../components/button/home";
 
 export const Edge = () => {
   return (
@@ -15,7 +16,7 @@ export const Edge = () => {
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center text-white">
           <TitleSection>Неважно где, важно с нами</TitleSection>
 
-          <p className="text-xl opacity-80 mb-14">
+          <p className="text-xl opacity-80 my-6 mt-10">
             Чаты, уведомления и рабочие пространства — мгновенно, стабильно, в любом месте.
           </p>
 
@@ -49,10 +50,14 @@ export const Edge = () => {
             </div>
 
           </div>
+          <div className="flex justify-center">
+            <div className="flex w-full max-w-[300px]">  
+              <ButtonHome handler={()=>{}} >
+                <>Попробовать Orbis</>
+              </ButtonHome>
+            </div>
+          </div>
 
-          <button className="px-10 py-4 bg-cyan-500 hover:bg-cyan-400 rounded-full text-lg font-semibold shadow-[0_0_20px_rgba(6,182,212,0.4)] transition">
-            Попробовать Orbis
-          </button>
         </div>
 
       </SectionLayout>

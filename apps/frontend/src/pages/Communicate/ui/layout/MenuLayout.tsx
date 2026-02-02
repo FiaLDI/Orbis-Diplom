@@ -14,7 +14,8 @@ export const MenuLayout = ({
   SettingsMode?: React.ReactNode;
 }) => {
   return (
-    <div className="order-10 lg:order-0 w-full flex lg:w-fit lg:flex-col justify-between items-center lg:h-full bg-background p-3 pt-5 pb-5 relative">
+    <div className="order-10 
+      backdrop-blur-sm border-r border-white/30 lg:order-0 w-full flex lg:w-fit lg:flex-col justify-between items-center lg:h-full bg-background/50 p-3 pt-5 pb-5 relative">
       <div className="flex lg:flex-col gap-2">
         <div className="">{PersonalMode}</div>
         <div className="flex gap-2 flex-col justify-center">

@@ -69,7 +69,7 @@ export const MenuNotification: React.FC<Props> = ({ connected }) => {
               ) : notifications.length === 0 ? (
                 <p className="text-gray-400 italic">{t("empty")}</p>
               ) : (
-                <div className="flex flex-col divide-y divide-[#ffffff22]">
+                <div className="flex flex-col divide-y divide-[#ffffff22] p-2">
                   {notifications.map((n) => (
                     <NotificationItemView
                       key={n.id}

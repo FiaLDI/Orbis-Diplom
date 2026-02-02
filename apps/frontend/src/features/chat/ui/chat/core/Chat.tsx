@@ -18,7 +18,7 @@ export const Chat: React.FC = () => {
           chat={activeChat}
           triggerElement={({ onContextMenu }) => (
             <div
-              className="flex bg-background text-white text-1xl justify-between items-center flex-wrap shrink-0"
+              className="flex bg-background/50 border border-white/30 backdrop-blur-lg text-white text-1xl justify-between items-center flex-wrap shrink-0"
               onContextMenu={onContextMenu}
             >
               <HeadComponent title={activeChat.name} />

@@ -6,8 +6,8 @@ export const NotificationLayout: React.FC<{
     view: React.ReactNode;
 }> = ({ head, action, view }) => {
     return (
-        <div className="p-5 text-white bg-foreground rounded-lg max-h-[600px] overflow-y-auto min-w-[500px] ">
-            <div className="flex justify-between items-center mb-3">
+        <div className="text-white bg-background rounded-lg max-h-[600px] overflow-y-auto min-w-[500px] flex flex-col gap-2 ">
+            <div className="flex justify-between bg-foreground/20 items-center p-2 gap-10">
                 {head}
 
                 <div className="flex gap-2">{action}</div>

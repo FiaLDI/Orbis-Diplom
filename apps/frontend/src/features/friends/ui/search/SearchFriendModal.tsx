@@ -1,5 +1,5 @@
 import React from "react";
-import { ModalLayout, ModalInput } from "@/shared/ui";
+import { ModalLayout, ModalInput, HeadComponent, CloseButton } from "@/shared/ui";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { SearchResultItem } from "./SearchResultItem";
@@ -27,15 +27,13 @@ export const SearchFriendModal: React.FC<Props> = ({
 
   return (
     <ModalLayout open={open} onClose={onClose}>
-      <div className="text-white flex flex-col gap-5 w-[600px]">
-        <div className="bg-background w-full rounded flex items-center justify-between p-5">
-          <h2 className="w-full text-2xl">{t("search")}</h2>
-          <button onClick={onClose} className="cursor-pointer p-0 w-fit">
-            <X />
-          </button>
-        </div>
+      <div className="text-white flex flex-col w-[600px]">
+          <div className="bg-foreground/20 w-full flex items-center justify-between p-2">
+            <HeadComponent title={t("search")} />
+            <CloseButton handler={() => {onClose()}} />
+          </div>
 
-        <div className="p-5 w-full flex flex-col gap-5 bg-foreground">
+        <div className="p-2 w-full flex flex-col gap-5 bg-background">
           <ModalInput
             change={handleChange}
             value={find}

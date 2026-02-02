@@ -1,3 +1,4 @@
+import { ModalHead } from "@/shared/ui/Modal";
 import React from "react";
 
 export const IssueAssignLayout: React.FC<{
@@ -6,9 +7,9 @@ export const IssueAssignLayout: React.FC<{
     result: React.ReactNode;
 }> = ({ head, search, result }) => (
     <div className="w-[500px] text-white">
-        <div className="bg-background w-full rounded flex items-center justify-baseline p-5">
+        <ModalHead>
             {head}
-        </div>
+        </ModalHead>
         <div className="p-5 flex flex-col gap-5 w-full">
             {search}
 

@@ -17,7 +17,7 @@ export const FriendsSidebar: React.FC<{ t: any }> = ({ t }) => {
   ];
 
   return (
-    <div className="relative h-full p-5 flex flex-col bg-background items-center rounded-[5px] justify-between lg:justify-normal">
+    <div className="relative h-full p-5 flex flex-col backdrop-blur-sm bg-background/10 border border-white/30 items-center justify-between lg:justify-normal">
       <div className="flex flex-col gap-5 w-full pb-5">
         {buttons.map((b) => (
           <DefaultButton

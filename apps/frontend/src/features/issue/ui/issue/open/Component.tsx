@@ -3,6 +3,7 @@ import { Props } from "./interface";
 import { Plus, X } from "lucide-react";
 import { chat, ChatItem } from "@/features/chat";
 import { useIssueOpenModel } from "@/features/issue/hooks/model/useIssueOpenModel";
+import { ModalHead } from "@/shared/ui/Modal";
 
 export const Component: React.FC<Props> = ({
   serverId,
@@ -26,12 +27,12 @@ export const Component: React.FC<Props> = ({
 
   return (
     <div className="w-full h-full overflow-x-scroll bg-background/50 text-white list-none flex flex-col">
-      <div className="bg-background w-full rounded flex items-center justify-baseline p-5">
+      <ModalHead>
         <div className="w-full">Issue</div>
         <button className="cursor-pointer p-0 w-fit" onClick={cloeseIssue}>
           <X />
         </button>
-      </div>
+      </ModalHead>
       <div className="p-5">
         <h4 className="">
           <div className="w-full bg-foreground/50 p-1 rounded">Title:</div>

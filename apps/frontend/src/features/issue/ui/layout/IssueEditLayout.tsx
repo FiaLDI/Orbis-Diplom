@@ -1,3 +1,4 @@
+import { ModalHead } from "@/shared/ui/Modal";
 import React from "react";
 
 export const IssueEditLayout: React.FC<{
@@ -5,9 +6,9 @@ export const IssueEditLayout: React.FC<{
     form: React.ReactNode;
 }> = ({ head, form }) => (
     <div className="text-white w-[500px]">
-        <div className="bg-background w-full rounded flex items-center justify-between p-5">
+        <ModalHead>
             {head}
-        </div>
+        </ModalHead>
         {form}
     </div>
 );

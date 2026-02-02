@@ -8,7 +8,7 @@ export const Component: React.FC<Props> = ({
   onProjectToggle,
 }) => {
   return (
-    <div className="w-full flex justify-between text-white text-lg bg-background p-5">
+    <div className="w-full flex justify-between border-b border-white/30 text-white text-lg bg-foreground/5 backdrop-blur-xl p-5">
       <h4 className="truncate">{name}</h4>
       <div className="flex gap-3">
         <button

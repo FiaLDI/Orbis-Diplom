@@ -17,7 +17,7 @@ export const MessageInput: React.FC = () => {
         </div>
       )}
 
-      <div className="flex flex-col gap-2 p-3 bg-background relative">
+      <div className="flex flex-col gap-2 p-3 bg-background/50 backdrop-blur-sm  relative">
         {m.typingUsers.length > 0 && <TypingIndicator users={m.typingUsers} />}
 
         {m.upload.files?.length > 0 && (
@@ -68,10 +68,10 @@ export const MessageInput: React.FC = () => {
           </div>
         )}
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-5">
           <button
             onClick={m.handleUploadClick}
-            className="p-2 rounded-lg bg-foreground hover:bg-foreground/33 transition"
+            className="p-2 rounded-lg hover:bg-foreground/50 transition"
             title="Загрузить файл"
           >
             <Upload size={24} color="#fff" strokeWidth={1.75} />
@@ -87,7 +87,7 @@ export const MessageInput: React.FC = () => {
 
           <input
             type="text"
-            className="flex-1 bg-foreground text-white rounded-lg p-2 outline-none"
+            className="flex-1 bg-foreground/40 hover:bg-foreground/50 text-white rounded-lg p-2 outline-none border border-white/30"
             placeholder="Введите сообщение..."
             value={m.inputValue}
             onChange={m.handleInputChange}
@@ -97,7 +97,7 @@ export const MessageInput: React.FC = () => {
           <button
             onClick={m.handleSend}
             disabled={m.upload.loading}
-            className="bg-foreground hover:bg-foreground/110 text-white px-4 py-2 rounded-lg"
+            className="bg-foreground/40 hover:bg-foreground/50 border border-white/30 text-white px-4 py-2 rounded-lg"
           >
             Отправить
           </button>

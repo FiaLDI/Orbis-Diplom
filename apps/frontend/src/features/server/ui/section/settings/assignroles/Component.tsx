@@ -33,7 +33,7 @@ export const AssignRolesModal: React.FC<ComponentProps> = ({
 
       <ModalLayout open={open} onClose={() => setOpen(false)}>
         <div className="p-0 w-[320px] text-white">
-          <div className="bg-background w-full rounded flex items-center justify-between p-5">
+          <div className="bg-foreground/20 w-full rounded flex items-center justify-between p-2">
             <HeadComponent title={t("settings.assignmodal")} />
             <CloseButton handler={() => setOpen(false)} />
           </div>

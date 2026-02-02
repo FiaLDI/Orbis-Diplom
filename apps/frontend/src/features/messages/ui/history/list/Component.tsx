@@ -40,7 +40,7 @@ export const MessagesList: React.FC = () => {
     <div className="relative h-full min-h-0">
       <div
         ref={m.containerRef}
-        className="h-full overflow-y-auto p-4 flex flex-col gap-3 bg-background/50 text-white min-h-0"
+        className="h-full overflow-y-auto p-4 flex flex-col gap-3 bg-background/50 text-white min-h-0 backdrop-blur-xl border border-white/30"
       >
         <AnimatePresence>
           {m.isLoadingMore && (

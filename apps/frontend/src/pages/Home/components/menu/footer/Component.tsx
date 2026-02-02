@@ -1,74 +1,33 @@
 import { cn } from "@/shared/utils/cn";
-import React from "react";
+import React, { useCallback } from "react";
 import { ICompoentProps } from "./interface";
+import { ButtonLink } from "../../button/link";
 
 export const NavigationMenu: React.FC<ICompoentProps> = ({ navigate }) => {
+
+  const menuItems = useCallback(()=> {
+      return [
+          { label: "Загрузить", href: "#start" },
+          { label: "Узнать больше", href: "#more" },
+          { label: "Политика", onClick: () => navigate?.("political") },
+          { label: "Поддержка", href: "#support" },
+        ]
+    }, [])
+
   return (
     <ul
       className={cn(
         "flex flex-col lg:flex-col gap-2",
         "text-lg opacity-90",
-        "[&>li]:cursor-pointer [&>li]:select-none",
-        "[&>li]:transition-all [&>li]:duration-300",
+        "[&>li>a]:cursor-pointer [&>li>a]:select-none",
+        "[&>li>a]:transition-all [&>li>a]:duration-300",
         "[&>li]:px-2 [&>li]:py-1"
       )}
     >
-      {/* item */}
-      <li className="group">
-        <a
-          href="#start"
-          className="block px-2 py-1 rounded-md
-                     border-l-2 border-transparent
-                     group-hover:border-cyan-300
-                     group-hover:text-cyan-300
-                     group-hover:drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]
-                     transition-all"
-        >
-          Загрузить
-        </a>
-      </li>
-
-      <li className="group">
-        <a
-          href="#more"
-          className="block px-2 py-1 rounded-md
-                     border-l-2 border-transparent
-                     group-hover:border-cyan-300
-                     group-hover:text-cyan-300
-                     group-hover:drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]
-                     transition-all"
-        >
-          Узнать больше
-        </a>
-      </li>
-
-      <li className="group">
-        <a
-          onClick={() => navigate && navigate("political")}
-          className="block px-2 py-1 rounded-md
-                     border-l-2 border-transparent
-                     group-hover:border-cyan-300
-                     group-hover:text-cyan-300
-                     group-hover:drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]
-                     transition-all"
-        >
-          Политика
-        </a>
-      </li>
-
-      <li className="group">
-        <a
-          href="#support"
-          className="block px-2 py-1 rounded-md
-                     border-l-2 border-transparent
-                     group-hover:border-cyan-300
-                     group-hover:text-cyan-300
-                     group-hover:drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]
-                     transition-all"
-        >
-          Поддержка
-        </a>
-      </li>
+      {menuItems().map((item, i) => (
+        <ButtonLink key={i} href="#" children={<>{item.label}</>}/>
+      ))}
+      
     </ul>
   );
 };

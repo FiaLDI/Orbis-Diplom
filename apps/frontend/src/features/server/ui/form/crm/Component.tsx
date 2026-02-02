@@ -30,7 +30,7 @@ export const ServerModal: React.FC = () => {
 
       <ModalLayout open={open} onClose={() => setOpen(false)}>
         <div className="p-0 text-white flex flex-col w-[500px]">
-          <div className="bg-background w-full rounded flex items-center justify-between p-0">
+          <div className="bg-foreground/30 w-full rounded flex items-center justify-between p-0">
             <HeadComponent title={t("form.title")} />
             <CloseButton handler={() => setOpen(false)} />
           </div>

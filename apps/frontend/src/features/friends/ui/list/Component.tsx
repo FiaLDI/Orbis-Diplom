@@ -9,8 +9,7 @@ export const Component: React.FC = () => {
 
   return (
     <>
-      <div className="w-full h-full flex text-white p-5 rounded-[5px] z-10">
-        <FriendsSidebar t={m.t} />
+      <div className="w-full h-full flex text-white p-5 rounded-[5px] z-10 gap-5">
         <FriendsList
           items={m.filteredFriends}
           mode={m.mode}
@@ -20,6 +19,7 @@ export const Component: React.FC = () => {
           onConfirm={m.confirmFriend}
           onReject={m.reject}
         />
+        <FriendsSidebar t={m.t} />
       </div>
 
       <AnimatedContextMenu

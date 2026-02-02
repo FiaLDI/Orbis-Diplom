@@ -8,9 +8,10 @@ export const SettingsLayout: React.FC<{
 }> = ({ menu, back, exit, current }) => {
   return (
     <div className="w-screen h-screen text-white overflow-auto">
-      <div className="grid grid-cols-[1fr_5fr] h-full w-full">
+      <div className="grid grid-cols-[1fr_6fr] h-full w-full">
         <ul className="w-full">
-          <div className="flex flex-col bg-background p-10 gap-5 h-full justify-between">
+          <div className="order-10 min-w-[180px]
+      backdrop-blur-sm border-r border-white/30 lg:order-0 w-full flex lg:flex-col justify-between items-center lg:h-full bg-background/50 p-3 pt-5 pb-5 relative">
             <div className="flex flex-col">
               {back}
 

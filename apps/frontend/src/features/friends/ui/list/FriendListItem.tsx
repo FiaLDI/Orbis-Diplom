@@ -20,7 +20,8 @@ export const FriendListItem: React.FC<{
       key={val.id}
       onContextMenu={(e) => onContext(e, val)}
       className={clsx(
-        "flex items-center justify-between p-2 rounded-md transition bg-foreground/70 hover:bg-foreground",
+        "flex items-center justify-between p-2 rounded-md transition  bg-foreground/30 hover:bg-foreground/50",
+        "border border-cyan-300/40 shadow-[0_0_10px_5px_rgba(0,200,255,0.25)]",
         isBlocked && "opacity-60 pointer-events-none",
       )}
     >
@@ -36,7 +37,7 @@ export const FriendListItem: React.FC<{
           />
           <span
             className={clsx(
-              "absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-[#25309b88]",
+              "absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-foreground",
               isBlocked
                 ? "bg-gray-500"
                 : isOnline

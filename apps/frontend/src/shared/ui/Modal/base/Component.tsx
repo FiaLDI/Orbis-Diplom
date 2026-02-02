@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ModalLayoutProps } from "./interface";
 
 export const Component: React.FC<ModalLayoutProps> = ({ children, open, onClose }) => {
     const modalRef = useRef<HTMLDivElement>(null);
+    const container = document.getElementById("modal-root");
 
-    // локальный стейт (используется если open не проброшен)
     const [internalOpen, setInternalOpen] = useState(true);
     const isControlled = open !== undefined;
     const visible = isControlled ? open : internalOpen;
 
-    // Закрытие по клику вне модалки или по Esc
     useEffect(() => {
         if (!visible) return;
 
@@ -29,19 +29,24 @@ export const Component: React.FC<ModalLayoutProps> = ({ children, open, onClose 
 
         document.addEventListener("mousedown", handleClickOutside);
         document.addEventListener("keydown", handleEscape);
+
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
             document.removeEventListener("keydown", handleEscape);
         };
     }, [visible, isControlled, onClose]);
 
-    if (!visible) return null;
+    if (!visible || !container) return null;
 
-    return (
-        <div className="fixed inset-0 z-[1000] flex justify-center items-center bg-black/50 backdrop-blur-sm">
-            <div ref={modalRef} className="bg-foreground rounded-2xl shadow-xl">
+    return createPortal(
+        <div className="fixed inset-0 z-[1023300] flex justify-center items-center bg-black/50 backdrop-blur-sm">
+            <div
+                ref={modalRef}
+                className="bg-foreground/50 rounded-2xl shadow-xl backdrop-blur-xl"
+            >
                 {children}
             </div>
-        </div>
+        </div>,
+        container
     );
 };
