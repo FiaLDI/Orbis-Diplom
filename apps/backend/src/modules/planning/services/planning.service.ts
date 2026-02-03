@@ -9,6 +9,7 @@ import { IssueListEntity } from "../entities/issue.list.entity";
 import { UserProfile } from "@/modules/users/entity/user.profile";
 import { UserService } from "@/modules/users";
 import { ChatService } from "@/modules/chat";
+import { IssueAssigneeDto } from "../dtos/user.assignee.dto";
 
 @injectable()
 export class PlanningService {
@@ -71,13 +72,21 @@ export class PlanningService {
 
         const assigneeIds = list.getAssigneeUserIds();
 
-        const profiles = assigneeIds.length
-            ? await Promise.all(
-                  assigneeIds.map((id: string) => this.userService.getProfileById(id))
-              )
-            : [];
+        const profiles = await this.userService.getProfilesByIds(assigneeIds);
 
-        const profilesMap = new Map(profiles.map((p: any) => [p.toJSON().id, p]));
+        const profilesMap = new Map(
+            profiles.map(p => {
+                const json = p.toJSON();
+                return [
+            json.id,
+            {
+                id: json.id,
+                username: json.username,
+                avatarUrl: json.avatar_url,
+            } satisfies IssueAssigneeDto
+            ];
+            })
+        );
 
         const chatIds = list.getChatIds();
 
@@ -120,26 +129,22 @@ export class PlanningService {
         return issue;
     }
 
-    async updateIssue({
-        issueId,
-        title,
-        description,
-        priority,
-        statusId,
-        dueDate,
-        parentId,
-    }: IUpdateIssueDto) {
-        return await this.prisma.issue.update({
-            where: { id: issueId },
-            data: {
-                title,
-                description,
-                priority,
-                status_id: statusId,
-                due_date: dueDate,
-                parent_id: parentId,
-            },
-        });
+    async updateIssue(dto: IUpdateIssueDto) {
+        // если пришёл ТОЛЬКО parentId → это move
+        const onlyMove =
+            dto.parentId !== undefined &&
+            dto.title === undefined &&
+            dto.description === undefined &&
+            dto.priority === undefined &&
+            dto.statusId === undefined &&
+            dto.dueDate === undefined;
+
+        if (onlyMove) {
+            return this.moveIssue(dto.issueId, dto.parentId);
+        }
+
+        // обычное обновление
+        return this.updateIssueFields(dto);
     }
 
     async deleteIssue(issueId: string) {
@@ -150,6 +155,83 @@ export class PlanningService {
             await tx.issue.delete({ where: { id: issueId } });
         });
     }
+
+    private normalizeParentId(
+        parentId: unknown
+        ): string | null | undefined {
+        if (parentId === undefined) return undefined;
+        if (parentId === null) return null;
+        if (parentId === "null") return null;
+        if (parentId === "undefined") return null;
+        return parentId as string;
+        }
+    
+        private isUuid(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+}
+
+
+    private async moveIssue(issueId: string, rawParentId: unknown) {
+  const parentId = this.normalizeParentId(rawParentId);
+
+  if (parentId === issueId) {
+    throw Errors.conflict("Issue cannot be parent of itself");
+  }
+
+  if (parentId && await this.isDescendant(issueId, parentId)) {
+    throw Errors.conflict("Cannot move issue under its descendant");
+  }
+
+  return this.prisma.issue.update({
+    where: { id: issueId },
+    data: { parent_id: parentId },
+  });
+}
+
+
+    private async isDescendant(
+        issueId: string,
+        targetParentId: string
+        ): Promise<boolean> {
+        let current: string | null = targetParentId;
+
+        while (current) {
+            // 🔐 защита от мусора
+            if (!this.isUuid(current)) return false;
+
+            if (current === issueId) return true;
+
+            const parent: { parent_id: string | null } | null =
+            await this.prisma.issue.findUnique({
+                where: { id: current },
+                select: { parent_id: true },
+            });
+
+
+            current = parent?.parent_id ?? null;
+        }
+
+        return false;
+        }
+
+
+
+    private async updateIssueFields(dto: IUpdateIssueDto) {
+        const data: any = {};
+
+        if (dto.title !== undefined) data.title = dto.title;
+        if (dto.description !== undefined) data.description = dto.description;
+        if (dto.priority !== undefined) data.priority = dto.priority;
+        if (dto.statusId !== undefined) data.status_id = dto.statusId;
+        if (dto.dueDate !== undefined) data.due_date = dto.dueDate;
+        if (dto.parentId !== undefined) data.parent_id = dto.parentId;
+
+        return this.prisma.issue.update({
+            where: { id: dto.issueId },
+            data,
+        });
+    }
+
 
     async assignUserToIssue(issueId: string, userId: string) {
         const exists = await this.prisma.issue_assignee.findUnique({
