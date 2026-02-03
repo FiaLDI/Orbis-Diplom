@@ -32,7 +32,7 @@ export function useIssueFormModel({
       due_date: initialData?.due_date
         ? new Date(initialData.due_date).toISOString().slice(0, 10)
         : "",
-      parent_id: initialData?.parent_id ?? null,
+      parentId: initialData?.parentId ?? null,
     },
   });
 
@@ -46,7 +46,7 @@ export function useIssueFormModel({
         statusId: Number(data.statusId),
         priority: data.priority,
         due_date: data.due_date ? new Date(data.due_date).toISOString() : null,
-        parent_id: data.parent_id || null,
+        parentId: data.parentId || null,
       };
 
       if (initialData) {

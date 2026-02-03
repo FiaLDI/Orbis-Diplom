@@ -12,7 +12,7 @@ export const MembersSidebar: React.FC = () => {
   return (
     <>
       <div className="bg-background/20 backdrop-blur-xl text-white text-lg flex flex-col w-[200px] lg:w-[400px] lg:min-w-[250px] lg:max-w-[250px] border-l border-white/30">
-        <h2 className="w-full flex justify-between border-b border-white/30 text-white text-lg bg-foreground/5 backdrop-blur-xl p-5">
+        <h2 className="w-full flex justify-between border-b border-white/30 text-white text-lg bg-foreground/5 backdrop-blur-xl p-3">
           Участники: {m.count}
         </h2>
 

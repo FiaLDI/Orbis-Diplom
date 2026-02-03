@@ -8,7 +8,7 @@ export const SideBarHead: React.FC<{
 }> = ({ search, onSearch, t }) => {
     return (
         <div className="text-5xl lg:text-base flex flex-col text-white">
-            <div className="w-full flex justify-between border-b border-white/30 text-white text-lg bg-foreground/5 backdrop-blur-xl p-5">
+            <div className="w-full flex justify-between border-b border-white/30 text-white text-lg bg-foreground/5 backdrop-blur-xl p-3">
                 <h4 className="truncate">{t("chat.personal.title")}</h4>
             </div>
             <div className="p-5 pb-0">

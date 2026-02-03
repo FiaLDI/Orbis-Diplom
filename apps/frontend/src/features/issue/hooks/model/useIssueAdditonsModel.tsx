@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Orbit, Pencil, Trash2 } from "lucide-react";
 import { Statuses } from "@/features/issue/types";
 import { ContextMenuItem } from "@/shared/ui/AnimatedContextMenu/interface";
@@ -23,12 +23,25 @@ export function useIssueAdditionsModel({
   closeMenu,
   deleteIssue,
 }: UseIssueAdditionsModelProps) {
+
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+
   const statusIcon: Record<Statuses, string> = {
     Open: "⚪",
     "In Progress": "⏳",
     Review: "🔍",
     Done: "✅",
     Closed: "🚫",
+  };
+
+  const isCollapsed = (id: string) => collapsed.has(id);
+
+  const toggleCollapse = (id: string) => {
+    setCollapsed(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
   };
 
   const menuItems: ContextMenuItem[] = contextMenu
@@ -57,5 +70,5 @@ export function useIssueAdditionsModel({
       ]
     : [];
 
-  return { statusIcon, menuItems };
+  return { collapsed, setCollapsed, isCollapsed, toggleCollapse, statusIcon, menuItems };
 }
