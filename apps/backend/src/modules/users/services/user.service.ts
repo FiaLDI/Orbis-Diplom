@@ -1,13 +1,11 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "@/di/types";
 import type { PrismaClient } from "@prisma/client";
-import type { RedisClientType } from "redis";
-
 import { Errors } from "@/common/errors";
 import { UserProfile } from "../entity/user.profile";
-import { GetUserChatsDto } from "../dtos/user.chats.dto";
 import { UserUpdate } from "../entity/user.update";
 import { ChatService } from "@/modules/chat";
+import { UserUpdateDto } from "../dtos/user.update.dto";
 
 @injectable()
 export class UserService {
@@ -33,6 +31,31 @@ export class UserService {
         return entity;
     }
 
+    async getProfilesByIds(ids: string[]) {
+        if (ids.length === 0) return [];
+
+        const uniqueIds = Array.from(new Set(ids));
+
+        const users = await this.prisma.users.findMany({
+            where: {
+                id: { in: uniqueIds },
+            },
+            include: {
+                user_profile: true,
+                user_preferences: true,
+                blocks_initiated: true,
+                blocks_received: true,
+            },
+        });
+
+        if (users.length !== uniqueIds.length) {
+            throw Errors.notFound("One or more users not found");
+        }
+
+        return users.map(user => new UserProfile(user));
+    }
+
+
     async getUsernameById(id: string) {
         const user = await this.prisma.users.findUnique({
             where: { id },
@@ -43,34 +66,43 @@ export class UserService {
         return { id: user.id };
     }
 
-    async getUserChats(id: string) {
-        const chats = await this.chatService.getUsersChat(id);
+    async getUserChats(userId: string) {
+        const chatAggregate = await this.chatService.getUsersChat(userId);
+        const chatList = chatAggregate.toUserChatList();
 
-        const chatsWithProfiles = await Promise.all(
-            chats.toJSONU().map(async (chat) => {
-                const members = await Promise.all(
-                    chat.chatUsers.map(async (cu) => {
-                        const profile = await this.getProfileById(cu.user_id);
-                        return profile.toJSON();
-                    })
-                );
+        if (chatList.length === 0) return [];
 
-                const other = members.find((m) => m.id !== id);
+        const participantIds = Array.from(
+            new Set(chatList.flatMap(chat => chat.participantIds))
+        );
 
-                return {
-                    id: chat.id,
-                    name: chat.name,
-                    created_at: chat.createdAt,
-                    members,
-                    avatar_url: other?.avatar_url ?? null,
-                };
+        const profiles = await this.getProfilesByIds(participantIds);
+
+        const profileMap = new Map(
+            profiles.map(p => {
+                const json = p.toJSON();
+                return [json.id, json];
             })
         );
 
-        return chatsWithProfiles;
+        return chatList.map(chat => {
+            const members = chat.participantIds
+                .map(id => profileMap.get(id))
+                .filter((m): m is NonNullable<typeof m> => m !== undefined);
+
+            const otherUser = members.find(m => m.id !== userId);
+
+            return {
+                id: chat.id,
+                name: chat.name,
+                created_at: chat.createdAt,
+                members,
+                avatar_url: otherUser?.avatar_url ?? null,
+            };
+        });
     }
 
-    async updateUser(dto: Partial<GetUserChatsDto>) {
+    async updateUser(dto: Partial<UserUpdateDto>) {
         const {
             id,
             email,
@@ -130,7 +162,10 @@ export class UserService {
             where: name ? { username: { contains: String(name), mode: "insensitive" } } : {},
         });
 
-        return users;
+        return users.map(u => ({
+            id: u.id,
+            username: u.username,
+        }));
     }
 
     async deleteUser(id: string) {

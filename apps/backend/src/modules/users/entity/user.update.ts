@@ -1,11 +1,9 @@
-import { Prisma } from "@prisma/client";
+import { UserUpdateInfo } from "../types/user.update.info.types";
 
 export class UserUpdate {
-    private user: Prisma.usersGetPayload<{
-        include: { user_profile: true };
-    }>;
+    private user: UserUpdateInfo;
 
-    constructor(user: Prisma.usersGetPayload<{ include: { user_profile: true } }>) {
+    constructor(user: UserUpdateInfo) {
         this.user = user;
     }
 

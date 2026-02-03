@@ -1,15 +1,8 @@
-import { Prisma } from "@prisma/client";
+import { UserProfileProps } from "../types/user.info.types";
 
 export class UserProfile {
     constructor(
-        private user: Prisma.usersGetPayload<{
-            include: {
-                user_profile: true;
-                user_preferences: true;
-                blocks_initiated: true;
-                blocks_received: true;
-            };
-        }>
+        private user: UserProfileProps,
     ) {}
 
     static getUsersMap(profiles: UserProfile[]): Map<string, UserProfile> {

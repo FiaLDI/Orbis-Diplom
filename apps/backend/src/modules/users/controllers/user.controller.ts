@@ -5,6 +5,7 @@ import { UserService } from "../services/user.service";
 import { GetUserProfileSchema } from "../dtos/user.profile.dto";
 import { GetUserChatsSchema } from "../dtos/user.chats.dto";
 import { SearchUserSchema } from "../dtos/user.search.dto";
+import { UserDeleteSchema } from "../dtos/user.delete.dto";
 
 @injectable()
 export class UserController {
@@ -67,6 +68,16 @@ export class UserController {
     };
 
     deleteUser = async (req: Request, res: Response, next: NextFunction) => {
-        const dto = GetUserProfileSchema.parse({ id: (req as any).user.id });
+        try {
+            const dto = UserDeleteSchema.parse({ id: (req as any).user.id });
+            const entity = await this.userService.deleteUser(dto.id);
+
+            return res.json({
+                message: "Success Delete",
+                data: entity,
+            });
+        } catch (err) {
+            next(err);
+        }
     };
 }
