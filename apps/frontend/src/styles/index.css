@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* твои переменные */
 @layer base {
   :root {
     --background: 255 255 255;
@@ -48,6 +47,7 @@
 body {
   font-family: 'poppins';
 }
+
 .scroll-hidden {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -58,7 +58,6 @@ body {
 }
 
 @layer utilities {
-  /* Chrome / Edge / Safari */
   .autofill-transparent:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
     box-shadow: 0 0 0px 1000px transparent inset !important;
