@@ -24,7 +24,7 @@ export const IssueListLayout: React.FC<Props> = ({
     assign,
 }) => (
     <div className="h-full w-full overflow-y-auto scroll-hidden">
-        <div className="bg-background/90 p-5 flex w-full justify-between items-center">
+        <div className="bg-background/50 backdrop-blur-sm border-r border-white/30  p-3 flex w-full justify-between items-center">
             <h4 className="truncate text-lg text-white flex w-full gap-5 items-center">
                 {back}
                 {head}

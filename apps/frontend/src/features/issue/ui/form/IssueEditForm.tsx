@@ -84,11 +84,11 @@ export const IssueEditForm: React.FC<Props> = ({
       />
 
       <FormSelect<IssueFormData>
-        name="parent_id"
+        name="parentId"
         label="Parent issue"
         setValue={setValue}
-        value={watch("parent_id") ?? ""}
-        error={errors.parent_id as any}
+        value={watch("parentId") ?? ""}
+        error={errors.parentId as any}
         options={[
           { label: "-- No parent --", value: "" },
           ...issues

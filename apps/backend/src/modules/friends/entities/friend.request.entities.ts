@@ -1,5 +1,4 @@
 import { UserProfile } from "@/modules/users/entity/user.profile";
-import { Prisma } from "@prisma/client";
 
 export class RequestsFriends {
     private requests: UserProfile[] = [];

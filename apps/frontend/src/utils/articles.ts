@@ -1,4 +1,4 @@
-import { ArticleProps } from "@/page/Political/types/article.types";
+import { ArticleProps } from "@/pages/Political/types/article.types";
 
 export const article: ArticleProps[] = [
     {
