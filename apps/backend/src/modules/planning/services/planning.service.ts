@@ -6,7 +6,6 @@ import { NotificationService } from "@/modules/notifications";
 import { ICreateProjectDto, IDeleteProjectDto, IUpdateProjectDto } from "../dtos/project.dto";
 import { ICreateIssueDto, IUpdateIssueDto } from "../dtos/issue.dto";
 import { IssueListEntity } from "../entities/issue.list.entity";
-import { UserProfile } from "@/modules/users/entity/user.profile";
 import { UserService } from "@/modules/users";
 import { ChatService } from "@/modules/chat";
 import { IssueAssigneeDto } from "../dtos/user.assignee.dto";
@@ -231,7 +230,6 @@ export class PlanningService {
             data,
         });
     }
-
 
     async assignUserToIssue(issueId: string, userId: string) {
         const exists = await this.prisma.issue_assignee.findUnique({
