@@ -16,6 +16,34 @@ import { ClusterView } from "@/features/issue/ui/view/ClusterView";
 import { TreeView } from "@/features/issue/ui/view/TreeView";
 import { useIssueAdditionsModel } from "@/features/issue/hooks";
 import { useIssueAssignModal } from "@/features/issue/hooks";
+import { findIssueById, getContextIssues } from "@/features/issue/utils";
+import { ClusterContextPanel } from "../../view/ClusterContextPanel";
+
+/* =======================
+   HELPERS
+======================= */
+
+function getIssuePath(issues: any[], id: string): string[] {
+  for (const issue of issues) {
+    const path = findPath(issue, id);
+    if (path) return path;
+  }
+  return [];
+}
+
+function findPath(node: any, targetId: string): string[] | null {
+  if (node.id === targetId) return [node.id];
+
+  for (const sub of node.subtasks ?? []) {
+    const subPath = findPath(sub, targetId);
+    if (subPath) return [node.id, ...subPath];
+  }
+  return null;
+}
+
+/* =======================
+   COMPONENT
+======================= */
 
 interface Props {
   serverId?: string;
@@ -24,9 +52,9 @@ interface Props {
 }
 
 export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
-  const { open, editingIssue, openModal, closeModal } = useIssueEditModal();
-
+  const { open, editingIssue, openModal } = useIssueEditModal();
   const [viewMode, setViewMode] = useState<"tree" | "cluster">("tree");
+  const [focusedIssueId, setFocusedIssueId] = useState<string | null>(null);
 
   const { assignModal, closeModalAssign, setAssignModalHandler } =
     useIssueAssignModal();
@@ -38,7 +66,7 @@ export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
     updateState,
     createState,
     deleteIssue,
-    getIssues,
+    onMoveIssue,
     updateIssue,
     createIssue,
     emitServerUpdate,
@@ -47,7 +75,12 @@ export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
   const { issue, activeIssueChat, membersServer, openIssue, back } =
     useIssueModel();
 
-  const { statusIcon, menuItems } = useIssueAdditionsModel({
+  const {
+    statusIcon,
+    menuItems,
+    collapsed,
+    toggleCollapse,
+  } = useIssueAdditionsModel({
     contextMenu,
     openModal,
     setAssignModalHandler,
@@ -57,6 +90,17 @@ export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
 
   if (!serverId || !name || !projectId) return null;
 
+  const roots = issue.issues.filter((i: any) => !i.parentId);
+
+  const activePath =
+    focusedIssueId ? getIssuePath(issue.issues, focusedIssueId) : [];
+  
+    const context =
+  focusedIssueId
+    ? getContextIssues(issue.issues, focusedIssueId)
+    : null;
+
+
   return (
     <IssueListLayout
       back={<BackButton handler={back} />}
@@ -65,6 +109,10 @@ export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
         <ChangeViewLayout setViewMode={setViewMode} viewMode={viewMode} />
       }
       createIssue={<CreateButton handler={() => openModal()} />}
+
+      /* =======================
+         ISSUE FORM
+      ======================= */
       IssueFormModal={
         <>
           {open && (
@@ -85,37 +133,69 @@ export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
           )}
         </>
       }
+
+      /* =======================
+         MAIN VIEW
+      ======================= */
       view={
         <>
-          {viewMode === "tree" &&
-            issue.issues
-              .filter((i: any) => !i.parent_id)
-              .map((root: any) => (
+          {/* ===== TREE VIEW ===== */}
+          {viewMode === "tree" && (
+            <div
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                const draggedId = e.dataTransfer.getData("issueId");
+                if (draggedId) onMoveIssue(draggedId, null);
+              }}
+            >
+              {roots.map((root: any) => (
                 <TreeView
                   key={`tree-${root.id}`}
                   task={root}
+                  collapsed={collapsed}
+                  toggleCollapse={toggleCollapse}
+                  onMove={onMoveIssue}
                   handleContextMenu={handleContextMenu}
-                  openIssue={openIssue}
+                  openIssue={(task) => {
+                    setFocusedIssueId(task.id);
+                    openIssue(task);
+                  }}
                   membersServer={membersServer}
                   statusIcon={statusIcon}
                 />
               ))}
+            </div>
+          )}
 
-          {viewMode === "cluster" &&
-            issue.issues
-              .filter((i: any) => !i.parent_id)
-              .map((root: any) => (
-                <ClusterView
-                  key={`cluster-${root.id}`}
-                  task={root}
-                  handleContextMenu={handleContextMenu}
-                  openIssue={openIssue}
-                  membersServer={membersServer}
-                  statusIcon={statusIcon}
+          {/* ===== CLUSTER VIEW ===== */}
+          {viewMode === "cluster" && (
+            <div className="flex">
+            <ClusterView
+              issues={issue.issues}
+              focusedIssueId={focusedIssueId}
+              setFocusedIssueId={setFocusedIssueId}
+              activePath={activePath}
+              handleContextMenu={handleContextMenu}
+              openIssue={(task) => {
+                setFocusedIssueId(task.id);
+                openIssue(task);
+              }}
+              statusIcon={statusIcon}
+            />
+            {context && (
+                <ClusterContextPanel
+                  context={context}
+                  onSelect={(id) => setFocusedIssueId(id)}
                 />
-              ))}
+              )}
+            </div>
+          )}
         </>
       }
+
+      /* =======================
+         ISSUE PANEL
+      ======================= */
       issue={
         <>
           {issue.openIssue !== null && (
@@ -127,6 +207,10 @@ export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
           )}
         </>
       }
+
+      /* =======================
+         CONTEXT MENU
+      ======================= */
       menu={
         <AnimatedContextMenu
           visible={!!contextMenu}
@@ -137,6 +221,10 @@ export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
           onClose={closeMenu}
         />
       }
+
+      /* =======================
+         ASSIGN MODAL
+      ======================= */
       assign={
         <>
           {assignModal.open && (

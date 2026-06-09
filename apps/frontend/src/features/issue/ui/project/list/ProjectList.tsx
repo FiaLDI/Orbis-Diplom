@@ -14,7 +14,7 @@ export const ProjectList: React.FC<{
   if (!serverId || !name) return null;
 
   const header = (
-    <div className="bg-background p-5 flex w-full justify-between items-center">
+    <div className="bg-background/50 backdrop-blur-sm border-r border-white/30  p-3 flex w-full justify-between items-center">
       <h4 className="truncate text-lg text-white w-full flex items-center gap-5">
         <button
           className="cursor-pointer"

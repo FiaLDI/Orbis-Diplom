@@ -7,10 +7,10 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "outDir": "./dist",
-        "types": ["node", "express"],
-        "baseUrl": "./src",
+        "types": ["node", "express", "vitest/globals"],
+        "baseUrl": ".",
             "paths": {
-            "@/*": ["*"]
+            "@/*": ["src/*"]
             },
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true

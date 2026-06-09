@@ -1,0 +1,12 @@
+node_modules
+dist
+build
+coverage
+.git
+.env
+.env.*
+public/uploads
+*.log
+npm-debug.log*
+.eslintcache
+*.tsbuildinfo

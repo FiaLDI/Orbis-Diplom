@@ -1,13 +1,14 @@
 {
-  "name": "authservice",
+  "name": "orbisbackend",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "dev": "ts-node -r tsconfig-paths/register ./src/server.dev.ts",
+    "dev": "DOTENV_CONFIG_PATH=.env.dev ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.dev.ts",
     "build": "tsc",
-    "start": "ts-node -r tsconfig-paths/register ./src/server.dev.ts",
+    "start": "DOTENV_CONFIG_PATH=.env.prod ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.prod.ts",
     "lint": "eslint --config eslint.config.mjs",
     "lint:fix": "eslint --config eslint.config.mjs --fix",
+    "test:unit": "vitest tests/unit",
     "prisma:generate": "npx prisma generate"
   },
   "keywords": [],
@@ -54,6 +55,8 @@
     "prettier": "^3.4.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vite-tsconfig-paths": "^6.1.0",
+    "vitest": "^4.0.18"
   }
 }

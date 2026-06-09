@@ -7,7 +7,7 @@ export const loadLocales = () => {
         if (!match) continue;
 
         const [, featureName, lang] = match;
-        const namespace = featureName; // 👈 название фичи как namespace
+        const namespace = featureName;
 
         if (!resources[lang]) resources[lang] = {};
         resources[lang][namespace] = (modules[path] as any).default;

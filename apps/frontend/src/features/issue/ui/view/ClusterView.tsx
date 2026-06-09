@@ -1,104 +1,136 @@
 import React from "react";
-import { config } from "@/config";
 import { Statuses } from "@/features/issue/types";
+import { findIssueById } from "@/features/issue/utils"; // <-- твой helper
 
 interface ClusterViewProps {
-  task: any;
-  depth?: number;
+  issues: any[]; // ВСЕ корневые задачи проекта
+  focusedIssueId: string | null;
+  setFocusedIssueId: (id: string | null) => void;
+  activePath: string[];
   handleContextMenu: (e: React.MouseEvent, task: any) => void;
   openIssue: (task: any) => void;
-  membersServer: any[];
   statusIcon: Record<Statuses, string>;
 }
 
 export const ClusterView: React.FC<ClusterViewProps> = ({
-  task,
-  depth = 0,
+  issues,
+  focusedIssueId,
+  setFocusedIssueId,
+  activePath,
   handleContextMenu,
   openIssue,
-  membersServer,
   statusIcon,
 }) => {
-  if (depth > 3) return null;
+  const center =
+    focusedIssueId
+      ? findIssueById(issues, focusedIssueId)
+      : issues[0]; // fallback на первый root
 
-  const subs = task.subtasks || [];
-  const radius = 120 + depth * 40;
-  const angleStep = (2 * Math.PI) / (subs.length || 1);
+  if (!center) return null;
+
+  const children = center.subtasks ?? [];
+
+  const SIZE = 520;
+  const CENTER = SIZE / 2;
+  const RADIUS = 170;
+  const angleStep = (2 * Math.PI) / Math.max(children.length, 1);
 
   return (
-    <div className="relative flex items-center justify-center m-5">
+    <div className="relative mx-auto my-6" style={{ width: SIZE, height: SIZE }}>
+      {/* CONNECTIONS */}
       <svg className="absolute inset-0 w-full h-full pointer-events-none">
-        {subs.map((sub: any, idx: number) => {
-          const angle = idx * angleStep;
-          const x = Math.cos(angle) * radius;
-          const y = Math.sin(angle) * radius;
+        {children.map((child: any, idx: number) => {
+          const angle = idx * angleStep - Math.PI / 2;
+          const x = CENTER + Math.cos(angle) * RADIUS;
+          const y = CENTER + Math.sin(angle) * RADIUS;
+
+          const isActive = activePath.includes(child.id);
+
           return (
             <line
-              key={sub.id}
-              x1="0"
-              y1="0"
+              key={child.id}
+              x1={CENTER}
+              y1={CENTER}
               x2={x}
               y2={y}
-              stroke="#aaa"
-              strokeWidth={1.5}
+              stroke={
+                isActive
+                  ? "rgba(59,130,246,0.9)"
+                  : "rgba(148,163,184,0.5)"
+              }
+              strokeWidth={isActive ? 2.5 : 1.5}
             />
           );
         })}
       </svg>
 
+      {/* CENTER NODE */}
       <div
-        onContextMenu={(e) => handleContextMenu(e, task)}
-        onClick={() => openIssue(task)}
-        className="px-3 py-2 rounded-full cursor-pointer transition relative z-10 flex flex-col items-center"
+        onClick={() => openIssue(center)}
+        onContextMenu={(e) => handleContextMenu(e, center)}
+        className="absolute z-10 px-5 py-3 rounded-full cursor-pointer
+                   bg-primary text-primary-foreground shadow-lg
+                   left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
       >
-        <span>
-          {statusIcon[task.status?.name as Statuses] || "❓"} {task.title}
-        </span>
-        <div className="flex gap-1 mt-1">
-          {task.assignees?.length ? (
-            task.assignees.slice(0, 3).map((a: any) => {
-              const member = membersServer.find((m: any) => m.id === a.id);
-              const avatar =
-                member?.avatar_url &&
-                (member.avatar_url.startsWith("http")
-                  ? member.avatar_url
-                  : `${config.cdnServiceUrl}/${member.avatar_url}`);
-              const username = member?.username || "Unknown";
-
-              return (
-                <img
-                  key={a.user_id}
-                  src={avatar || "/img/icon.png"}
-                  alt={username}
-                  title={username}
-                  className="w-5 h-5 rounded-full border-2 border-[#1e293b] object-cover"
-                />
-              );
-            })
-          ) : (
-            <span className="text-[10px] opacity-50 italic">Unassigned</span>
-          )}
+        <div className="flex items-center gap-2">
+          <span>{statusIcon[center.status?.name as Statuses] || "❓"}</span>
+          <span className="font-semibold max-w-[180px] truncate">
+            {center.title}
+          </span>
         </div>
+
+        {/* BACK TO PARENT */}
+        {center.parentId && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setFocusedIssueId(center.parentId);
+            }}
+            className="absolute -top-7 left-1/2 -translate-x-1/2
+                       text-xs opacity-70 hover:opacity-100"
+          >
+            ↑ Parent
+          </button>
+        )}
       </div>
 
-      {subs.map((sub: any, idx: number) => {
-        const angle = idx * angleStep;
-        const x = Math.cos(angle) * radius;
-        const y = Math.sin(angle) * radius;
+      {/* CHILD NODES */}
+      {children.map((child: any, idx: number) => {
+        const angle = idx * angleStep - Math.PI / 2;
+        const x = CENTER + Math.cos(angle) * RADIUS;
+        const y = CENTER + Math.sin(angle) * RADIUS;
+
+        const isActive = activePath.includes(child.id);
+
         return (
           <div
-            key={sub.id}
+            key={child.id}
+            style={{
+              left: x,
+              top: y,
+              transform: "translate(-50%, -50%)",
+            }}
             className="absolute"
-            style={{ transform: `translate(${x}px, ${y}px)` }}
           >
-            <ClusterView
-              task={sub}
-              depth={depth + 1}
-              handleContextMenu={handleContextMenu}
-              openIssue={openIssue}
-              membersServer={membersServer}
-              statusIcon={statusIcon}
-            />
+            <div
+              onClick={() => setFocusedIssueId(child.id)}
+              onContextMenu={(e) => handleContextMenu(e, child)}
+              className={`
+                px-4 py-2 rounded-full cursor-pointer shadow transition
+                bg-background hover:ring-2 hover:ring-primary
+                ${isActive ? "ring-2 ring-primary" : ""}
+              `}
+              title="Click to drill down"
+            >
+              <div className="flex items-center gap-2 text-sm">
+                <span>
+                  {statusIcon[child.status?.name as Statuses] || "❓"}
+                </span>
+                <span className="max-w-[140px] truncate">
+                  {child.title}
+                </span>
+              </div>
+            </div>
           </div>
         );
       })}

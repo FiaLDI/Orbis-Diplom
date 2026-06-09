@@ -2,81 +2,68 @@ import React, { useEffect, useRef, useState } from "react";
 
 const CustomScroll: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isScrolling, setIsScrolling] = useState(false);
-    const scrollTimeout = useRef<any>(null); // Таймер для сброса стиля
+    const scrollTimeout = useRef<any>(null);
 
     useEffect(() => {
-        // Отключаем стандартный скролл
         document.body.style.overflow = "hidden";
 
         const header = document.querySelector("header");
 
         const handleScroll = () => {
             if (header) {
-                // Если страница в стартовом состоянии (scrollY === 0)
                 if (window.scrollY === 0) {
-                    // Очищаем таймер и убираем стиль у хедера
                     if (scrollTimeout.current) {
                         clearTimeout(scrollTimeout.current);
                         scrollTimeout.current = null;
                     }
                     header.classList.remove("scrolled");
-                    return; // Выходим из функции, чтобы не добавлять стиль
                 }
 
-                // Добавляем стиль при скролле
                 header.classList.add("scrolled");
 
-                // Сбрасываем предыдущий таймер, если он есть
                 if (scrollTimeout.current) {
                     clearTimeout(scrollTimeout.current);
                 }
 
-                // Устанавливаем новый таймер для сброса стиля
                 scrollTimeout.current = setTimeout(() => {
-                    // Проверяем, что скролл действительно остановился
                     if (!isScrolling) {
                         header.classList.remove("scrolled");
                     }
-                }, 1000); // Сбрасываем стиль через 1000 мс после остановки скролла
+                }, 1000);
             }
         };
 
         const handleWheel = (event: WheelEvent) => {
-            event.preventDefault(); // Отменяем стандартное поведение скролла
+            event.preventDefault();
 
-            if (isScrolling) return; // Если уже происходит скролл, выходим
+            if (isScrolling) return;
             setIsScrolling(true);
 
-            const delta = event.deltaY; // Направление скролла (вниз > 0, вверх < 0)
-            const currentScroll = window.scrollY; // Текущая позиция скролла
-            const viewportHeight = window.innerHeight; // Высота окна (100vh)
+            const delta = event.deltaY;
+            const currentScroll = window.scrollY;
+            const viewportHeight = window.innerHeight;
 
             let targetScroll;
 
             if (delta > 0) {
-                // Скролл вниз
                 targetScroll = currentScroll + viewportHeight;
             } else {
-                // Скролл вверх
                 targetScroll = currentScroll - viewportHeight;
             }
 
-            // Ограничиваем targetScroll в пределах страницы
             targetScroll = Math.max(
                 0,
                 Math.min(targetScroll, document.body.scrollHeight - viewportHeight)
             );
 
-            // Плавно прокручиваем страницу
             window.scrollTo({
                 top: targetScroll,
                 behavior: "smooth",
             });
 
-            // Разрешаем следующий скролл после завершения текущего
             setTimeout(() => {
                 setIsScrolling(false);
-            }, 500); // Задержка для завершения анимации скролла
+            }, 500);
         };
 
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -109,16 +96,14 @@ const CustomScroll: React.FC<{ children: React.ReactNode }> = ({ children }) => 
             });
         };
 
-        // Добавляем обработчики событий
         window.addEventListener("scroll", handleScroll);
         window.addEventListener("wheel", handleWheel, { passive: false });
         window.addEventListener("keydown", handleKeyDown);
 
-        // Убираем обработчики при размонтировании компонента
         return () => {
-            document.body.style.overflow = ""; // Восстанавливаем стандартный скролл
+            document.body.style.overflow = "";
             if (scrollTimeout.current) {
-                clearTimeout(scrollTimeout.current); // Очищаем таймер
+                clearTimeout(scrollTimeout.current);
             }
             window.removeEventListener("scroll", handleScroll);
             window.removeEventListener("wheel", handleWheel);

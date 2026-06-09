@@ -1,8 +1,3 @@
-// src/styles/preset.ts
-// --------------------------------------------
-// Tailwind 3.4-safe preset with 3 themes + plugins
-// --------------------------------------------
-
 import plugin from "tailwindcss/plugin";
 import defaultTheme from "tailwindcss/defaultTheme";
 import typography from "@tailwindcss/typography";

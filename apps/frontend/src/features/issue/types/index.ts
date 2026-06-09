@@ -20,7 +20,7 @@ export interface IssueFormData {
   statusId: number;
   priority: string;
   due_date: string;
-  parent_id?: string | null;
+  parentId?: string | null;
 }
 
 export interface IssueFormProps {

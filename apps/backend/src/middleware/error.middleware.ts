@@ -3,7 +3,7 @@ import { ZodError } from "zod";
 import { DomainError, ValidationError } from "@/common/errors";
 
 export function errorHandler(err: any, req: Request, res: Response, _next: NextFunction) {
-    console.error("❌ Global error:", err);
+    console.error("Global error:", err);
 
     if (err instanceof ZodError) {
         return res.status(400).json({

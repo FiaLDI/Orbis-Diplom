@@ -40,7 +40,9 @@ export class IssueListEntity {
             status: issue.status,
             parentId: issue.parent_id,
 
-            assignees: issue.assignees.map((a: any) => profilesMap.get(a.user_id)).filter(Boolean),
+            assignees: issue.assignees
+                .map((a: any) => profilesMap.get(a.user_id))
+                .filter(Boolean),
 
             chats: issue.chat_issues.map((ci: any) => chatsMap.get(ci.chat_id)).filter(Boolean),
         }));

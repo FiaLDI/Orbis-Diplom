@@ -122,6 +122,12 @@ npm run dev
 
 Создай все `.env` см. на `.env.example`
 
+Актуальная документация по запуску и окружению вынесена сюда:
+
+- [docs/START.md](docs/START.md) - dev/prod запуск;
+- [docs/API.md](docs/API.md) - реальные REST routes, Socket.IO namespaces и CDN routes;
+- [docs/ENV.md](docs/ENV.md) - переменные окружения.
+
 ---
 
 ## Автор проекта

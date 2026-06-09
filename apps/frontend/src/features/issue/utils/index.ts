@@ -19,3 +19,25 @@ export function flattenIssues(issues: any[]): any[] {
     }
     return result;
 }
+
+export function getContextIssues(
+  issues: any[],
+  focusedId: string
+) {
+  const all = flattenIssues(issues);
+  const current = all.find(i => i.id === focusedId);
+
+  if (!current) return null;
+
+  const parent = current.parentId
+    ? all.find(i => i.id === current.parentId)
+    : null;
+
+  const children = current.subtasks ?? [];
+
+  const siblings = parent
+    ? parent.subtasks.filter((i: any) => i.id !== focusedId)
+    : all.filter(i => !i.parentId && i.id !== focusedId);
+
+  return { parent, children, siblings };
+}

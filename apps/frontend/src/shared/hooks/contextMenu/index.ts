@@ -7,9 +7,9 @@ export interface ContextMenuPosition<T> {
 }
 
 /**
- * Универсальный хук для контекстного меню
- * @template T — тип данных (например, message)
- * @template E — DOM элемент для ref (по умолчанию HTMLUListElement)
+ * Universal hook for context menu
+ * @template T — data
+ * @template E — DOM element for Ref
  */
 export function useContextMenu<T, E extends HTMLElement = HTMLUListElement>() {
     const [contextMenu, setContextMenu] = useState<ContextMenuPosition<T> | null>(null);

@@ -54,11 +54,41 @@ export function useIssueQuery(
     await getIssuesApi({ serverId, projectId });
   };
 
+  const isDescendant = (dragId: string, target: any): boolean => {
+    if (!target.subtasks) return false;
+    for (const sub of target.subtasks) {
+      if (sub.id === dragId || isDescendant(dragId, sub)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+
+  const onMoveIssue = async (
+    
+    dragId: string,
+    targetId: string | null
+    ) => {
+      if (isDescendant(dragId, targetId)) return;
+      if (!serverId) return;
+    if (dragId === targetId) return;
+
+    await updateIssue({
+      issueId: dragId,
+      parentId: targetId,
+    }, dragId);
+
+    emitServerUpdate("issues", serverId, projectId, "project");
+    };
+
+
   return {
     createState,
     updateState,
     deleteIssue,
     updateIssue,
+    onMoveIssue,
     createIssue,
     getIssues,
     emitServerUpdate,

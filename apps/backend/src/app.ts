@@ -25,19 +25,15 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 
-// routes
 app.use("/api/auth", authModule());
 app.use("/api/chats", chatModule());
 app.use("/api/friends", friendModule());
 app.use("/api/messages", messageModule());
 app.use("/api/notifications", notificationModule());
 app.use("/api/users", userModule());
-
-// all server-scoped modules share one prefix
 app.use("/api/servers", serverModule());
 app.use("/api/servers", rolesModule());
 app.use("/api/servers", planningModule());
 app.use("/api/servers", moderationModule());
 
-// error middleware last
 app.use(errorHandler);
