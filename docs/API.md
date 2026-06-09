@@ -261,3 +261,14 @@ https://localhost
 | `GET` | `/download?url=<encoded-url>` | Proxy download for an external URL. |
 
 Production nginx proxies `/cdn`, `/upload`, and `/download` to the CDN container.
+
+CDN service ownership:
+
+- `apps/cdn/src/server.ts` - process bootstrap and HTTP/HTTPS server creation.
+- `apps/cdn/src/app.ts` - Express middleware and route registration.
+- `apps/cdn/src/routes/cdn.routes.ts` - cached file reads from `/cdn`.
+- `apps/cdn/src/routes/media.routes.ts` - range streaming from `/media`.
+- `apps/cdn/src/routes/upload.routes.ts` - Multer upload handling on `/upload`.
+- `apps/cdn/src/routes/download.routes.ts` - proxied downloads from `/download`.
+- `apps/cdn/src/services` - filesystem/cache/media/upload/download business logic.
+- `apps/cdn/src/config` - env and Redis connection.

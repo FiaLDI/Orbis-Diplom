@@ -92,3 +92,9 @@ Files:
 
 In development, CDN starts HTTPS when `SSL_KEY_PATH` and `SSL_CERT_PATH` are present. In production, CDN starts HTTP behind nginx TLS termination.
 
+CDN runtime layout:
+
+- `server.ts` owns process startup and server listening.
+- `app.ts` configures Express but does not create or listen on an HTTP server.
+- route modules under `src/routes` own individual endpoint groups.
+- service modules under `src/services` own CDN business behavior and keep routes thin.

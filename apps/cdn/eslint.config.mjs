@@ -3,25 +3,24 @@ import jsConfig from "@eslint/js";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import reactPlugin from "eslint-plugin-react";
-import prettier from "eslint-plugin-prettier"; // Import the Prettier plugin
-import tsEslintPlugin from "@typescript-eslint/eslint-plugin"; // Import the TypeScript ESLint plugin
+import prettier from "eslint-plugin-prettier";
+import tsEslintPlugin from "@typescript-eslint/eslint-plugin"; 
 import stylisticJs from '@stylistic/eslint-plugin-js'
 
 /** @type {import('eslint').Linter.FlatConfigArray} */
 export default [
   {
-    ignores: ["node_modules/", "build/", "**/*.config.js", "**/*.config.mjs"], // Игнорируемые файлы и папки
+    ignores: ["node_modules/", "build/", "**/*.config.js", "**/*.config.mjs"],
   },
-  // Настройка для всех файлов
   {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     languageOptions: {
-      parser: tsParser, // Используем TypeScript parser
+      parser: tsParser,
       parserOptions: {
-        ecmaVersion: "latest", // Поддержка последней версии ECMAScript
-        sourceType: "module", // Модульный код
+        ecmaVersion: "latest",
+        sourceType: "module",
         ecmaFeatures: {
-          jsx: true, // Включение поддержки JSX
+          jsx: true,
         },
       },
       globals: {
@@ -30,24 +29,20 @@ export default [
       },
     },
   },
-
-  // Рекомендуемые правила JavaScript
   {
     rules: jsConfig.configs.recommended.rules,
   },
-  // Рекомендуемые правила TypeScript
   {
     rules: tsPlugin.configs.recommended.rules,
   },
-  // Рекомендуемые правила React
   {
     rules: reactPlugin.configs.recommended.rules,
   },
   {
     plugins: {
-      prettier, // Указываем плагин Prettier в объекте
-      "@typescript-eslint": tsEslintPlugin, // Указываем плагин TypeScript ESLint
-      react: reactPlugin, // Указываем плагин React
+      prettier,
+      "@typescript-eslint": tsEslintPlugin,
+      react: reactPlugin,
       '@stylistic/js': stylisticJs
     },
     rules: {
@@ -57,10 +52,10 @@ export default [
         "code": 100,
         "tabWidth": 4
       }],
-      "react/react-in-jsx-scope": "off", // Отключаем правило для импорта React
-      "@typescript-eslint/no-unused-vars": "warn", // Предупреждения для неиспользуемых переменных
-      "react/prop-types": "off", // Отключение проверки prop-types для TypeScript
-      "react/display-name": "warn", // Включение правила для display-name в React компонентах
+      "react/react-in-jsx-scope": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
+      "react/prop-types": "off",
+      "react/display-name": "warn",
       "prettier/prettier": [
         "error",
         {
@@ -71,10 +66,9 @@ export default [
       ] , 
         
     },
-    
     settings: {
       react: {
-        version: "detect", // Автоматическое определение версии React
+        version: "detect",
       },
     },
   },
