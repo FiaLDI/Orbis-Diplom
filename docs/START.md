@@ -9,8 +9,8 @@ This document describes the actual startup paths used by the repository.
 | Frontend | `apps/frontend` | `5173` | `orbis_frontend` |
 | Backend API + Socket.IO | `apps/backend` | `4000` | `orbis_backend` |
 | CDN/upload service | `apps/cdn` | `4005` | `orbis_cdn` |
-| PostgreSQL | Docker | `5433 -> 5432` | `orbis_db_container` |
-| Redis | Docker | `6380 -> 6379` | `orbis_redis_container` |
+| PostgreSQL | Docker | `5432` | `orbis_db_container` |
+| Redis | Docker | `6379` | `orbis_redis_container` |
 | Nginx reverse proxy | `nginx/nginx.conf` | `443` | `orbis_nginx` |
 
 ## Environment Files
@@ -97,6 +97,8 @@ Expected containers:
 - `orbis_db_container`
 - `orbis_redis_container`
 
+Production compose uses `network_mode: host` because this environment cannot create Docker bridge/veth interfaces. Nginx proxies `/` to the frontend service on `127.0.0.1:5173`, `/api` and `/socket.io` to backend on `127.0.0.1:4000`, and CDN routes to `127.0.0.1:4005`. Make sure local ports `80`, `443`, `4000`, `4005`, `5173`, `5432`, and `6379` are free before starting.
+
 Open:
 
 ```text
@@ -123,4 +125,3 @@ Remove persisted PostgreSQL and Redis data:
 ```bash
 docker compose down -v
 ```
-

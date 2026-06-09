@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Копируем зависимости
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
 # Копируем весь фронт и билдим
 COPY . .
@@ -16,6 +16,7 @@ WORKDIR /usr/share/nginx/html
 
 # Копируем билд из предыдущей стадии
 COPY --from=build /app/dist .
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # (опционально) собственный nginx.conf, если фронт отдельно
 # COPY nginx.conf /etc/nginx/conf.d/default.conf
