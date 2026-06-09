@@ -19,7 +19,7 @@ export function createSocketThrottler<T>(
     let isProcessing = false;
 
     return async (data: T) => {
-        pendingData = data; // Всегда актуализируем данные
+        pendingData = data;
 
         if (isProcessing) return;
 

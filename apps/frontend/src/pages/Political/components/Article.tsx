@@ -8,7 +8,6 @@ const Article: React.FC<ArticleProps> = ({ title, description, content }) => {
     let currentSection: Section | null = null;
     content.split("\n").forEach((line) => {
       if (line.startsWith("## ")) {
-        // Новая глава
         currentChapter = {
           title: line.replace("## ", ""),
           sections: [],
@@ -16,7 +15,6 @@ const Article: React.FC<ArticleProps> = ({ title, description, content }) => {
         chapters.push(currentChapter);
         currentSection = null;
       } else if (line.startsWith("### ")) {
-        // Новый пункт
         if (currentChapter) {
           currentSection = {
             title: line.replace("### ", ""),
@@ -25,13 +23,11 @@ const Article: React.FC<ArticleProps> = ({ title, description, content }) => {
           currentChapter?.sections?.push(currentSection);
         }
       } else if (line.startsWith("#### ")) {
-        // Новый подпункт
         if (currentSection) {
           currentSection.subSections = currentSection.subSections || [];
           currentSection.subSections.push(line.replace("#### ", ""));
         }
       } else if (line.trim() !== "") {
-        // Абзац
         if (currentSection) {
           currentSection.content = currentSection.content || [];
           currentSection.content.push(line);

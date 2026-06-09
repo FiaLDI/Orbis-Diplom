@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import { throttle } from "@/utils/throttle";
 
 export default function ScrollTop() {
-    const [isVisible, setIsVisible] = useState(false); // Состояние видимости кнопки
-
+    const [isVisible, setIsVisible] = useState(false); 
     useEffect(() => {
         const handleScroll = () => {
-            // Показываем кнопку, если пользователь проскроллил больше, чем 100vh
             if (window.scrollY > window.innerHeight - 100) {
                 setIsVisible(true);
             } else {
@@ -14,13 +12,9 @@ export default function ScrollTop() {
             }
         };
 
-        // Троттлинг функции handleScroll (вызов не чаще, чем каждые 100 мс)
         const throttledHandleScroll = throttle(handleScroll, 100);
-
-        // Добавляем обработчик события scroll
         window.addEventListener("scroll", throttledHandleScroll);
-
-        // Убираем обработчик при размонтировании компонента
+        
         return () => {
             window.removeEventListener("scroll", throttledHandleScroll);
         };

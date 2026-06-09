@@ -41,7 +41,7 @@ export const AvatarUpload: React.FC<Props> = ({
                 type="file"
                 accept="image/*"
                 ref={inputRef}
-                onChange={onSelect} // ✅ теперь тип совпадает
+                onChange={onSelect}
                 className="hidden"
             />
         </div>
