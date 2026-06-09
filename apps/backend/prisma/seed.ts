@@ -20,6 +20,7 @@ async function main() {
         "MANAGE_ISSUE",
         "VIEW_ISSUES",
         "MANAGE_ASSIGNEES",
+        "VIEW_BANS",
     ];
 
     for (const perm of permissions) {

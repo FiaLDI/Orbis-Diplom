@@ -24,7 +24,10 @@ export default [
           jsx: true, // Включение поддержки JSX
         },
       },
-      globals: globals.browser, // Глобальные переменные для браузера
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
     },
   },
 
@@ -49,9 +52,9 @@ export default [
     },
     rules: {
       
-      '@stylistic/js/indent': ['error', 4],
+      '@stylistic/js/indent': 'off',
       '@stylistic/js/max-len': ['error', {
-        "code": 80,
+        "code": 100,
         "tabWidth": 4
       }],
       "react/react-in-jsx-scope": "off", // Отключаем правило для импорта React
@@ -62,7 +65,8 @@ export default [
         "error",
         {
           tabWidth: 4,
-          useTabs: false
+          useTabs: false,
+          printWidth: 100
         }
       ] , 
         

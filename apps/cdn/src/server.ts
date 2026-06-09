@@ -1,5 +1,5 @@
 import express from "express";
-import type { Request, Response } from "express";
+import type { Express, Request, Response } from "express";
 import serveStatic from "serve-static";
 import compression from "compression";
 import morgan from "morgan";
@@ -10,6 +10,7 @@ import multer from "multer";
 import dotenv from "dotenv";
 import axios from "axios";
 import https from "https";
+import http from "http";
 import { connectRedis, redisClient } from "./config";
 
 dotenv.config();
@@ -18,21 +19,26 @@ dotenv.config();
 const PORT = Number(process.env.PORT) || 4005;
 const HOST = process.env.HOST || "0.0.0.0";
 const FRONTEND = process.env.FRONTENDADDRES || "https://localhost";
-const SSL_KEY = process.env.SSL_KEY_PATH!;
-const SSL_CERT = process.env.SSL_CERT_PATH!;
+const NODE_ENV = process.env.NODE_ENV || "development";
+const SSL_KEY = process.env.SSL_KEY_PATH;
+const SSL_CERT = process.env.SSL_CERT_PATH;
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), "public", "uploads");
 const MAX_FILE_SIZE = Number(process.env.MAX_FILE_SIZE) || 10 * 1024 * 1024;
 
 const { diskStorage } = multer;
 type FileFilterCallback = import("multer").FileFilterCallback;
 
-const options = {
-    key: fs.readFileSync(SSL_KEY),
-    cert: fs.readFileSync(SSL_CERT),
-};
-
 const app = express();
-const server = https.createServer(options, app);
+const useHttps = NODE_ENV !== "production" && Boolean(SSL_KEY && SSL_CERT);
+const server = useHttps
+    ? https.createServer(
+          {
+              key: fs.readFileSync(SSL_KEY!),
+              cert: fs.readFileSync(SSL_CERT!),
+          },
+          app,
+      )
+    : http.createServer(app);
 const __dirnameResolved = path.resolve();
 
 // Redis client
@@ -71,12 +77,7 @@ function getMimeType(filePath: string): string {
 // CDN + Redis cache
 app.get("/cdn/:folder?/:filename", async (req: Request, res: Response) => {
     const folder = req.params.folder ? `${req.params.folder}/` : "";
-    const filePath = path.join(
-        __dirnameResolved,
-        "public",
-        folder,
-        req.params.filename || "",
-    );
+    const filePath = path.join(__dirnameResolved, "public", folder, req.params.filename || "");
     const cacheKey = `cdn:${folder}${req.params.filename}`;
 
     try {
@@ -93,11 +94,7 @@ app.get("/cdn/:folder?/:filename", async (req: Request, res: Response) => {
 
         const fileBuffer = await fs.promises.readFile(filePath);
         if (fileBuffer.length < 5 * 1024 * 1024) {
-            await redisClient.setEx(
-                cacheKey,
-                3600,
-                fileBuffer.toString("base64"),
-            );
+            await redisClient.setEx(cacheKey, 3600, fileBuffer.toString("base64"));
         }
 
         res.setHeader("Content-Type", getMimeType(filePath));
@@ -111,11 +108,7 @@ app.get("/cdn/:folder?/:filename", async (req: Request, res: Response) => {
 
 // Media with Range support
 app.get("/media/:filename", (req: Request, res: Response) => {
-    const filePath = path.join(
-        __dirnameResolved,
-        "public",
-        req.params.filename,
-    );
+    const filePath = path.join(__dirnameResolved, "public", req.params.filename);
 
     fs.stat(filePath, (err, stats) => {
         if (err || !stats.isFile()) return res.status(404).send("Not found");
@@ -194,7 +187,8 @@ app.post("/upload", upload.array("files", 5), (req: Request, res: Response) => {
     }
 
     const urls = files.map((file) => {
-        return `${req.protocol}://${req.get("host")}/cdn/uploads/${file.filename}`;
+        const origin = `${req.protocol}://${req.get("host")}`;
+        return `${origin}/cdn/uploads/${file.filename}`;
     });
 
     res.status(200).json({ uploaded: urls });
@@ -214,7 +208,8 @@ app.use((req: Request, res: Response) => {
 });
 
 server.listen(PORT, HOST, () => {
-    console.log(`🚀 CDN-сервер запущен: https://localhost:${PORT}`);
+    const protocol = useHttps ? "https" : "http";
+    console.log(`🚀 CDN-сервер запущен: ${protocol}://localhost:${PORT}`);
     console.log(
         `Server for frontend: ${process.env.FRONTENDADDRES || "https://26.234.138.233:5173"}`,
     );

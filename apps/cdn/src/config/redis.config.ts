@@ -25,8 +25,9 @@ redisClient.on("ready", () => {
 export const connectRedis = async () => {
     try {
         await redisClient.connect();
-    } catch (err: any) {
-        console.error("❌ Redis connection failed:", err.message);
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error("❌ Redis connection failed:", message);
         process.exit(1);
     }
 };
