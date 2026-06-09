@@ -5,9 +5,6 @@ import type { PrismaClient } from "@prisma/client";
 import { TYPES } from "@/di/types";
 import { Errors } from "@/common/errors";
 
-/**
- * Расширенный тип запроса с добавленным пользователем
- */
 export interface AuthRequest extends Request {
     user?: {
         id: string;
@@ -16,10 +13,6 @@ export interface AuthRequest extends Request {
     };
 }
 
-/**
- * DI-middleware аутентификации через JWT.
- * Получает Prisma из контейнера и проверяет токен.
- */
 @injectable()
 export class AuthMiddleware {
     constructor(@inject(TYPES.Prisma) private prisma: PrismaClient) {}

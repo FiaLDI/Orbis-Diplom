@@ -1,5 +1,3 @@
-// типизация событий для каждого namespace
-
 export interface ChatEvents {
     "new-message": any;
     "user-typing-start": { chatId: string; username?: string };

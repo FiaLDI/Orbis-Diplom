@@ -4,11 +4,9 @@ import { PrismaClient } from "@prisma/client";
 import { redisClient } from "@/config";
 import { TYPES } from "./types";
 
-// ===== Modules imports =====
 import { AuthService } from "@/modules/auth/services/auth.service";
 import { AuthController } from "@/modules/auth/controllers/auth.controller";
-console.log("AuthService?", AuthService);
-console.log("AuthController?", AuthController);
+
 import { AuthMiddleware } from "@/middleware/auth.middleware";
 import { RolePermissionMiddleware } from "@/middleware/role.permission.middleware";
 
@@ -39,7 +37,6 @@ import { PlanningService } from "@/modules/planning/services/planning.service";
 import { ModerationController } from "@/modules/moderation/controllers/moderation.controller";
 import { ModerationService } from "@/modules/moderation/services/moderation.services";
 
-// ===== Container setup =====
 const container = new Container({ defaultScope: "Singleton" });
 
 function safeBind<T>(symbol: symbol, clazz: new (...args: any[]) => T) {
@@ -59,7 +56,6 @@ function safeBind<T>(symbol: symbol, clazz: new (...args: any[]) => T) {
     }
 }
 
-// Core dependencies
 try {
     container.bind(TYPES.Prisma).toConstantValue(new PrismaClient());
     console.log("✅ Bound: PrismaClient instance");
@@ -69,12 +65,11 @@ try {
 
 try {
     container.bind(TYPES.Redis).toConstantValue(redisClient);
-    console.log("✅ Bound: Redis client");
+    console.log("Bound: Redis client");
 } catch (err) {
-    console.error("❌ Failed to bind Redis client:", err);
+    console.error("Failed to bind Redis client:", err);
 }
 
-// ===== Services & Controllers =====
 safeBind(TYPES.AuthService, AuthService);
 safeBind(TYPES.AuthController, AuthController);
 
@@ -105,10 +100,9 @@ safeBind(TYPES.PlanningController, PlanningController);
 safeBind(TYPES.ModerationService, ModerationService);
 safeBind(TYPES.ModerationController, ModerationController);
 
-// ===== Middleware =====
 safeBind(TYPES.AuthMiddleware, AuthMiddleware);
 safeBind(TYPES.RolePermissionMiddleware, RolePermissionMiddleware);
 
-console.log("🧩 All DI bindings attempted.");
+console.log("All DI bindings attempted.");
 
 export { container };

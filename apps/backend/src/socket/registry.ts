@@ -23,14 +23,6 @@ export const getNamespace = <N extends keyof NamespaceEvents>(name: N): Namespac
     return ns;
 };
 
-/**
- * Типизированная отправка событий в комнату / пользователю.
- */
-/**
- * Типизированная отправка событий в комнату / пользователю.
- * Делает имя namespace устойчивым (поддерживает 'chat' и '/chat'),
- * и если namespace не зарегистрирован вручную, берёт io.of('/chat') напрямую.
- */
 export const emitTo = <
   N extends keyof NamespaceEvents,
   E extends keyof NamespaceEvents[N]
@@ -43,7 +35,6 @@ export const emitTo = <
   const nsKey = String(namespace);
   const normalized = nsKey.startsWith("/") ? nsKey : `/${nsKey}`;
 
-  // Пытаемся взять из словаря, иначе берём напрямую из io
   const ns =
     namespaces.get(nsKey) ??
     namespaces.get(normalized) ??
@@ -58,9 +49,6 @@ export const debugRoom = async (namespace: string, room: string) => {
   console.log(`[${namespace}] room=${room} size=${sockets.length}`, sockets.map(s => s.id));
 };
 
-/**
- * Быстрая отправка типизированного события конкретному пользователю
- */
 export const emitToUser = <N extends keyof NamespaceEvents, E extends keyof NamespaceEvents[N]>(
     namespace: N,
     userId: string,
