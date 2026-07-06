@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import React from "react";
 
 export interface Props {
     change: (e: React.ChangeEvent<HTMLInputElement>) => void;

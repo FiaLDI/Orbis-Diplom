@@ -6,9 +6,7 @@ export const IssueEditLayout: React.FC<{
     form: React.ReactNode;
 }> = ({ head, form }) => (
     <div className="text-white w-[500px]">
-        <ModalHead>
-            {head}
-        </ModalHead>
+        <ModalHead>{head}</ModalHead>
         {form}
     </div>
 );

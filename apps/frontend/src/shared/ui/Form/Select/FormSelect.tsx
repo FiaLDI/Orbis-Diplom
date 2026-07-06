@@ -49,7 +49,7 @@ export const FormSelect = <T extends Record<string, any>>({
 
     const handleSelect = (val: string | number) => {
         setSelected(val);
-        setValue(name as any, val as any); // безопасно
+        setValue(name as Path<T>, val as any); // безопасно
         setOpen(false);
     };
 

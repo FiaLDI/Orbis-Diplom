@@ -7,14 +7,14 @@ import { Start } from "./sections/Start";
 import { SupportForm } from "./sections/Support/SupportForm";
 
 export const Component = () => {
-  return (
-    <>
-      <HeroSection />
-      <Edge />
-      <ShowCase />
-      <Slider />
-      <Start />
-      <SupportForm />
-    </>
-  );
+    return (
+        <>
+            <HeroSection />
+            <Edge />
+            <ShowCase />
+            <Slider />
+            <Start />
+            <SupportForm />
+        </>
+    );
 };

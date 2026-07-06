@@ -1,3 +1,3 @@
 export type InputChatProps = {
-  scrollToBottom: () => void;
+    scrollToBottom: () => void;
 };

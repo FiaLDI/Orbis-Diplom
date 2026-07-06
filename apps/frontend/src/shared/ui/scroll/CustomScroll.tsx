@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 const CustomScroll: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isScrolling, setIsScrolling] = useState(false);
-    const scrollTimeout = useRef<any>(null);
+    const scrollTimeout = useRef<number | null>(null);
 
     useEffect(() => {
         document.body.style.overflow = "hidden";

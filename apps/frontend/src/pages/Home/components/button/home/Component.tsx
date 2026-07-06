@@ -2,14 +2,14 @@ import React from "react";
 import { ICompoentProps } from "./interface";
 
 export const ButtonHome: React.FC<ICompoentProps> = ({
-  children,
-  handler = () => {},
-  buttonclass = "",
+    children,
+    handler = () => {},
+    buttonclass = "",
 }) => {
-  return (
-    <button
-      onClick={() => handler()}
-      className={`
+    return (
+        <button
+            onClick={() => handler()}
+            className={`
         relative group 
         px-8 py-4 
         text-2xl lg:text-xl 
@@ -38,9 +38,9 @@ export const ButtonHome: React.FC<ICompoentProps> = ({
 
         ${buttonclass}
       `}
-    >
-      <span
-        className="
+        >
+            <span
+                className="
           pointer-events-none
           absolute inset-0 
           bg-gradient-to-r from-transparent via-white/20 to-transparent 
@@ -49,9 +49,9 @@ export const ButtonHome: React.FC<ICompoentProps> = ({
           group-hover:translate-x-[150%] 
           transition-all duration-[1200ms] ease-out
         "
-      />
+            />
 
-      {children}
-    </button>
-  );
+            {children}
+        </button>
+    );
 };

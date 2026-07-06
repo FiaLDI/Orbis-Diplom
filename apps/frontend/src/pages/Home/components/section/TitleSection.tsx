@@ -1,12 +1,12 @@
 import React from "react";
 
 export const TitleSection: React.FC<{ children: React.ReactNode; className?: string }> = ({
-  children,
-  className = "",
+    children,
+    className = "",
 }) => {
-  return (
-    <h2
-      className={`
+    return (
+        <h2
+            className={`
         text-4xl lg:text-5xl 
         font-semibold 
         text-white 
@@ -23,10 +23,10 @@ export const TitleSection: React.FC<{ children: React.ReactNode; className?: str
 
         ${className}
       `}
-    >
-      {/* Светящийся underline */}
-      <span
-        className="
+        >
+            {/* Светящийся underline */}
+            <span
+                className="
           absolute left-1/2 -bottom-2 -translate-x-1/2
           w-24 h-[2px]
           bg-gradient-to-r 
@@ -36,9 +36,9 @@ export const TitleSection: React.FC<{ children: React.ReactNode; className?: str
           drop-shadow-[0_0_10px_rgba(0,255,255,0.5)]
           rounded-full
         "
-      />
+            />
 
-      {children}
-    </h2>
-  );
+            {children}
+        </h2>
+    );
 };

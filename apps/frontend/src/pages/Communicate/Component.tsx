@@ -6,42 +6,31 @@ import { UserProfile } from "@/features/user";
 import { useModerationListener } from "@/features/server";
 
 export const Component = () => {
-  const {
-    socket,
-    ui,
-    openProjectId,
-    serverId,
-    serverName,
-    isConnected,
-    server,
-  } = useCommunicateModel();
+    const { socket, ui, openProjectId, serverId, serverName, isConnected, server } =
+        useCommunicateModel();
 
-  const { modal } = useModerationListener(socket);
+    const { modal } = useModerationListener(socket);
 
-  if (!socket) return null;
-  if (!ui) return null;
+    if (!socket) return null;
+    if (!ui) return null;
 
-  return (
-    <>
-      {modal}
-      <PageLayout
-        sidebar={
-          <AppMenu
-            socket={socket}
-            notificationConnect={isConnected}
-            server={server}
-          />
-        }
-        profile={<UserProfile />}
-        main={
-          <MainView
-            ui={ui}
-            serverId={serverId}
-            serverName={serverName}
-            openProjectId={openProjectId}
-          />
-        }
-      />
-    </>
-  );
+    return (
+        <>
+            {modal}
+            <PageLayout
+                sidebar={
+                    <AppMenu socket={socket} notificationConnect={isConnected} server={server} />
+                }
+                profile={<UserProfile />}
+                main={
+                    <MainView
+                        ui={ui}
+                        serverId={serverId}
+                        serverName={serverName}
+                        openProjectId={openProjectId}
+                    />
+                }
+            />
+        </>
+    );
 };

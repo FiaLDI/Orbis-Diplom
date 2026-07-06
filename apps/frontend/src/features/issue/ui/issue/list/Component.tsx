@@ -24,21 +24,21 @@ import { ClusterContextPanel } from "../../view/ClusterContextPanel";
 ======================= */
 
 function getIssuePath(issues: any[], id: string): string[] {
-  for (const issue of issues) {
-    const path = findPath(issue, id);
-    if (path) return path;
-  }
-  return [];
+    for (const issue of issues) {
+        const path = findPath(issue, id);
+        if (path) return path;
+    }
+    return [];
 }
 
 function findPath(node: any, targetId: string): string[] | null {
-  if (node.id === targetId) return [node.id];
+    if (node.id === targetId) return [node.id];
 
-  for (const sub of node.subtasks ?? []) {
-    const subPath = findPath(sub, targetId);
-    if (subPath) return [node.id, ...subPath];
-  }
-  return null;
+    for (const sub of node.subtasks ?? []) {
+        const subPath = findPath(sub, targetId);
+        if (subPath) return [node.id, ...subPath];
+    }
+    return null;
 }
 
 /* =======================
@@ -46,198 +46,178 @@ function findPath(node: any, targetId: string): string[] | null {
 ======================= */
 
 interface Props {
-  serverId?: string;
-  name?: string;
-  projectId?: string;
+    serverId?: string;
+    name?: string;
+    projectId?: string;
 }
 
 export const Component: React.FC<Props> = ({ serverId, name, projectId }) => {
-  const { open, editingIssue, openModal } = useIssueEditModal();
-  const [viewMode, setViewMode] = useState<"tree" | "cluster">("tree");
-  const [focusedIssueId, setFocusedIssueId] = useState<string | null>(null);
+    const { open, editingIssue, openModal } = useIssueEditModal();
+    const [viewMode, setViewMode] = useState<"tree" | "cluster">("tree");
+    const [focusedIssueId, setFocusedIssueId] = useState<string | null>(null);
 
-  const { assignModal, closeModalAssign, setAssignModalHandler } =
-    useIssueAssignModal();
+    const { assignModal, closeModalAssign, setAssignModalHandler } = useIssueAssignModal();
 
-  const { contextMenu, handleContextMenu, closeMenu, menuRef } =
-    useContextMenu<any>();
+    const { contextMenu, handleContextMenu, closeMenu, menuRef } = useContextMenu<any>();
 
-  const {
-    updateState,
-    createState,
-    deleteIssue,
-    onMoveIssue,
-    updateIssue,
-    createIssue,
-    emitServerUpdate,
-  } = useIssueQuery(serverId, projectId, closeMenu);
+    const {
+        updateState,
+        createState,
+        deleteIssue,
+        onMoveIssue,
+        updateIssue,
+        createIssue,
+        emitServerUpdate,
+    } = useIssueQuery(serverId, projectId, closeMenu);
 
-  const { issue, activeIssueChat, membersServer, openIssue, back } =
-    useIssueModel();
+    const { issue, activeIssueChat, membersServer, openIssue, back } = useIssueModel();
 
-  const {
-    statusIcon,
-    menuItems,
-    collapsed,
-    toggleCollapse,
-  } = useIssueAdditionsModel({
-    contextMenu,
-    openModal,
-    setAssignModalHandler,
-    closeMenu,
-    deleteIssue,
-  });
+    const { statusIcon, menuItems, collapsed, toggleCollapse } = useIssueAdditionsModel({
+        contextMenu,
+        openModal,
+        setAssignModalHandler,
+        closeMenu,
+        deleteIssue,
+    });
 
-  if (!serverId || !name || !projectId) return null;
+    if (!serverId || !name || !projectId) return null;
 
-  const roots = issue.issues.filter((i: any) => !i.parentId);
+    const roots = issue.issues.filter((i: any) => !i.parentId);
 
-  const activePath =
-    focusedIssueId ? getIssuePath(issue.issues, focusedIssueId) : [];
-  
-    const context =
-  focusedIssueId
-    ? getContextIssues(issue.issues, focusedIssueId)
-    : null;
+    const activePath = focusedIssueId ? getIssuePath(issue.issues, focusedIssueId) : [];
 
+    const context = focusedIssueId ? getContextIssues(issue.issues, focusedIssueId) : null;
 
-  return (
-    <IssueListLayout
-      back={<BackButton handler={back} />}
-      head={<IssueListHead name={name} projectId={projectId} />}
-      viewChange={
-        <ChangeViewLayout setViewMode={setViewMode} viewMode={viewMode} />
-      }
-      createIssue={<CreateButton handler={() => openModal()} />}
-
-      /* =======================
+    return (
+        <IssueListLayout
+            back={<BackButton handler={back} />}
+            head={<IssueListHead name={name} projectId={projectId} />}
+            viewChange={<ChangeViewLayout setViewMode={setViewMode} viewMode={viewMode} />}
+            createIssue={<CreateButton handler={() => openModal()} />}
+            /* =======================
          ISSUE FORM
       ======================= */
-      IssueFormModal={
-        <>
-          {open && (
-            <IssueFormModal
-              key={editingIssue?.id ?? "new"}
-              projectId={projectId}
-              serverId={serverId}
-              statuses={issue.statuses}
-              priorities={issue.priorities}
-              issues={issue.issues}
-              initialData={editingIssue}
-              emitServerUpdate={emitServerUpdate}
-              updateIssue={updateIssue}
-              updateState={updateState}
-              createIssue={createIssue}
-              createState={createState}
-            />
-          )}
-        </>
-      }
-
-      /* =======================
+            IssueFormModal={
+                <>
+                    {open && (
+                        <IssueFormModal
+                            key={editingIssue?.id ?? "new"}
+                            projectId={projectId}
+                            serverId={serverId}
+                            statuses={issue.statuses}
+                            priorities={issue.priorities}
+                            issues={issue.issues}
+                            initialData={editingIssue}
+                            emitServerUpdate={emitServerUpdate}
+                            updateIssue={updateIssue}
+                            updateState={updateState}
+                            createIssue={createIssue}
+                            createState={createState}
+                        />
+                    )}
+                </>
+            }
+            /* =======================
          MAIN VIEW
       ======================= */
-      view={
-        <>
-          {/* ===== TREE VIEW ===== */}
-          {viewMode === "tree" && (
-            <div
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                const draggedId = e.dataTransfer.getData("issueId");
-                if (draggedId) onMoveIssue(draggedId, null);
-              }}
-            >
-              {roots.map((root: any) => (
-                <TreeView
-                  key={`tree-${root.id}`}
-                  task={root}
-                  collapsed={collapsed}
-                  toggleCollapse={toggleCollapse}
-                  onMove={onMoveIssue}
-                  handleContextMenu={handleContextMenu}
-                  openIssue={(task) => {
-                    setFocusedIssueId(task.id);
-                    openIssue(task);
-                  }}
-                  membersServer={membersServer}
-                  statusIcon={statusIcon}
-                />
-              ))}
-            </div>
-          )}
+            view={
+                <>
+                    {/* ===== TREE VIEW ===== */}
+                    {viewMode === "tree" && (
+                        <div
+                            onDragOver={(e) => e.preventDefault()}
+                            onDrop={(e) => {
+                                const draggedId = e.dataTransfer.getData("issueId");
+                                if (draggedId) onMoveIssue(draggedId, null);
+                            }}
+                        >
+                            {roots.map((root: any) => (
+                                <TreeView
+                                    key={`tree-${root.id}`}
+                                    task={root}
+                                    collapsed={collapsed}
+                                    toggleCollapse={toggleCollapse}
+                                    onMove={onMoveIssue}
+                                    handleContextMenu={handleContextMenu}
+                                    openIssue={(task) => {
+                                        setFocusedIssueId(task.id);
+                                        openIssue(task);
+                                    }}
+                                    membersServer={membersServer}
+                                    statusIcon={statusIcon}
+                                />
+                            ))}
+                        </div>
+                    )}
 
-          {/* ===== CLUSTER VIEW ===== */}
-          {viewMode === "cluster" && (
-            <div className="flex">
-            <ClusterView
-              issues={issue.issues}
-              focusedIssueId={focusedIssueId}
-              setFocusedIssueId={setFocusedIssueId}
-              activePath={activePath}
-              handleContextMenu={handleContextMenu}
-              openIssue={(task) => {
-                setFocusedIssueId(task.id);
-                openIssue(task);
-              }}
-              statusIcon={statusIcon}
-            />
-            {context && (
-                <ClusterContextPanel
-                  context={context}
-                  onSelect={(id) => setFocusedIssueId(id)}
-                />
-              )}
-            </div>
-          )}
-        </>
-      }
-
-      /* =======================
+                    {/* ===== CLUSTER VIEW ===== */}
+                    {viewMode === "cluster" && (
+                        <div className="flex">
+                            <ClusterView
+                                issues={issue.issues}
+                                focusedIssueId={focusedIssueId}
+                                setFocusedIssueId={setFocusedIssueId}
+                                activePath={activePath}
+                                handleContextMenu={handleContextMenu}
+                                openIssue={(task) => {
+                                    setFocusedIssueId(task.id);
+                                    openIssue(task);
+                                }}
+                                statusIcon={statusIcon}
+                            />
+                            {context && (
+                                <ClusterContextPanel
+                                    context={context}
+                                    onSelect={(id) => setFocusedIssueId(id)}
+                                />
+                            )}
+                        </div>
+                    )}
+                </>
+            }
+            /* =======================
          ISSUE PANEL
       ======================= */
-      issue={
-        <>
-          {issue.openIssue !== null && (
-            <OpenIssue
-              serverId={serverId}
-              issueId={issue.openIssue}
-              activeIssueChat={activeIssueChat}
-            />
-          )}
-        </>
-      }
-
-      /* =======================
+            issue={
+                <>
+                    {issue.openIssue !== null && (
+                        <OpenIssue
+                            serverId={serverId}
+                            issueId={issue.openIssue}
+                            activeIssueChat={activeIssueChat}
+                        />
+                    )}
+                </>
+            }
+            /* =======================
          CONTEXT MENU
       ======================= */
-      menu={
-        <AnimatedContextMenu
-          visible={!!contextMenu}
-          x={contextMenu?.x || 0}
-          y={contextMenu?.y || 0}
-          items={menuItems}
-          menuRef={menuRef}
-          onClose={closeMenu}
-        />
-      }
-
-      /* =======================
+            menu={
+                <AnimatedContextMenu
+                    visible={!!contextMenu}
+                    x={contextMenu?.x || 0}
+                    y={contextMenu?.y || 0}
+                    items={menuItems}
+                    menuRef={menuRef}
+                    onClose={closeMenu}
+                />
+            }
+            /* =======================
          ASSIGN MODAL
       ======================= */
-      assign={
-        <>
-          {assignModal.open && (
-            <AssignModal
-              issue={assignModal.issue}
-              onClose={closeModalAssign}
-              serverId={serverId}
-              projectId={projectId}
-              emitServerUpdate={emitServerUpdate}
-            />
-          )}
-        </>
-      }
-    />
-  );
+            assign={
+                <>
+                    {assignModal.open && (
+                        <AssignModal
+                            issue={assignModal.issue}
+                            onClose={closeModalAssign}
+                            serverId={serverId}
+                            projectId={projectId}
+                            emitServerUpdate={emitServerUpdate}
+                        />
+                    )}
+                </>
+            }
+        />
+    );
 };

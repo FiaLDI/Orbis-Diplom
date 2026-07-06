@@ -3,26 +3,26 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { closeProfile } from "@/features/user/slice";
 
 export function usePublicProfileModel() {
-  const [open, setOpen] = useState<boolean>(false);
+    const [open, setOpen] = useState<boolean>(false);
 
-  const dispatch = useAppDispatch();
-  const userInfo = useAppSelector((s) => s.user.openProfile);
-  const check = useAppSelector((s) => s.user.isOpenProfile);
+    const dispatch = useAppDispatch();
+    const userInfo = useAppSelector((s) => s.user.openProfile);
+    const check = useAppSelector((s) => s.user.isOpenProfile);
 
-  const closeProfileHandler = () => {
-    dispatch(closeProfile());
-    setOpen((prev) => !prev);
-  };
+    const closeProfileHandler = () => {
+        dispatch(closeProfile());
+        setOpen((prev) => !prev);
+    };
 
-  useEffect(() => {
-    if (check) {
-      setOpen(true);
-    }
-  }, [check]);
+    useEffect(() => {
+        if (check) {
+            setOpen(true);
+        }
+    }, [check]);
 
-  return {
-    userInfo,
-    open,
-    closeProfileHandler,
-  };
+    return {
+        userInfo,
+        open,
+        closeProfileHandler,
+    };
 }

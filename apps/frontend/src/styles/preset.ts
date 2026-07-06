@@ -51,7 +51,6 @@ export const preset: Config = {
         typography,
         aspectRatio,
         animate,
-        require("tailwindcss-textshadow"),
         plugin(function ({ addVariant }: PluginAPI) {
             addVariant("parent", "&>div");
         }),

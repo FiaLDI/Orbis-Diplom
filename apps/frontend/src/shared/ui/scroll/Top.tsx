@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { throttle } from "@/utils/throttle";
 
 export default function ScrollTop() {
-    const [isVisible, setIsVisible] = useState(false); 
+    const [isVisible, setIsVisible] = useState(false);
     useEffect(() => {
         const handleScroll = () => {
             if (window.scrollY > window.innerHeight - 100) {
@@ -14,7 +14,7 @@ export default function ScrollTop() {
 
         const throttledHandleScroll = throttle(handleScroll, 100);
         window.addEventListener("scroll", throttledHandleScroll);
-        
+
         return () => {
             window.removeEventListener("scroll", throttledHandleScroll);
         };

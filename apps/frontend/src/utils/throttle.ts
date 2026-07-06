@@ -1,6 +1,6 @@
-export const throttlet = (func: (...args: any[]) => void, limit: number) => {
+export const throttlet = (func: (...args: unknown[]) => void, limit: number) => {
     let inThrottle: boolean;
-    return (...args: any[]) => {
+    return (...args: unknown[]) => {
         if (!inThrottle) {
             func(...args);
             inThrottle = true;
@@ -37,12 +37,7 @@ export function createSocketThrottler<T>(
     };
 }
 
-interface ThrottleOptions {
-    leading?: boolean;
-    trailing?: boolean;
-}
-
-export const throttle = <T extends (...args: any[]) => any>(
+export const throttle = <T extends (...args: unknown[]) => unknown>(
     func: T,
     wait: number,
     options: { leading?: boolean; trailing?: boolean } = {}
