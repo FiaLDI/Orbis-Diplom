@@ -40,10 +40,7 @@ export const Component: React.FC<ModalLayoutProps> = ({ children, open, onClose 
 
     return createPortal(
         <div className="fixed inset-0 z-[1023300] flex justify-center items-center bg-black/50 backdrop-blur-sm">
-            <div
-                ref={modalRef}
-                className="bg-foreground/50 rounded-2xl shadow-xl backdrop-blur-xl"
-            >
+            <div ref={modalRef} className="bg-foreground/50 rounded-2xl shadow-xl backdrop-blur-xl">
                 {children}
             </div>
         </div>,

@@ -12,49 +12,48 @@ import { ServerSettingsLayout } from "@/features/server/ui/layout/ServerSettings
 import { InviteSection } from "./sections/InviteLinkSection";
 
 export const ServerSettingsForm: React.FC = () => {
-  const { t } = useTranslation("server");
-  const { activeserver, allPermission, form, ui, lists, invites } =
-    useServerSettingsModel();
+    const { t } = useTranslation("server");
+    const { activeserver, allPermission, form, ui, lists, invites } = useServerSettingsModel();
 
-  if (!activeserver) return null;
+    if (!activeserver) return null;
 
-  return (
-    <ServerSettingsLayout>
-      <SettingsHeader
-        title={`${t("settings.title")} ${activeserver.name}`}
-        onClose={ui.onCloseSettings}
-      />
+    return (
+        <ServerSettingsLayout>
+            <SettingsHeader
+                title={`${t("settings.title")} ${activeserver.name}`}
+                onClose={ui.onCloseSettings}
+            />
 
-      <BasicSettingsSection t={t} activeserver={activeserver} form={form} />
+            <BasicSettingsSection t={t} activeserver={activeserver} form={form} />
 
-      <MembersSection
-        t={t}
-        serverId={activeserver.id}
-        members={lists.members}
-        roles={lists.roles}
-        emitServerUpdate={ui.emit}
-      />
+            <MembersSection
+                t={t}
+                serverId={activeserver.id}
+                members={lists.members}
+                roles={lists.roles}
+                emitServerUpdate={ui.emit}
+            />
 
-      <RolesSection
-        t={t}
-        serverId={activeserver.id}
-        roles={lists.roles}
-        allPermissions={(allPermission ?? []) as any[]}
-        onCreateRole={ui.onCreateRole}
-        onDeleteRole={ui.onDeleteRole}
-        emitServerUpdate={ui.emit}
-      />
+            <RolesSection
+                t={t}
+                serverId={activeserver.id}
+                roles={lists.roles}
+                allPermissions={(allPermission ?? []) as any[]}
+                onCreateRole={ui.onCreateRole}
+                onDeleteRole={ui.onDeleteRole}
+                emitServerUpdate={ui.emit}
+            />
 
-      <InviteSection
-        serverId={activeserver.id}
-        inviteLinks={activeserver.inviteLinks}
-        onCreateInviteLink={invites.createServerLink}
-        onDeleteInviteLink={invites.DeleteServerLinks}
-      />
+            <InviteSection
+                serverId={activeserver.id}
+                inviteLinks={activeserver.inviteLinks}
+                onCreateInviteLink={invites.createServerLink}
+                onDeleteInviteLink={invites.DeleteServerLinks}
+            />
 
-      <DeleteServerSection t={t} onDelete={ui.onDangerDeleteServer} />
+            <DeleteServerSection t={t} onDelete={ui.onDangerDeleteServer} />
 
-      <AuditDrawer activeserver={activeserver as any} />
-    </ServerSettingsLayout>
-  );
+            <AuditDrawer activeserver={activeserver as any} />
+        </ServerSettingsLayout>
+    );
 };

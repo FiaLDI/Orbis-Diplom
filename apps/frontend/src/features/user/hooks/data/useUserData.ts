@@ -2,16 +2,16 @@ import React, { useCallback } from "react";
 import { useLazyGetChatsUsersQuery } from "@/features/user/api";
 
 export function useUserData(userId?: string) {
-  const [getPersonalChats] = useLazyGetChatsUsersQuery();
+    const [getPersonalChats] = useLazyGetChatsUsersQuery();
 
-  const fetchUserData = useCallback(async () => {
-    if (!userId) return;
+    const fetchUserData = useCallback(async () => {
+        if (!userId) return;
 
-    await Promise.all([getPersonalChats({})]);
-  }, [userId]);
+        await Promise.all([getPersonalChats({})]);
+    }, [userId]);
 
-  React.useEffect(() => {
-    if (!userId) return;
-    fetchUserData();
-  }, [userId, fetchUserData]);
+    React.useEffect(() => {
+        if (!userId) return;
+        fetchUserData();
+    }, [userId, fetchUserData]);
 }

@@ -7,11 +7,7 @@ export const ProjectEditLayout: React.FC<{
 }> = ({ form, head }) => {
     return (
         <div className="p-0 w-[420px] text-white">
-            {
-                <ModalHead>
-                    {head}
-                </ModalHead>
-            }
+            {<ModalHead>{head}</ModalHead>}
 
             {form}
         </div>

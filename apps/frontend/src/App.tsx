@@ -7,31 +7,31 @@ import { ToastContainer } from "@/features/toast";
 import { config } from "./config";
 
 export const App: React.FC = () => {
-  const theme = useAppSelector((s) => s.settings.theme);
-  useAutoRefreshToken(12);
-  useApplyTheme();
-  console.log(config)  
+    const theme = useAppSelector((s) => s.settings.theme);
+    useAutoRefreshToken(12);
+    useApplyTheme();
+    console.log(config);
 
-  const getBackgroundClass = () => {
-    switch (theme) {
-      case "light":
-        return "bg-body-texture-light";
-      case "dark":
-        return "bg-body-texture-black";
-      case "standart":
-        return "bg-body-texture-standart";
-      default:
-        return "bg-body-texture-standart";
-    }
-  };
+    const getBackgroundClass = () => {
+        switch (theme) {
+            case "light":
+                return "bg-body-texture-light";
+            case "dark":
+                return "bg-body-texture-black";
+            case "standart":
+                return "bg-body-texture-standart";
+            default:
+                return "bg-body-texture-standart";
+        }
+    };
 
-  return (
-    <>
-      <ToastContainer />
-      <div
-        className={`${getBackgroundClass()} fixed w-full h-full -z-50 overflow-hidden bg-cover bg-no-repeat`}
-      ></div>
-      <PagesRouter />
-    </>
-  );
+    return (
+        <>
+            <ToastContainer />
+            <div
+                className={`${getBackgroundClass()} fixed w-full h-full -z-50 overflow-hidden bg-cover bg-no-repeat`}
+            ></div>
+            <PagesRouter />
+        </>
+    );
 };

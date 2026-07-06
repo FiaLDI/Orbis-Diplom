@@ -7,9 +7,7 @@ export const IssueAssignLayout: React.FC<{
     result: React.ReactNode;
 }> = ({ head, search, result }) => (
     <div className="w-[500px] text-white">
-        <ModalHead>
-            {head}
-        </ModalHead>
+        <ModalHead>{head}</ModalHead>
         <div className="p-5 flex flex-col gap-5 w-full">
             {search}
 
