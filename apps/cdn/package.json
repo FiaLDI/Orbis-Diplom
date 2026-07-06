@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "DOTENV_CONFIG_PATH=.env.dev npx ts-node -r dotenv/config src/server.ts",
+    "dev": "npx ts-node -r dotenv/config src/server.ts",
     "build": "tsc && tsc-alias",
-    "start": "DOTENV_CONFIG_PATH=.env.prod npx ts-node -r dotenv/config src/server.ts",
+    "start": "npx ts-node -r dotenv/config src/server.ts",
     "lint": "eslint --config eslint.config.mjs",
     "lint:fix": "eslint --config eslint.config.mjs --fix",
     "test": "echo"

@@ -7,7 +7,7 @@ services:
     container_name: orbis_backend
     restart: always
     env_file:
-      - ./apps/backend/.env.prod
+      - ./.env
     depends_on:
       - orbis_db
       - orbis_redis
@@ -18,7 +18,7 @@ services:
       dockerfile: Dockerfile
     restart: always
     env_file:
-      - ./apps/cdn/.env.prod
+      - ./.env
 
   orbis-frontend:
     build:
@@ -27,6 +27,8 @@ services:
     restart: always
     depends_on:
       - orbis-backend
+    env_file:
+      - ./.env
 
   nginx:
     image: nginx:stable
@@ -52,6 +54,8 @@ services:
       POSTGRES_PASSWORD: orbis
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./.env
 
   orbis_redis:
     image: redis:7-alpine
@@ -60,6 +64,8 @@ services:
     command: ["redis-server", "--requirepass", "admin"]
     volumes:
       - redis_data:/data
+    env_file:
+      - ./.env
 
 volumes:
   postgres_data:

@@ -1,0 +1,55 @@
+name: Test Project
+
+on: 
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-lastest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: backend
+            path: ./apps/backend
+        include:
+          - name: frontend
+            path: ./apps/frontend
+        include:
+          - name: cdn
+            path: ./apps/cdn
+    
+    name: Test ${{ matrix.name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ matrix.path }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.path }}
+        run: npm ci
+
+      - name: Lint
+        working-directory: ${{ matrix.path }}
+        run: npm run lint
+
+      - name: Unit Tests
+        working-directory: ${{ matrix.path }}
+        run: npm test
+
+      - name: Build
+        working-directory: ${{ matrix.path }}
+        run: npm run build

@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "dev": "DOTENV_CONFIG_PATH=.env.dev ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.dev.ts",
+    "dev": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.dev.ts",
     "build": "tsc && tsc-alias",
-    "start": "DOTENV_CONFIG_PATH=.env.prod ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.prod.ts",
+    "start": "ts-node -r dotenv/config -r tsconfig-paths/register ./src/server.prod.ts",
     "lint": "eslint --config eslint.config.mjs",
     "lint:fix": "eslint --config eslint.config.mjs --fix",
     "test:unit": "vitest tests/unit",
