@@ -1,4 +1,4 @@
-name: Test Project
+name: Test Orbis
 
 on: 
   pull_request:
@@ -9,9 +9,12 @@ concurrency:
   group: test-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NODE_VERSION: 22
+
 jobs:
   test:
-    runs-on: ubuntu-lastest
+    runs-on: ubuntu-latest
     timeout-minutes: 20
 
     strategy:
@@ -20,13 +23,13 @@ jobs:
         include:
           - name: backend
             path: ./apps/backend
-        include:
+
           - name: frontend
             path: ./apps/frontend
-        include:
+
           - name: cdn
             path: ./apps/cdn
-    
+        
     name: Test ${{ matrix.name }}
 
     steps:
