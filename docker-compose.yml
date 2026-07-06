@@ -1,10 +1,9 @@
 services:
-  backend:
+  orbis-backend:
     image: orbis_backend_image
     build:
       context: ./apps/backend
       dockerfile: Dockerfile
-      network: host
     container_name: orbis_backend
     restart: always
     env_file:
@@ -12,46 +11,37 @@ services:
     depends_on:
       - orbis_db
       - orbis_redis
-    network_mode: host
 
-  cdn:
+  orbis-cdn:
     build:
       context: ./apps/cdn
       dockerfile: Dockerfile
-      network: host
-    container_name: orbis_cdn
     restart: always
     env_file:
       - ./apps/cdn/.env.prod
-    network_mode: host
 
-  frontend:
+  orbis-frontend:
     build:
       context: ./apps/frontend
       dockerfile: Dockerfile
-      network: host
-    container_name: orbis_frontend
     restart: always
     depends_on:
-      - backend
-    network_mode: host
+      - orbis-backend
 
   nginx:
     image: nginx:stable
     container_name: orbis_nginx
     restart: always
+    ports:
+      - 443:443
     depends_on:
-      - frontend
-      - backend
-      - cdn
+      - orbis-frontend
+      - orbis-backend
+      - orbis-cdn
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./ssl:/etc/ssl/private:ro
-    network_mode: host
+      - ./nginx/ssl:/etc/ssl/private:ro
 
-  # ===============================
-  # 🗄 PostgreSQL
-  # ===============================
   orbis_db:
     image: postgres:15
     container_name: orbis_db_container
@@ -62,11 +52,7 @@ services:
       POSTGRES_PASSWORD: orbis
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    network_mode: host
 
-  # ===============================
-  # 💾 Redis
-  # ===============================
   orbis_redis:
     image: redis:7-alpine
     container_name: orbis_redis_container
@@ -74,7 +60,6 @@ services:
     command: ["redis-server", "--requirepass", "admin"]
     volumes:
       - redis_data:/data
-    network_mode: host
 
 volumes:
   postgres_data:

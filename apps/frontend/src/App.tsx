@@ -4,11 +4,13 @@ import { useApplyTheme } from "@/features/settings";
 import { useAppSelector } from "@/app/hooks";
 import { useAutoRefreshToken } from "@/features/auth/hooks";
 import { ToastContainer } from "@/features/toast";
+import { config } from "./config";
 
 export const App: React.FC = () => {
   const theme = useAppSelector((s) => s.settings.theme);
   useAutoRefreshToken(12);
   useApplyTheme();
+  console.log(config)  
 
   const getBackgroundClass = () => {
     switch (theme) {
